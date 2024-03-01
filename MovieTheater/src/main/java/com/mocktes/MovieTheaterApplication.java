@@ -1,4 +1,4 @@
-package com.mocktest;
+package com.mocktes;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
