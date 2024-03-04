@@ -3,7 +3,10 @@ package com.mocktest.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -20,18 +23,23 @@ public class Movie {
     private String id;
 
     @Column(name = "content")
+    @NotNull(message = "The content is not blank!")
     private String content;
 
     @Column(name = "movie_name_english")
+    @NotNull(message = "The movie name english is not blank!")
     private String movieNameEnglish;
 
     @Column(name = "movie_name_vn")
+    @NotNull(message = "The movie name vn is not blank!")
     private String movieNameVN;
 
     @Column(name = "actor")
+    @NotNull(message = "The actor is not blank!")
     private String actor;
 
     @Column(name = "director")
+    @NotNull(message = "The director is not blank!")
     private String director;
 
     @Column(name = "duration")
@@ -49,5 +57,10 @@ public class Movie {
     @Column(name = "image_url")
     private String imageURL;
 
-
+    @ManyToMany
+    @JoinTable(
+            name = "movie_type",
+            joinColumns = @JoinColumn(name = "movie_id_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_id"))
+    private Set<Type> typeMovies;
 }

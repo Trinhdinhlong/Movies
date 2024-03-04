@@ -3,6 +3,7 @@ package com.mocktest.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -21,5 +22,6 @@ public class Type {
     @Column(name = "type_name")
     private String typeName;
 
-
+    @ManyToMany(mappedBy = "typeMovies")
+    private Set<Movie> movies;
 }
