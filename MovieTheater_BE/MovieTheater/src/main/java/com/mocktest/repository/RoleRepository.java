@@ -1,4 +1,7 @@
 package com.mocktest.repository;
 
-public interface RoleRepository {
+import com.mocktest.entities.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RoleRepository extends JpaRepository<Role, Long> {
 }
