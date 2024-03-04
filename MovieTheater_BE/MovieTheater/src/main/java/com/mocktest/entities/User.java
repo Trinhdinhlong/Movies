@@ -37,7 +37,8 @@ public class User {
     private LocalDate dateOfBirth;
 
     @Column(name = "gender")
-    private int gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "email", unique = true)
     @NotNull(message = "The email should not be blanked!")
@@ -57,4 +58,7 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     private Role role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Ticket> tickets;
 }
