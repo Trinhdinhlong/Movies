@@ -1,4 +1,7 @@
 package com.mocktest.repository;
 
-public interface SeatRepository {
+import com.mocktest.entities.Seat;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SeatRepository extends JpaRepository<Seat, Long> {
 }
