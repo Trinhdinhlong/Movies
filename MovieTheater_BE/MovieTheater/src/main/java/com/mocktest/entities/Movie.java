@@ -57,10 +57,19 @@ public class Movie {
     @Column(name = "image_url")
     private String imageURL;
 
+    @Column(name = "created_date")
+    private LocalDateTime createdTimDate;
+
+    @Column(name = "updated_time")
+    private LocalDateTime updatedTime;
+
     @ManyToMany
     @JoinTable(
             name = "movie_type",
             joinColumns = @JoinColumn(name = "movie_id_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
     private Set<Type> typeMovies;
+
+    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ShowTime> showTimes;
 }
