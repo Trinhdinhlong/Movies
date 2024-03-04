@@ -20,7 +20,7 @@ public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
-    private String id;
+    private Long id;
 
     @Column(name = "content")
     @NotNull(message = "The content is not blank!")
