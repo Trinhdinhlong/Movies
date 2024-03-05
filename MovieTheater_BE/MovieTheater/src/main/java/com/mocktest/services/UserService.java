@@ -1,6 +1,6 @@
 package com.mocktest.services;
 
-import com.mocktest.entities.User;
+import com.mocktest.dto.UserDto;
 
-public interface UserService extends BaseService<User> {
+public interface UserService extends BaseService<UserDto> {
 }

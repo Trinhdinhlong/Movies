@@ -6,5 +6,5 @@ public interface BaseService<T> {
     List<T> getAll();
     T create(T t);
     T updateById(T t, Long id);
-    T deleteById(Long id);
+    boolean deleteById(Long id);
 }
