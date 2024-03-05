@@ -1,12 +1,11 @@
 import "../globals.css";
 
-export default function RegisterLayout({
+export default function LoginLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    //Searchbar Component
     <div className="h-screen">{children}</div>
   );
 }

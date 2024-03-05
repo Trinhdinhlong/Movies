@@ -1,12 +1,15 @@
 import "./globals.css";
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex-initial">{children}</div>
+    <html lang="en">
+      <body>
+        {children}
+      </body>
+    </html>
   );
 }
