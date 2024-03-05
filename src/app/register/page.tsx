@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -36,7 +37,17 @@ export default function Register() {
   function handleRegister(e: any) {
     e.preventDefault();
     if (checkAllFieldsFilled()) {
-      // Call API from here
+      axios.post("http://localhost:8080/api/user", {
+        username: account,
+        password: password,
+        fullName: fullName,
+        dateOfBirth: dob,
+        gender: gender,
+        email: email,
+        address: address,
+        phone: phoneNumber,
+        role: 2,
+      }).then(response => console.log(response.data));
     }
   }
 
@@ -165,8 +176,12 @@ export default function Register() {
       </div>
       <span className="text-black">
         Have account already?{" "}
-        <span className="underline cursor-pointer"
-        onClick={() => handleRedirectLogin()}>Login</span>
+        <span
+          className="underline cursor-pointer"
+          onClick={() => handleRedirectLogin()}
+        >
+          Login
+        </span>
       </span>
     </div>
   );
