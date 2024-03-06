@@ -1,11 +1,13 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,10 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "users", schema = "dbo")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -49,13 +51,13 @@ public class User {
 
     @Column(name = "phone", unique = true)
     @NotNull(message = "The phone should not be blanked!")
-    @Max(value = 10, message = "The length of the phone number must not exceed 10!")
     private String phone;
 
     @Column(name = "image_url")
     private String imageURL;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     private Role role;
 

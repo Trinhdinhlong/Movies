@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "tickets", schema = "dbo")
 public class Ticket {
     @Id
