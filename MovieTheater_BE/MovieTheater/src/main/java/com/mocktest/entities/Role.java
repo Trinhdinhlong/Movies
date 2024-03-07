@@ -33,4 +33,14 @@ public class Role {
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<User> users;
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", roleName='" + roleName + '\'' +
+                ", createdTimDate=" + createdTimDate +
+                ", updatedTime=" + updatedTime +
+                '}';
+    }
 }

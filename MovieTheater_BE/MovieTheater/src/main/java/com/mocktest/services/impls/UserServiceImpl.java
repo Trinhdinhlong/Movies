@@ -22,28 +22,88 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(UserDto::new)
-                .collect(Collectors.toList());
+        try {
+            List<User> users = userRepository.findAll();
+            return users.stream()
+                    .map(UserDto::new)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Error while retrieving all users", e);
+        }
     }
 
     @Override
     public UserDto getById(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        User user = userOptional.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-        return new UserDto(user);
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            User user = userOptional.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+            return new UserDto(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while retrieving user by id: " + id, e);
+        }
     }
 
     @Override
     public UserDto create(UserDto userDto) {
-        User user = new User();
-        if (userDto != null) {
-            BeanUtils.copyProperties(userDto, user);
+        try {
+            User user = new User();
+            if (userDto != null) {
+                BeanUtils.copyProperties(userDto, user);
+            }
+            User userSaved = userRepository.save(user);
+            return new UserDto(userSaved);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while creating user", e);
         }
-        User userSaved = userRepository.save(user);
-        return new UserDto(userSaved);
-
     }
 
+    @Override
+    public UserDto updateById(UserDto userDto, Long id) {
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            User user = userOptional.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+            if (userDto != null) {
+                BeanUtils.copyProperties(userDto, user);
+            }
+            User userUpdated = userRepository.save(user);
+            return new UserDto(userUpdated);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while updating user with id: " + id, e);
+        }
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        try {
+            if (userRepository.existsById(id)) {
+                userRepository.deleteById(id);
+                return true;
+            } else {
+                throw new EntityNotFoundException("User not found with id: " + id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while deleting user with id: " + id, e);
+        }
+    }
+
+    @Override
+    public UserDto getByUserName(String username) {
+        if(username != null){
+            User user = userRepository.getByUsername(username);
+            return new UserDto(user);
+        }else {
+            throw new EntityNotFoundException("User not found with username: " + username);
+        }
+    }
+
+    @Override
+    public UserDto updateByUserName(UserDto userDto) {
+        User user = userRepository.getByUsername(userDto.getUsername());
+        if (user != null) {
+                userRepository.updateByUserName(userDto);
+                return userDto;
+        }else{
+            throw new EntityNotFoundException("User not found with username: " + userDto.getUsername());
+        }
+    }
 }
