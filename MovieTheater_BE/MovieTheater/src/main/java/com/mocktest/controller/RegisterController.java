@@ -1,7 +1,6 @@
 package com.mocktest.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mocktest.dto.UserDto;
 import com.mocktest.jsons.UserJson;
 import com.mocktest.payload.ResponseData;
 import lombok.RequiredArgsConstructor;
