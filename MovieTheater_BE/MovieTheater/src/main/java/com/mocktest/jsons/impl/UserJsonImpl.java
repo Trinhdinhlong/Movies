@@ -43,7 +43,6 @@ public class UserJsonImpl implements UserJson {
     public ResponseData CreateUser(String json) throws JsonProcessingException {
         UserDto userDto = objectMapper.readValue(json, UserDto.class);
         RoleDto roleDto = roleService.getById(2L);
-        System.out.println(roleDto);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
         userDto.setRole(role);
@@ -54,9 +53,8 @@ public class UserJsonImpl implements UserJson {
     }
 
     @Override
-    public ResponseData UpdateUser(String json) throws JsonProcessingException {
+    public ResponseData UpdateUserAndAdmin(String json) throws JsonProcessingException {
         UserDto userDto = objectMapper.readValue(json, UserDto.class);
-        System.out.println(userDto);
         UserDto userDtoSaved = userService.updateByUserName(userDto);
         return ResponseData.builder()
                 .isSuccess(true)

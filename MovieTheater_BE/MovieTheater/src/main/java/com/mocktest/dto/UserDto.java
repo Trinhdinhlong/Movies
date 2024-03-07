@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
-    private Long id;
+    private Long userId;
     private String username;
     private String password;
     private String fullName;
@@ -29,7 +29,7 @@ public class UserDto {
     private String email;
     private String address;
     private String phone;
-    private String imageURL;
+    private LocalDate registerDate;
     private Role role;
     public UserDto(User entity) {
         if (entity != null) {

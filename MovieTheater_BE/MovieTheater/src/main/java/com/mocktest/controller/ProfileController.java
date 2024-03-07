@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/profile")
 public class ProfileController {
     private final UserJson userJson;
-    @PostMapping
-    public ResponseData updateUserEntity(@RequestBody String json) throws JsonProcessingException {
-        return userJson.UpdateUser(json);
+    @PutMapping
+    public  ResponseData updateUserEntity(@RequestBody String json) throws JsonProcessingException {
+        return userJson.UpdateUserAndAdmin(json);
     }
 }
