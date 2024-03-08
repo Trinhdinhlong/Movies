@@ -2,11 +2,14 @@ package com.mocktest.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mocktest.entities.Seat;
+import com.mocktest.entities.TicketType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 @Data
 @Builder
@@ -22,5 +25,6 @@ public class BookingDto {
     private String movieNameVN;
     private LocalDateTime startTime;
     private Seat seat;
-
+    @Enumerated(EnumType.STRING)
+    private TicketType ticketType;
 }

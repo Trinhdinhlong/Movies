@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mocktest.dto.RoleDto;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Role;
-import com.mocktest.entities.User;
 import com.mocktest.jsons.UserJson;
 import com.mocktest.payload.ResponseData;
 import com.mocktest.services.RoleService;
@@ -18,30 +17,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserJsonImpl implements UserJson {
     private final UserService userService;
-    private final ObjectMapper objectMapper;
     private final RoleService roleService;
 
 
     @Override
-    public String ToJson(String username, String password) throws JsonProcessingException {
+    public ResponseData ToJson(String username, String password) throws JsonProcessingException {
         UserDto userDto = userService.getByUserName(username);
         if (userDto != null) {
             if (userDto.getUsername().equals(username) && userDto.getPassword().equals(password)) {
-                ResponseData responseData = ResponseData.builder()
+                return ResponseData.builder()
                         .isSuccess(true)
                         .data(userDto)
                         .build();
-                return objectMapper.writeValueAsString(responseData);
-            } else {
-                return "Account or password is incorrect";
             }
         }
-        return "Account or password is incorrect";
+        return ResponseData.builder()
+                .isSuccess(false)
+                .message("Account Or Password fail")
+                .build();
     }
 
     @Override
-    public ResponseData CreateUser(String json) throws JsonProcessingException {
-        UserDto userDto = objectMapper.readValue(json, UserDto.class);
+    public ResponseData CreateUser(UserDto userDto) throws JsonProcessingException {
         RoleDto roleDto = roleService.getById(2L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
@@ -53,8 +50,7 @@ public class UserJsonImpl implements UserJson {
     }
 
     @Override
-    public ResponseData UpdateUserAndAdmin(String json) throws JsonProcessingException {
-        UserDto userDto = objectMapper.readValue(json, UserDto.class);
+    public ResponseData UpdateUserAndAdmin(UserDto userDto) throws JsonProcessingException {
         UserDto userDtoSaved = userService.updateByUserName(userDto);
         return ResponseData.builder()
                 .isSuccess(true)

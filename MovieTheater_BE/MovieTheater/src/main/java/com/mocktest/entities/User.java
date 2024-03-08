@@ -50,7 +50,7 @@ public class User implements Serializable {
     @Column(name = "register_date")
     private LocalDate registerDate;
     @UpdateTimestamp
-    @Column(name = "registerDate")
+    @Column(name = "update_Date")
     private LocalDate updateDate;
     @Column(name = "Identity_card" ,unique = true)
     private String identituCard;
@@ -63,4 +63,23 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ticket> tickets;
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender=" + gender +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                ", registerDate=" + registerDate +
+                ", updateDate=" + updateDate +
+                ", identituCard='" + identituCard + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                ", role=" + role +
+                '}';
+    }
 }

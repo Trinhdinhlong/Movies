@@ -1,5 +1,6 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -68,8 +69,29 @@ public class Movie {
             name = "movie_type",
             joinColumns = @JoinColumn(name = "movie_id_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
+    @JsonIgnore
     private Set<Type> typeMovies;
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ShowTime> showTimes;
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", movieNameEnglish='" + movieNameEnglish + '\'' +
+                ", movieNameVN='" + movieNameVN + '\'' +
+                ", actor='" + actor + '\'' +
+                ", director='" + director + '\'' +
+                ", duration=" + duration +
+                ", movieProductionCompany='" + movieProductionCompany + '\'' +
+                ", startedDate=" + startedDate +
+                ", endDate=" + endDate +
+                ", imageURL='" + imageURL + '\'' +
+                ", createdTimDate=" + createdTimDate +
+                ", updatedTime=" + updatedTime +
+                '}';
+    }
 }

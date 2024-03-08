@@ -2,6 +2,7 @@ package com.mocktest.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mocktest.jsons.RoomJson;
+import com.mocktest.payload.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CinemaController {
     private final RoomJson roomJson;
     @GetMapping
-    public ResponseEntity<String> getCinema() throws JsonProcessingException {
-          return new ResponseEntity<>( roomJson.ToJson(), HttpStatus.OK);
+    public ResponseData getCinema() throws JsonProcessingException {
+          return roomJson.ToJson();
     }
 }

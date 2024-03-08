@@ -24,4 +24,12 @@ public class Type {
 
     @ManyToMany(mappedBy = "typeMovies")
     private Set<Movie> movies;
+
+    @Override
+    public String toString() {
+        return "Type{" +
+                "id=" + id +
+                ", typeName='" + typeName + '\'' +
+                '}';
+    }
 }

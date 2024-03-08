@@ -30,6 +30,8 @@ public class UserDto {
     private String address;
     private String phone;
     private LocalDate registerDate;
+    private String identituCard;
+    private String imageURL;
     private Role role;
     public UserDto(User entity) {
         if (entity != null) {

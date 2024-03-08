@@ -1,5 +1,7 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,13 +29,26 @@ public class ShowTime {
     private LocalDateTime endTime;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "movie_id", referencedColumnName = "movie_id")
     private Movie movie;
 
     @OneToMany(mappedBy = "showTime", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Ticket> tickets;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "room_id", referencedColumnName = "room_id")
     private Room room;
+
+    @Override
+    public String toString() {
+        return "ShowTime{" +
+                "id=" + id +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", movie=" + movie +
+                '}';
+    }
 }

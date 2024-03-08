@@ -5,7 +5,7 @@ import com.mocktest.dto.UserDto;
 import com.mocktest.payload.ResponseData;
 
 public interface UserJson {
-    String ToJson(String username,String password) throws JsonProcessingException;
-    ResponseData CreateUser(String json) throws JsonProcessingException;
-    ResponseData UpdateUserAndAdmin(String json) throws JsonProcessingException;
+    ResponseData checkLogin(String username,String password) throws JsonProcessingException;
+    ResponseData CreateUser(UserDto userDto) throws JsonProcessingException;
+    ResponseData UpdateUserAndAdmin(UserDto userDto) throws JsonProcessingException;
 }

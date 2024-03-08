@@ -1,5 +1,7 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,9 +35,22 @@ public class Seat {
     private SeatType seatType;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "room_id", referencedColumnName = "room_id")
     private Room room;
 
     @OneToMany(mappedBy = "seat", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Ticket> tickets;
+
+    @Override
+    public String toString() {
+        return "Seat{" +
+                "id=" + id +
+                ", seatColumn='" + seatColumn + '\'' +
+                ", seatRow=" + seatRow +
+                ", price=" + price +
+                ", seatType=" + seatType +
+                '}';
+    }
 }

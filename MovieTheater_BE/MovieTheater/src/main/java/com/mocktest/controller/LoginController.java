@@ -2,6 +2,7 @@ package com.mocktest.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mocktest.jsons.UserJson;
+import com.mocktest.payload.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,8 @@ public class LoginController {
     private final UserJson userLoad;
     @GetMapping("/{username}/{password}")
     @ResponseStatus(HttpStatus.OK)
-    public  ResponseEntity<String> getById(@PathVariable("username") String username,@PathVariable("password") String password)
+    public ResponseData getById(@PathVariable("username") String username, @PathVariable("password") String password)
             throws JsonProcessingException {
-         String message = userLoad.ToJson(username, password);
-         return new ResponseEntity<>(message, HttpStatus.OK);
+         return userLoad.checkLogin(username, password);
     }
 }

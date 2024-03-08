@@ -15,6 +15,7 @@ public class ResponseData {
     private boolean isSuccess;
     private String message;
     private Object description;
+    @JsonInclude
     private Object data;
 
 }

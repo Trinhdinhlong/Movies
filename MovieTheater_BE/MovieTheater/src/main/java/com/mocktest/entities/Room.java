@@ -1,5 +1,6 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,8 +33,21 @@ public class Room {
     private LocalDateTime updatedTime;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Seat> seats;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ShowTime> showTimes;
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", roomName='" + roomName + '\'' +
+                ", seatQuantity=" + seatQuantity +
+                ", createdTimDate=" + createdTimDate +
+                ", updatedTime=" + updatedTime +
+                '}';
+    }
 }
