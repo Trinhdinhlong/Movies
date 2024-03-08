@@ -58,7 +58,7 @@ public class Movie {
     private String imageURL;
 
     @Column(name = "created_date")
-    private LocalDateTime createdTimDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
