@@ -21,7 +21,7 @@ public class UserJsonImpl implements UserJson {
 
 
     @Override
-    public ResponseData ToJson(String username, String password) throws JsonProcessingException {
+    public ResponseData checkLogin(String username, String password) throws JsonProcessingException {
         UserDto userDto = userService.getByUserName(username);
         if (userDto != null) {
             if (userDto.getUsername().equals(username) && userDto.getPassword().equals(password)) {
