@@ -12,8 +12,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("FROM User u WHERE u.username = :username")
-    User getByUsername(@Param("username") String username);
+    @Query("FROM User u WHERE u.username = :#{#dto.username}")
+    User getByUsername(@Param("dto") UserDto dto);
     @Transactional
     @Modifying
     @Query("UPDATE User u SET u.password = :#{#dto.password}, u.fullName = :#{#dto.fullName}, " +

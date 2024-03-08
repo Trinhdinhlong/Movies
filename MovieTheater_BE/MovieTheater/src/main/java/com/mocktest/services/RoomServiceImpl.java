@@ -1,9 +1,8 @@
-package com.mocktest.services.impls;
+package com.mocktest.services;
 
 import com.mocktest.dto.RoomDto;
 import com.mocktest.entities.Room;
 import com.mocktest.repository.RoomRepository;
-import com.mocktest.services.RoomService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
-public class RoomServiceImpl implements RoomService {
+public class RoomServiceImpl{
     @Autowired
     private RoomRepository roomRepository;
-    @Override
     public List<RoomDto> getAll() {
         try {
             List<Room> rooms = roomRepository.findAll();
@@ -27,8 +25,6 @@ public class RoomServiceImpl implements RoomService {
             throw new RuntimeException("Error while retrieving all roles", e);
         }
     }
-
-    @Override
     public RoomDto getById(Long id) {
         try {
             Optional<Room> roleOptional = roomRepository.findById(id);
@@ -38,8 +34,6 @@ public class RoomServiceImpl implements RoomService {
             throw new RuntimeException("Error while retrieving role by id: " + id, e);
         }
     }
-
-    @Override
     public RoomDto create(RoomDto roomDto) {
         try {
             Room room = new Room();
@@ -52,8 +46,6 @@ public class RoomServiceImpl implements RoomService {
             throw new RuntimeException("Error while creating user", e);
         }
     }
-
-    @Override
     public RoomDto updateById(RoomDto roomDto, Long id) {
         try {
             Optional<Room> roomOptional = roomRepository.findById(id);
@@ -67,8 +59,6 @@ public class RoomServiceImpl implements RoomService {
             throw new RuntimeException("Error while updating user with id: " + id, e);
         }
     }
-
-    @Override
     public boolean deleteById(Long id) {
         try {
             if (roomRepository.existsById(id)) {

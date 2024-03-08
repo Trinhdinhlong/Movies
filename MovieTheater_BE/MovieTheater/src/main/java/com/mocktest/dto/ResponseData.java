@@ -1,4 +1,4 @@
-package com.mocktest.payload;
+package com.mocktest.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
