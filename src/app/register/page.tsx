@@ -34,20 +34,31 @@ export default function Register() {
     return allFilled;
   };
 
+  function extractDob() {
+    const arr = dob.split("-");
+    const arrInt = arr.map((a) => Number(a));
+    return arrInt;
+  }
+
   function handleRegister(e: any) {
     e.preventDefault();
     if (checkAllFieldsFilled()) {
-      axios.post("http://localhost:8080/api/user", {
-        username: account,
-        password: password,
-        fullName: fullName,
-        dateOfBirth: dob,
-        gender: gender,
-        email: email,
-        address: address,
-        phone: phoneNumber,
-        role: 2,
-      }).then(response => console.log(response.data));
+      const dobArray = extractDob();
+      axios
+        .post("http://localhost:8080/api/user", {
+          account: account,
+          password: password,
+          fullName: fullName,
+          dobYear: dobArray[0],
+          dobMonth: dobArray[2],
+          dobDay: dobArray[1],
+          gender: gender.toUpperCase(),
+          email: email,
+          address: address,
+          phone: phoneNumber,
+          role: 2,
+        })
+        .catch(error => console.log(error))
     }
   }
 
