@@ -1,6 +1,6 @@
 package com.mocktest.controller;
 import com.mocktest.dto.RoomDto;
-import com.mocktest.services.RoomServiceImpl;
+import com.mocktest.services.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import java.util.List;
 @RestController("/api/room")
 public class CinemaController {
     @Autowired
-    private RoomServiceImpl roomService;
+    private RoomService roomService;
     @GetMapping
     public ResponseEntity<List<RoomDto>> getCinema(){
         List<RoomDto> roomDtos = roomService.getAll();

@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.naming.AuthenticationException;
+import com.mocktest.exceptions.AuthenticationException;
 
 @CrossOrigin("*")
 @RestController
@@ -16,11 +15,11 @@ import javax.naming.AuthenticationException;
 @RequestMapping("/api")
 public class UserController {
     private final UserService userService;
-    @GetMapping("/login")
+    @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<UserDto> CheckLogin(@RequestBody UserDto userDto) throws BadRequestException, NotFoundException, AuthenticationException {
+    public ResponseEntity<UserDto> Login(@RequestBody UserDto userDto) throws BadRequestException,NotFoundException, AuthenticationException{
         UserDto userDtoSaved = userService.login(userDto);
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+        return new ResponseEntity<>(userDtoSaved, HttpStatus.OK);
     }
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -29,8 +28,8 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PutMapping("/profile")
-    public ResponseEntity<UserDto> updateUserEntity(@RequestBody UserDto userDto) throws BadRequestException, NotFoundException {
-        userService.updateByUserName(userDto);
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    public ResponseEntity<UserDto> updateUserEntity(@RequestBody UserDto request) throws BadRequestException, NotFoundException {
+        userService.updateById(request);
+        return new ResponseEntity<>(request, HttpStatus.OK);
     }
 }

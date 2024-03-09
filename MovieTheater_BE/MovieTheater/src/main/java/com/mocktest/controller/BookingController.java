@@ -1,12 +1,9 @@
 package com.mocktest.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mocktest.dto.BookingDto;
-import com.mocktest.entities.Ticket;
 import com.mocktest.exceptions.NotFoundException;
-import com.mocktest.services.BookingServiceImpl;
+import com.mocktest.services.TicketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class BookingController{
-    private final BookingServiceImpl bookingService;
+    private final TicketService bookingService;
     @GetMapping("/booking")
     public ResponseEntity<List<BookingDto>> getAllBookingTicket() throws NotFoundException {
         List<BookingDto> bookingDto = bookingService.getAllBookings();

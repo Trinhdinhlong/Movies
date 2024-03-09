@@ -7,21 +7,17 @@ import com.mocktest.entities.User;
 import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.UserRepository;
+import com.mocktest.exceptions.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Constants;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.springframework.core.Constants.*;
-
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -39,19 +35,16 @@ public class UserService {
             throw new RuntimeException("Error while retrieving all users", e);
         }
     }
-
-    public UserDto getById(Long id) {
+    public UserDto getById(UserDto request) throws NotFoundException {
         try {
-            Optional<User> userOptional = userRepository.findById(id);
-            User user = userOptional.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+            Optional<User> userOptional = userRepository.findById(request.getUserId());
+            User user = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
             return new UserDto(user);
         } catch (Exception e) {
-            throw new RuntimeException("Error while retrieving user by id: " + id, e);
+            throw new NotFoundException("Error while retrieving user by id");
         }
     }
-
     public UserDto create(UserDto request) throws BadRequestException, NotFoundException {
-
         if(request == null){
             throw new BadRequestException("All fields are required.");
         }
@@ -68,68 +61,53 @@ public class UserService {
             throw new NotFoundException("Email, IdentityCard or Number phone has Constraint");
         }
     }
-
-
-    public UserDto updateById(UserDto userDto, Long id) {
+    public UserDto updateById(UserDto request) throws BadRequestException, NotFoundException {
+        if (request == null){
+            throw new BadRequestException("Data is null");
+        }
         try {
-            Optional<User> userOptional = userRepository.findById(id);
-            User user = userOptional.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-            if (userDto != null) {
-                BeanUtils.copyProperties(userDto, user);
-            }
+            Optional<User> userOptional = userRepository.findById(request.getUserId());
+            User user = userOptional.orElseThrow(() -> new NotFoundException("User not found with id: " + request.getUserId()));
             User userUpdated = userRepository.save(user);
             return new UserDto(userUpdated);
         } catch (Exception e) {
-            throw new RuntimeException("Error while updating user with id: " + id, e);
+            throw new NotFoundException("Error while updating user with id: ");
+        }
+    }
+    public boolean deleteById(UserDto request) throws NotFoundException {
+        if (userRepository.existsById(request.getUserId())) {
+            userRepository.deleteById(request.getUserId());
+            return true;
+        }else {
+            throw new NotFoundException("data not found in entity User: " + request.getUserId());
         }
     }
 
 
-    public boolean deleteById(Long id) {
-        try {
-            if (userRepository.existsById(id)) {
-                userRepository.deleteById(id);
-                return true;
-            } else {
-                throw new EntityNotFoundException("User not found with id: " + id);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error while deleting user with id: " + id, e);
-        }
-    }
-
-
-    public UserDto getByUserName(UserDto userDto) {
+    public UserDto getByUserName(UserDto userDto) throws NotFoundException {
         if(userDto.getUsername() != null){
             User user = userRepository.getByUsername(userDto);
-            System.out.println();
             return new UserDto(user);
         }else {
-            throw new EntityNotFoundException("User not found with username: " + userDto.getUsername());
+            throw new NotFoundException("User not found with username: " + userDto.getUsername());
         }
     }
-    public UserDto login(UserDto userDto) throws BadRequestException, AuthenticationException {
-        if(userDto.getUsername() == null && userDto.getPassword() == null){
+    public UserDto login(UserDto userDto) throws BadRequestException, AuthenticationException, NotFoundException {
+        if(userDto.getUsername() == null || userDto.getPassword() == null){
             throw new BadRequestException("Not found data is null");
         }
         UserDto user = getByUserName(userDto);
-        if (userDto.getUsername().equals(user.getUsername())
-                && userDto.getPassword().equals(user.getPassword())) {
-            return userDto;
-        }else {
-            throw new AuthenticationException("Account or password is not correct");
+
+        if (user == null) {
+            throw new NotFoundException("User not found");
         }
-    }
-    public UserDto updateByUserName(UserDto userDto) throws BadRequestException, NotFoundException {
-        if(userDto == null){
-            throw new BadRequestException("Not found data is Null");
+        if (user.getPassword() == null && user.getUsername() == null) {
+            throw new BadRequestException("Password is null for user: " + user.getUsername());
         }
-        User user = userRepository.getByUsername(userDto);
-        if (user != null) {
-                userRepository.updateByUserName(userDto);
-                return userDto;
-        }else{
-            throw new NotFoundException("User not found with username: " + userDto.getUsername());
+        if (Objects.equals(userDto.getPassword(), user.getPassword())) {
+            return user;
+        } else {
+            throw new AuthenticationException("Pass word is not correct");
         }
     }
 }

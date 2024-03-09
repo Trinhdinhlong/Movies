@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
-public class BookingServiceImpl {
+public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
     public List<BookingDto> getAllBookings() throws NotFoundException {
