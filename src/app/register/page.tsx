@@ -36,30 +36,24 @@ export default function Register() {
 
   function handleRegister(e: any) {
     e.preventDefault();
-    // if (checkAllFieldsFilled()) {
-    //   axios.post("https://localhost:8080/api/user", {
-    //     username: account,
-    //     password: password,
-    //     fullName: fullName,
-    //     dateOfBirth: dob,
-    //     gender: gender,
-    //     email: email,
-    //     address: address,
-    //     phone: phoneNumber,
-    //     role: 2,
-    //   }).then(response => console.log(response.data));
-    // }
-    axios.post("http://localhost:8080/api/long",
-      {
-        address: "1243",
-        dateOfBirth: [2004, 1, 1],
-        email: "12483@gmail.com",
-        fullName: "Nguyen4",
-        gender: "MALE",
-        password: "1243",
-        phone: "0936036188",
-        username: "user22"
-      }).then(response => console.log(response.data))
+    if (checkAllFieldsFilled()) {
+      const dobArray = extractDob();
+      axios
+        .post("http://localhost:8080/api/user", {
+          account: account,
+          password: password,
+          fullName: fullName,
+          dobYear: dobArray[0],
+          dobMonth: dobArray[2],
+          dobDay: dobArray[1],
+          gender: gender.toUpperCase(),
+          email: email,
+          address: address,
+          phone: phoneNumber,
+          role: 2,
+        })
+        .catch(error => console.log(error))
+    }
   }
 
   function handleRedirectLogin() {
