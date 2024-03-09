@@ -38,7 +38,7 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handledException(AuthenticationException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(exception.getMessage())
-                .statusCode("403")
+                .statusCode("401")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }

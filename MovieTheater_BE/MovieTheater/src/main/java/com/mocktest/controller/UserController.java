@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.mocktest.exceptions.AuthenticationException;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +22,11 @@ public class UserController {
     public ResponseEntity<UserDto> Login(@RequestBody UserDto userDto) throws BadRequestException,NotFoundException, AuthenticationException{
         UserDto userDtoSaved = userService.login(userDto);
         return new ResponseEntity<>(userDtoSaved, HttpStatus.OK);
+    }
+    @GetMapping("/user")
+    private ResponseEntity<List<UserDto>> getall(){
+        List<UserDto> userDtoList = userService.getAll();
+        return new ResponseEntity<>(userDtoList, HttpStatus.OK);
     }
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
