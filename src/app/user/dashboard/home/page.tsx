@@ -38,7 +38,7 @@ export default function Home() {
         axios.get("http://localhost:8080/api/movie/listmovie").then(response => {
             setListMovie(response.data)
         })
-    },[listMovie])
+    },[])
   return (
     <div className="flex flex-col w-full relative">
       <div className="px-[30px] py-[10px] bg-[#205081] flex flex-row items-center justify-between w-full">
