@@ -1,29 +1,24 @@
 package com.mocktest.services;
 
-import com.mocktest.dto.RoleDto;
 import com.mocktest.dto.UserDto;
-import com.mocktest.entities.Role;
 import com.mocktest.entities.User;
 import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.UserRepository;
 import com.mocktest.exceptions.AuthenticationException;
-import lombok.RequiredArgsConstructor;
+import com.mocktest.until.PasswordEncoderExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-@RequiredArgsConstructor
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
-    private final RoleService roleService;
+    @Autowired
+    private PasswordEncoderExample passwordEncoderExample;
 
     public List<UserDto> getAll() {
         try {
@@ -46,15 +41,12 @@ public class UserService {
     }
     public UserDto create(UserDto request) throws BadRequestException, NotFoundException {
         if(request == null){
-            throw new BadRequestException("All fields are required.");
+            throw new BadRequestException("All fields are required.", "NOT FOUND");
         }
         try {
-            RoleDto roleDto = roleService.getById(2L);
-            Role role = new Role();
-            BeanUtils.copyProperties(roleDto, role);
-            request.setRole(role);
             User user = new User();
             BeanUtils.copyProperties(request, user);
+            user.setPassword(PasswordEncoderExample.encode(user.getPassword()));
             User userSaved = userRepository.save(user);
             return new UserDto(userSaved);
         } catch (Exception e) {
@@ -63,7 +55,7 @@ public class UserService {
     }
     public UserDto updateById(UserDto request) throws BadRequestException, NotFoundException {
         if (request == null){
-            throw new BadRequestException("Data is null");
+            throw new BadRequestException("Data is null", "NOT FOUND");
         }
         try {
             Optional<User> userOptional = userRepository.findById(request.getUserId());
@@ -74,37 +66,36 @@ public class UserService {
             throw new NotFoundException("Error while updating user with id: ");
         }
     }
-    public boolean deleteById(UserDto request) throws NotFoundException {
+    public UserDto deleteById(UserDto request) throws NotFoundException {
         if (userRepository.existsById(request.getUserId())) {
             userRepository.deleteById(request.getUserId());
-            return true;
+            return request;
         }else {
             throw new NotFoundException("data not found in entity User: " + request.getUserId());
         }
     }
 
 
-    public UserDto getByUserName(UserDto userDto) throws NotFoundException {
-        if(userDto.getUsername() != null){
-            User user = userRepository.getByUsername(userDto);
+    public UserDto getByUserName(UserDto request) throws NotFoundException {
+        if(request.getUsername() != null){
+            User user = userRepository.getByUsername(request);
             return new UserDto(user);
         }else {
-            throw new NotFoundException("User not found with username: " + userDto.getUsername());
+            throw new NotFoundException("User not found with username: " + request.getUsername());
         }
     }
-    public UserDto login(UserDto userDto) throws BadRequestException, AuthenticationException, NotFoundException {
-        if(userDto.getUsername() == null || userDto.getPassword() == null){
-            throw new BadRequestException("Not found data is null");
+    public UserDto login(UserDto request) throws BadRequestException, AuthenticationException, NotFoundException {
+        if(request.getUsername() == null || request.getPassword() == null){
+            throw new BadRequestException("Not found data is null", "NOT FOUND");
         }
-        UserDto user = getByUserName(userDto);
-
+        UserDto user = getByUserName(request);
         if (user == null) {
             throw new NotFoundException("User not found");
         }
         if (user.getPassword() == null && user.getUsername() == null) {
-            throw new BadRequestException("Password is null for user: " + user.getUsername());
+            throw new BadRequestException("Password is null for user: " + user.getUsername(), "NOT FOUND");
         }
-        if (Objects.equals(userDto.getPassword(), user.getPassword())) {
+        if (passwordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
             return user;
         } else {
             throw new AuthenticationException("Pass word is not correct");

@@ -92,6 +92,7 @@ public class Movie {
                 ", imageURL='" + imageURL + '\'' +
                 ", createdTimDate=" + createdTimDate +
                 ", updatedTime=" + updatedTime +
+                ", typeMovies=" + typeMovies +
                 '}';
     }
 }

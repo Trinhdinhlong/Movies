@@ -13,8 +13,9 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<ErrorResponse> handledException(BadRequestException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
+                .error(exception.error)
                 .message(exception.getMessage())
-                .statusCode("400")
+                .status("400")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
     protected  ResponseEntity<ErrorResponse> handledException(NotFoundException exception){
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(exception.getMessage())
-                .statusCode("404")
+                .status("404")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handledException(EntityNotFoundException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(exception.getMessage())
-                .statusCode("404")
+                .status("404")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -38,7 +39,7 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handledException(AuthenticationException exception) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(exception.getMessage())
-                .statusCode("401")
+                .status("401")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }

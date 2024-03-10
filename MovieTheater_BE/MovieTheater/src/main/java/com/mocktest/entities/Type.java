@@ -1,5 +1,6 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +11,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "types", schema = "dbo")
 public class Type {
@@ -18,10 +18,9 @@ public class Type {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "type_id")
     private Long id;
-
     @Column(name = "type_name")
     private String typeName;
-
+    @JsonIgnore
     @ManyToMany(mappedBy = "typeMovies")
     private Set<Movie> movies;
 

@@ -11,6 +11,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -48,12 +49,12 @@ public class User implements Serializable {
     private String phone;
     @CreationTimestamp
     @Column(name = "register_date")
-    private LocalDate registerDate;
+    private LocalDateTime registerDate;
     @UpdateTimestamp
     @Column(name = "update_Date")
-    private LocalDate updateDate;
+    private LocalDateTime updateDate;
     @Column(name = "Identity_card" ,unique = true)
-    private String identituCard;
+    private String identityCard;
     @Column(name = "image_url")
     private String imageURL;
     @ManyToOne
@@ -77,7 +78,7 @@ public class User implements Serializable {
                 ", phone='" + phone + '\'' +
                 ", registerDate=" + registerDate +
                 ", updateDate=" + updateDate +
-                ", identituCard='" + identituCard + '\'' +
+                ", identituCard='" + identityCard + '\'' +
                 ", imageURL='" + imageURL + '\'' +
                 ", role=" + role +
                 '}';

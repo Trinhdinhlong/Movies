@@ -1,0 +1,18 @@
+package com.mocktest.until;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.stereotype.Component;
+
+@RequiredArgsConstructor
+@Component
+public class PasswordEncoderExample {
+     public static String encode(String password) throws NoSuchAlgorithmException {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+    public boolean checkpw(String rawPassword, String hashedPasswordFromDatabase) {
+         return BCrypt.checkpw(rawPassword, hashedPasswordFromDatabase);
+    }
+}

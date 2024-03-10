@@ -7,17 +7,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @CrossOrigin("*")
-@RestController("/api/room")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/listroom")
 public class CinemaController {
-    @Autowired
-    private RoomService roomService;
-    @GetMapping
+    private final RoomService roomService;
+    @GetMapping("/listroom")
     public ResponseEntity<List<RoomDto>> getCinema(){
         List<RoomDto> roomDtos = roomService.getAll();
         return new ResponseEntity<>(roomDtos, HttpStatus.OK);

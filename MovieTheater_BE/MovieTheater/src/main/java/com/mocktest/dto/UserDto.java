@@ -30,8 +30,7 @@ public class UserDto implements Serializable {
     private String email;
     private String address;
     private String phone;
-    private LocalDate registerDate;
-    private String identituCard;
+    private String identityCard;
     private String imageURL;
     private Role role;
     public UserDto(User entity) {

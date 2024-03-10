@@ -20,6 +20,7 @@ public class RoomService {
     public List<RoomDto> getAll() {
         try {
             List<Room> rooms = roomRepository.findAll();
+            System.out.println(rooms);
             return rooms.stream()
                     .map(RoomDto::new)
                     .collect(Collectors.toList());
@@ -50,7 +51,7 @@ public class RoomService {
     }
     public RoomDto updateById(RoomDto request) throws BadRequestException, NotFoundException {
         if(request.getId() == null){
-            throw new BadRequestException("Data was not found because id null");
+            throw new BadRequestException("Data was not found because id null", "NOT FOUND");
         }
         try {
             Optional<Room> roomOptional = roomRepository.findById(request.getId());

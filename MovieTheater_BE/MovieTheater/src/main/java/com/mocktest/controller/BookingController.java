@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/ticket")
 public class BookingController{
     private final TicketService bookingService;
     @GetMapping("/booking")
@@ -24,4 +24,5 @@ public class BookingController{
         List<BookingDto> bookingDto = bookingService.getAllBookings();
         return new  ResponseEntity<>(bookingDto, HttpStatus.OK);
     }
+
 }
