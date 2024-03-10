@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import loginIcon from "../../../public/loginIcon.svg"
+import axios from "axios";
 
 export default function Register() {
   const router = useRouter();

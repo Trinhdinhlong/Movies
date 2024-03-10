@@ -3,13 +3,42 @@ import Image from "next/image";
 import logo from "@/public/logo.svg";
 import dropdown from "@/public/dropdown.svg";
 import search from "@/public/Search.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import user from "@/public/User.svg"
 import logout from "@/public/Logout.svg"
 import list from "@/public/list.png"
+import MovieBlock from "components/MovieBlock";
+import axios from "axios";
+
+interface TypeMovie {
+  id: number;
+  typeName: string;
+}
+
+interface Movie {
+  id: number;
+  content: string;
+  movieNameEnglish: string;
+  movieNameVN: string;
+  actor: string;
+  director: string;
+  duration: number;
+  movieProductionCompany: string;
+  startedDate: string;
+  endDate: string;
+  imageURL: string;
+  createdTimDate: string;
+  typeMovies: TypeMovie[];
+}
 
 export default function Home() {
   const [open, setOpen] = useState(false);
+  const [listMovie, setListMovie] = useState<Movie[]>([])
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/movie/listmovie").then(response => {
+            setListMovie(response.data)
+        })
+    },[listMovie])
   return (
     <div className="flex flex-col w-full relative">
       <div className="px-[30px] py-[10px] bg-[#205081] flex flex-row items-center justify-between w-full">
@@ -62,6 +91,12 @@ export default function Home() {
       <div className="bg-[#B3A6C1] h-screen">
               <div className="w-full">
                 <Image src={list} alt="" className="w-full"/>
+                <div>
+                  <span>Hoạt Hình</span>
+                  <div className="flex flex-row gap-5">
+                    {listMovie.map(movie => (<MovieBlock movieName={movie.movieNameEnglish}/>))}
+                  </div>
+                </div>
               </div>
       </div>
     </div>
