@@ -3,10 +3,12 @@ package com.mocktest.services;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.User;
 import com.mocktest.exceptions.BadRequestException;
+import com.mocktest.exceptions.MethodArgumentNotValidException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.UserRepository;
 import com.mocktest.exceptions.AuthenticationException;
 import com.mocktest.until.PasswordEncoderExample;
+import com.mocktest.until.ValidateDatabase;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,18 +41,24 @@ public class UserService {
             throw new NotFoundException("Error while retrieving user by id");
         }
     }
-    public UserDto create(UserDto request) throws BadRequestException, NotFoundException {
+    public UserDto create(UserDto request) throws BadRequestException, MethodArgumentNotValidException {
         if(request == null){
             throw new BadRequestException("All fields are required.", "NOT FOUND");
         }
-        try {
-            User user = new User();
-            BeanUtils.copyProperties(request, user);
-            user.setPassword(PasswordEncoderExample.encode(user.getPassword()));
-            User userSaved = userRepository.save(user);
-            return new UserDto(userSaved);
-        } catch (Exception e) {
-            throw new NotFoundException("Email, IdentityCard or Number phone has Constraint");
+        if(ValidateDatabase.isValidNumberPhone(request.getPhone())
+                || ValidateDatabase.isValidIdentityCard(request.getIdentityCard())){
+            try {
+                User user = new User();
+                BeanUtils.copyProperties(request, user);
+                user.setPassword(PasswordEncoderExample.encode(user.getPassword()));
+                User userSaved = userRepository.save(user);
+                return new UserDto(userSaved);
+            } catch (Exception e) {
+                 throw new MethodArgumentNotValidException("Email, IdentityCard or Number phone has Constraint, Email or Phone, IdentityCard is not format"
+                    , "BAD_REQUEST");
+            }
+        }else{
+            return request;
         }
     }
     public UserDto updateById(UserDto request) throws BadRequestException, NotFoundException {

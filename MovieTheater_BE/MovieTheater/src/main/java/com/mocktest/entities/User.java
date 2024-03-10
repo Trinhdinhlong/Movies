@@ -7,8 +7,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,11 +43,12 @@ public class User implements Serializable {
     private Gender gender;
     @Column(name = "email", unique = true)
     @NotNull(message = "The email should not be blanked!")
+    @Email(message = "Invalid email address")
     private String email;
     @Column(name = "address")
     private String address;
     @Column(name = "phone", unique = true)
-    @NotNull(message = "The phone should not be blanked!")
+    @Pattern(regexp="\\d{10}", message="Invalid phone number")
     private String phone;
     @CreationTimestamp
     @Column(name = "register_date")

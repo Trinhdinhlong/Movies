@@ -3,6 +3,7 @@ import com.mocktest.dto.RoleDto;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Role;
 import com.mocktest.exceptions.BadRequestException;
+import com.mocktest.exceptions.MethodArgumentNotValidException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.services.RoleService;
 import com.mocktest.services.UserService;
@@ -30,7 +31,7 @@ public class UserController {
     }
     @PostMapping("/user/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) throws BadRequestException, NotFoundException {
+    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) throws BadRequestException, MethodArgumentNotValidException {
         RoleDto roleDto = roleService.getById(2L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
@@ -40,7 +41,7 @@ public class UserController {
     }
     @PostMapping("/employee/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> saveEmployee(@RequestBody UserDto userDto) throws BadRequestException, NotFoundException {
+    public ResponseEntity<UserDto> saveEmployee(@RequestBody UserDto userDto) throws BadRequestException, MethodArgumentNotValidException {
         RoleDto roleDto = roleService.getById(3L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
