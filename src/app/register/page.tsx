@@ -36,8 +36,7 @@ export default function Register() {
 
   function extractDob() {
     const arr = dob.split("-");
-    const arrInt = arr.map((a) => Number(a));
-    return arrInt;
+    return arr;
   }
 
   function handleRegister(e: any) {
@@ -45,19 +44,17 @@ export default function Register() {
     if (checkAllFieldsFilled()) {
       const dobArray = extractDob();
       axios
-        .post("http://localhost:8080/api/user", {
-          account: account,
-          password: password,
-          fullName: fullName,
-          dobYear: dobArray[0],
-          dobMonth: dobArray[2],
-          dobDay: dobArray[1],
-          gender: gender.toUpperCase(),
-          email: email,
-          address: address,
-          phone: phoneNumber,
-          role: 2,
-        })
+        .post("http://localhost:8080/api/register", {
+          "username": account,
+          "password": password,
+          "fullName": fullName,
+          "dateOfBirth": dobArray[0]+ "-" + dobArray[2].padStart(2,'0') + "-" + dobArray[1].padStart(2,'0'),
+          "gender": gender.toUpperCase(),
+          "email": email,
+          "address": address,
+          "phone": phoneNumber,
+          "identituCard": identityCard
+      })
         .catch(error => console.log(error))
     }
   }

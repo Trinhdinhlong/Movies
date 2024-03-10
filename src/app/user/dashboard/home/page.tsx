@@ -62,6 +62,12 @@ export default function Home() {
       <div className="bg-[#B3A6C1] h-screen">
               <div className="w-full">
                 <Image src={list} alt="" className="w-full"/>
+                <div>
+                  <span>Hoạt Hình</span>
+                  <div>
+                    
+                  </div>
+                </div>
               </div>
       </div>
     </div>

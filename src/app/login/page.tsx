@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import loginIcon from "../../../public/loginIcon.svg"
+import axios from "axios";
 
 export default function Register() {
   const router = useRouter();
@@ -19,10 +20,13 @@ export default function Register() {
     return allFilled;
   };
 
-  function handleRegister(e: any) {
+  function handleLogin(e: any) {
     e.preventDefault();
     if (checkAllFieldsFilled()) {
-      // Call API from here
+      axios.post("http://localhost:8080/api/login", {
+        "username":account,
+        "password": password
+      }).then(response => console.log(response.data))
     }
   }
 
@@ -38,7 +42,7 @@ export default function Register() {
         </span>
         <form
           className="w-full flex flex-col gap-2 text-black"
-          onSubmit={(e) => handleRegister(e)}
+          onSubmit={(e) => handleLogin(e)}
         >
           <input
             type="text"
