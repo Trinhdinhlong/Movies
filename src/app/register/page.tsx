@@ -1,8 +1,9 @@
 "use client";
 
+
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Register() {
   const router = useRouter();
@@ -54,6 +55,8 @@ export default function Register() {
           "address": address,
           "phone": phoneNumber,
           "identituCard": identityCard
+      }).then(response => {
+        router.push("/login")
       })
         .catch(error => console.log(error))
     }
