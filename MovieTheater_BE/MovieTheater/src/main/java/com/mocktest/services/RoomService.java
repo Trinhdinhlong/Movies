@@ -18,50 +18,43 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
     public List<RoomDto> getAll() {
-        try {
             List<Room> rooms = roomRepository.findAll();
-            System.out.println(rooms);
+            if(rooms.isEmpty()) {
+                throw new NotFoundException("Error while retrieving all roles");
+
+            }
             return rooms.stream()
-                    .map(RoomDto::new)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new RuntimeException("Error while retrieving all roles", e);
-        }
+                .map(RoomDto::new)
+                .collect(Collectors.toList());
     }
     public RoomDto getById(Long id) {
-        try {
             Optional<Room> roleOptional = roomRepository.findById(id);
-            Room room = roleOptional.orElseThrow(() -> new NotFoundException("Role not found with id: " + id));
-            return new RoomDto(room);
-        } catch (Exception e) {
-            throw new RuntimeException("Error while retrieving role by id: " + id, e);
-        }
-    }
-    public RoomDto create(RoomDto roomDto) throws NotFoundException {
-        try {
-            Room room = new Room();
-            if (roomDto != null) {
-                BeanUtils.copyProperties(roomDto, room);
+            if(roleOptional.isEmpty()){
+                Room room = new Room();
+                BeanUtils.copyProperties(roleOptional, room);
+                Room roomSaved = roomRepository.save(room);
+                return new RoomDto(room);
             }
-            Room roomSaved = roomRepository.save(room);
-            return new RoomDto(roomSaved);
-        } catch (Exception e) {
-            throw new NotFoundException("Error while creating user");
-        }
+            throw new RuntimeException("Error while retrieving role by id: " + id);
     }
-    public RoomDto updateById(RoomDto request) throws BadRequestException, NotFoundException {
-        if(request.getId() == null){
-            throw new BadRequestException("Data was not found because id null", "NOT FOUND");
-        }
-        try {
-            Optional<Room> roomOptional = roomRepository.findById(request.getId());
-            Room room = roomOptional.orElseThrow(() -> new NotFoundException("Data id has not database"));
-            BeanUtils.copyProperties(request, room);
+    public RoomDto create(RoomDto roomDto){
+            Room room = new Room();
+            BeanUtils.copyProperties(roomDto, room);
             Room roomSaved = roomRepository.save(room);
-            return new RoomDto(roomSaved);
-        } catch (Exception e) {
+            if(roomSaved != null){
+                return new RoomDto(roomSaved);
+            }
+            throw new NotFoundException("Error while creating user");
+    }
+    public RoomDto updateById(RoomDto request){
+            Optional<Room> roomOptional = roomRepository.findById(request.getId());
+            if (roomOptional.isEmpty()){
+                Room room = new Room();
+                BeanUtils.copyProperties(roomOptional,room );
+                Room roomSaved = roomRepository.save(room);
+                return new RoomDto(roomSaved);
+            }
             throw new NotFoundException("Data has not database table Room");
-        }
     }
     public boolean deleteById(Long id) throws NotFoundException {
             if (roomRepository.existsById(id)) {

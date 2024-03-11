@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -50,16 +51,16 @@ public class Movie {
     private String movieProductionCompany;
 
     @Column(name = "started_date")
-    private LocalDateTime startedDate;
+    private LocalDate startedDate;
 
     @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Column(name = "image_url")
     private String imageURL;
 
     @Column(name = "created_date")
-    private LocalDateTime createdTimDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
@@ -90,7 +91,7 @@ public class Movie {
                 ", startedDate=" + startedDate +
                 ", endDate=" + endDate +
                 ", imageURL='" + imageURL + '\'' +
-                ", createdTimDate=" + createdTimDate +
+                ", createdTimDate=" + createdDate +
                 ", updatedTime=" + updatedTime +
                 ", typeMovies=" + typeMovies +
                 '}';

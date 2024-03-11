@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -25,10 +27,9 @@ public class MovieDto {
     private String director;
     private int duration;
     private String movieProductionCompany;
-    private LocalDateTime startedDate;
-    private LocalDateTime endDate;
+    private LocalDate startedDate;
+    private LocalDate endDate;
     private String imageURL;
-    private LocalDateTime createdTimDate;
     private Set<Type> typeMovies;
     public MovieDto(Movie entity) {
         if (entity != null) {

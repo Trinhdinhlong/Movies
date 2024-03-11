@@ -1,6 +1,6 @@
 package com.mocktest.exceptions;
 
-public class MethodArgumentNotValidException extends Exception{
+public class MethodArgumentNotValidException extends RuntimeException{
     private String error;
 
     public String getError() {

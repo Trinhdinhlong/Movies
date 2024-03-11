@@ -21,19 +21,19 @@ import java.util.List;
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/user-management")
 public class UserController {
     private final UserService userService;
     private final RoleService roleService;
-    @PostMapping("/login")
+    @GetMapping("/user")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto) throws BadRequestException,NotFoundException, AuthenticationException{
         UserDto userDtoSaved = userService.login(userDto);
         return new ResponseEntity<>(userDtoSaved, HttpStatus.OK);
     }
-    @PostMapping("/user/register")
+    @PostMapping("/user")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserDto request) throws BadRequestException, MethodArgumentNotValidException {
+    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request) throws BadRequestException, MethodArgumentNotValidException {
         RoleDto roleDto = roleService.getById(2L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
@@ -41,7 +41,7 @@ public class UserController {
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @PostMapping("/employee/register")
+    @PostMapping("/employee")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserDto> saveEmployee(@RequestBody @Valid UserDto request) throws BadRequestException, MethodArgumentNotValidException {
         RoleDto roleDto = roleService.getById(3L);

@@ -15,10 +15,10 @@ import java.util.List;
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/listroom")
+@RequestMapping("/api/room-management")
 public class CinemaController {
     private final RoomService roomService;
-    @GetMapping("/listroom")
+    @GetMapping("/rooms")
     public ResponseEntity<List<RoomDto>> getCinema(){
         List<RoomDto> roomDtos = roomService.getAll();
         return new ResponseEntity<>(roomDtos, HttpStatus.OK);

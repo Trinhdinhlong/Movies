@@ -27,7 +27,11 @@ export default function Register() {
         "username":account,
         "password": password
       }).then(response => {
-        router.push("user/dashboard/home")
+        if(response.data.role.roleName === "User") {
+        router.push("/user/dashboard/home")
+        } else {
+          router.push("/admin/dashboard/movies")
+        }
       })
     }
   }

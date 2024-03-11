@@ -5,14 +5,11 @@ import com.mocktest.dto.SeatDto;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 @Service
-@EnableScheduling
 public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
@@ -30,8 +27,4 @@ public class TicketService {
         }
         return response;
     }
-//    @Scheduled(fixedRate = 60000)
-//    public void updateTicketStatus() {
-//        ticketRepository.updateTicketStatus(LocalDateTime.now());
-//    }
 }

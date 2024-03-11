@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/ticket")
+@RequestMapping("/api/ticket-management")
 public class BookingController{
     private final TicketService bookingService;
     @GetMapping("/booking")
