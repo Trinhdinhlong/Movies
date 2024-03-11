@@ -44,16 +44,16 @@ export default function Register() {
     if (checkAllFieldsFilled()) {
       const dobArray = extractDob();
       axios
-        .post("http://localhost:8080/api/register", {
+        .post("http://localhost:8080/api/user/register", {
           "username": account,
           "password": password,
           "fullName": fullName,
-          "dateOfBirth": dobArray[0]+ "-" + dobArray[2].padStart(2,'0') + "-" + dobArray[1].padStart(2,'0'),
+          "dateOfBirth": dobArray[0]+ "-" + dobArray[1].padStart(2,'0') + "-" + dobArray[2].padStart(2,'0'),
           "gender": gender.toUpperCase(),
           "email": email,
           "address": address,
           "phone": phoneNumber,
-          "identituCard": identityCard
+          "identityCard": identityCard
       })
         .catch(error => console.log(error))
     }
