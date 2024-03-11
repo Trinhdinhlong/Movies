@@ -23,6 +23,7 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Data
 @Table(name = "users", schema = "dbo")
 public class User implements Serializable {
     @Id
@@ -33,6 +34,9 @@ public class User implements Serializable {
     @NotNull(message = "The username should not be blanked!")
     private String username;
     @Column(name = "password")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+            message = "Password must contain at least 8 characters, one uppercase letter" +
+                    ", one digit and one special character")
     private String password;
     @Column(name = "full_name")
     private String fullName;
@@ -48,7 +52,8 @@ public class User implements Serializable {
     @Column(name = "address")
     private String address;
     @Column(name = "phone", unique = true)
-    @Pattern(regexp="\\d{10}", message="Invalid phone number")
+    @NotNull(message = "The phone should not be blanked!")
+    @Pattern(regexp = "\\d{10}", message = "Invalid phone number. Phone number must contain exactly 10 digits.")
     private String phone;
     @CreationTimestamp
     @Column(name = "register_date")
@@ -57,6 +62,8 @@ public class User implements Serializable {
     @Column(name = "update_Date")
     private LocalDateTime updateDate;
     @Column(name = "Identity_card" ,unique = true)
+    @NotNull(message = "The identity card should not be blanked!")
+    @Pattern(regexp="[0-9]{9,12}", message="Invalid identity card number")
     private String identityCard;
     @Column(name = "image_url")
     private String imageURL;

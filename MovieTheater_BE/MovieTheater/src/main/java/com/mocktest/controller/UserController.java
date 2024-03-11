@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.mocktest.exceptions.AuthenticationException;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -31,26 +33,26 @@ public class UserController {
     }
     @PostMapping("/user/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) throws BadRequestException, MethodArgumentNotValidException {
+    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserDto request) throws BadRequestException, MethodArgumentNotValidException {
         RoleDto roleDto = roleService.getById(2L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
-        userDto.setRole(role);
-        UserDto response = userService.create(userDto);
+        request.setRole(role);
+        UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PostMapping("/employee/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> saveEmployee(@RequestBody UserDto userDto) throws BadRequestException, MethodArgumentNotValidException {
+    public ResponseEntity<UserDto> saveEmployee(@RequestBody @Valid UserDto request) throws BadRequestException, MethodArgumentNotValidException {
         RoleDto roleDto = roleService.getById(3L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
-        userDto.setRole(role);
-        UserDto response = userService.create(userDto);
+        request.setRole(role);
+        UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PutMapping("/profile")
-    public ResponseEntity<UserDto> updateUserEntity(@RequestBody UserDto request) throws BadRequestException, NotFoundException {
+    public ResponseEntity<UserDto> updateUserEntity(@RequestBody @Valid UserDto request) throws BadRequestException, NotFoundException {
         userService.updateById(request);
         return new ResponseEntity<>(request, HttpStatus.OK);
     }

@@ -1,11 +1,13 @@
 package com.mocktest.exceptions;
 
 import com.mocktest.dto.ErrorResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,8 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
                 .error(exception.error)
                 .message(exception.getMessage())
                 .status("400")
+                .timestamp(LocalDateTime.now())
+                .path("/api/user")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

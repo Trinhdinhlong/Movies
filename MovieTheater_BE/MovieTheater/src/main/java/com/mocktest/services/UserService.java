@@ -8,10 +8,11 @@ import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.UserRepository;
 import com.mocktest.exceptions.AuthenticationException;
 import com.mocktest.until.PasswordEncoderExample;
-import com.mocktest.until.ValidateDatabase;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,8 +20,6 @@ import java.util.stream.Collectors;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoderExample passwordEncoderExample;
 
     public List<UserDto> getAll() {
         try {
@@ -41,24 +40,21 @@ public class UserService {
             throw new NotFoundException("Error while retrieving user by id");
         }
     }
-    public UserDto create(UserDto request) throws BadRequestException, MethodArgumentNotValidException {
+    public UserDto create(@Valid UserDto request) throws BadRequestException, MethodArgumentNotValidException {
         if(request == null){
             throw new BadRequestException("All fields are required.", "NOT FOUND");
         }
-        if(ValidateDatabase.isValidNumberPhone(request.getPhone())
-                || ValidateDatabase.isValidIdentityCard(request.getIdentityCard())){
-            try {
-                User user = new User();
-                BeanUtils.copyProperties(request, user);
-                user.setPassword(PasswordEncoderExample.encode(user.getPassword()));
-                User userSaved = userRepository.save(user);
-                return new UserDto(userSaved);
-            } catch (Exception e) {
-                 throw new MethodArgumentNotValidException("Email, IdentityCard or Number phone has Constraint, Email or Phone, IdentityCard is not format"
-                    , "BAD_REQUEST");
-            }
-        }else{
-            return request;
+        if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
+            throw new BadRequestException("Password does not meet the requirements.", "BAD_REQUEST");
+        }
+        try {
+            User user = new User();
+            BeanUtils.copyProperties(request, user);
+            user.setPassword(PasswordEncoderExample.encode(user.getPassword()));
+            User userSaved = userRepository.save(user);
+            return new UserDto(userSaved);
+        } catch (Exception e) {
+            throw new MethodArgumentNotValidException("Email, IdentityCard or Number phone has Constraint, Email or Phone, IdentityCard is not format", "BAD_REQUEST");
         }
     }
     public UserDto updateById(UserDto request) throws BadRequestException, NotFoundException {
@@ -103,7 +99,7 @@ public class UserService {
         if (user.getPassword() == null && user.getUsername() == null) {
             throw new BadRequestException("Password is null for user: " + user.getUsername(), "NOT FOUND");
         }
-        if (passwordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
+        if (PasswordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
             return user;
         } else {
             throw new AuthenticationException("Pass word is not correct");
