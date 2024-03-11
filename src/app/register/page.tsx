@@ -1,5 +1,6 @@
 "use client";
 
+
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -54,6 +55,8 @@ export default function Register() {
           "address": address,
           "phone": phoneNumber,
           "identityCard": identityCard
+      }).then(response => {
+        router.push("/login")
       })
         .catch(error => console.log(error))
     }

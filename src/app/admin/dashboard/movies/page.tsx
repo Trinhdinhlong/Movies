@@ -6,6 +6,6 @@ export default function ListMovie() {
     const router = useRouter()
     useEffect(() => {
         router.push("/admin/dashboard/movies/add")
-    }, [])
+    }, [router])
     return null;
 }

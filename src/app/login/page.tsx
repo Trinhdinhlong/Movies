@@ -26,7 +26,9 @@ export default function Register() {
       axios.post("http://localhost:8080/api/login", {
         "username":account,
         "password": password
-      }).then(response => console.log(response.data))
+      }).then(response => {
+        router.push("user/dashboard/home")
+      })
     }
   }
 
