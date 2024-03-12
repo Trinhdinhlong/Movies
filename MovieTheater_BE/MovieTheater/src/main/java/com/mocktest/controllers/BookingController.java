@@ -1,14 +1,7 @@
 package com.mocktest.controllers;
 
-import com.mocktest.dto.BookingDto;
-import com.mocktest.dto.SeatDto;
-import com.mocktest.entities.Ticket;
-import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.services.TicketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

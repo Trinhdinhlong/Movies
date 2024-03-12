@@ -1,13 +1,18 @@
 package com.mocktest.controllers;
 
 import com.mocktest.dto.MovieDto;
+import com.mocktest.entities.Type;
 import com.mocktest.services.MovieService;
 import com.mocktest.services.MovieTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin("*")
 @RestController
@@ -21,7 +26,7 @@ public class MovieController {
         List<MovieDto> response = movieService.getAll();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @DeleteMapping("/movie/{id}")
+    @DeleteMapping("/movies/{id}")
     public ResponseEntity<String> deleteMovie(@PathVariable("id") Long request) {
         movieService.deleteById(request);
         return new ResponseEntity<>(String.valueOf(request), HttpStatus.OK);
@@ -29,12 +34,19 @@ public class MovieController {
 
     @PostMapping("/movies")
     public ResponseEntity<MovieDto> createMovie(@RequestBody MovieDto request) {
-        for (int i = 0; i < request.getTypeMovieId().size(); i++) {
-            request.setTypeMovies(movieTypeService.getByTypeId(request.getTypeMovieId().get(i)));
+        List<Type> typeMovies = new ArrayList<>();
+        for (Long typeId : request.getTypeMovieId()) {
+            Type type = movieTypeService.getByTypeId(typeId);
+            if (type != null) {
+                typeMovies.add(type);
+            }
         }
+        request.setTypeMovies(typeMovies);
         MovieDto requests = movieService.create(request);
-        return new ResponseEntity<>(requests, HttpStatus.CREATED);
+        System.out.println(requests);
+        return new ResponseEntity<>(requests, HttpStatus.OK);
     }
+
     @PutMapping("/movie")
     public ResponseEntity<MovieDto> updateMovie(@RequestBody MovieDto request){
         MovieDto response = movieService.updateById(request);

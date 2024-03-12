@@ -1,6 +1,7 @@
 package com.mocktest.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -73,8 +74,7 @@ public class Movie {
             name = "movie_type",
             joinColumns = @JoinColumn(name = "movie_id_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
-    @JsonIgnore
-    private Set<Type> typeMovies;
+    private List<Type> typeMovies;
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
@@ -96,7 +96,6 @@ public class Movie {
                 ", imageURL='" + imageURL + '\'' +
                 ", createdDate=" + createdDate +
                 ", updatedTime=" + updatedTime +
-                ", typeMovies=" + typeMovies +
                 '}';
     }
 }
