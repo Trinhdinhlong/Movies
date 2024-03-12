@@ -1,9 +1,11 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -49,10 +51,10 @@ public class Movie {
     private String movieProductionCompany;
 
     @Column(name = "started_date")
-    private LocalDateTime startedDate;
+    private LocalDate startedDate;
 
     @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Column(name = "image_url")
     private String imageURL;
@@ -68,8 +70,30 @@ public class Movie {
             name = "movie_type",
             joinColumns = @JoinColumn(name = "movie_id_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
+    @JsonIgnore
     private Set<Type> typeMovies;
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ShowTime> showTimes;
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", movieNameEnglish='" + movieNameEnglish + '\'' +
+                ", movieNameVN='" + movieNameVN + '\'' +
+                ", actor='" + actor + '\'' +
+                ", director='" + director + '\'' +
+                ", duration=" + duration +
+                ", movieProductionCompany='" + movieProductionCompany + '\'' +
+                ", startedDate=" + startedDate +
+                ", endDate=" + endDate +
+                ", imageURL='" + imageURL + '\'' +
+                ", createdTimDate=" + createdDate +
+                ", updatedTime=" + updatedTime +
+                ", typeMovies=" + typeMovies +
+                '}';
+    }
 }

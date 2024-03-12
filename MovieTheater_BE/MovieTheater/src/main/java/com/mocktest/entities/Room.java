@@ -1,6 +1,9 @@
 package com.mocktest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "rooms", schema = "dbo")
 public class Room {
@@ -25,16 +27,27 @@ public class Room {
 
     @Column(name = "seat_quantity")
     private int seatQuantity;
-
+    @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime createdTimDate;
-
+    @UpdateTimestamp
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
-
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Seat> seats;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ShowTime> showTimes;
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", roomName='" + roomName + '\'' +
+                ", seatQuantity=" + seatQuantity +
+                ", createdTimDate=" + createdTimDate +
+                ", updatedTime=" + updatedTime +
+                '}';
+    }
 }

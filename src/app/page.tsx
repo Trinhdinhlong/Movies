@@ -1,7 +1,15 @@
-import Image from "next/image";
+"use client"
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/register");
+  }, [router])
+
   return (
-    <div className="text-red-500">Hello World</div>
+    null
   );
 }
