@@ -1,4 +1,4 @@
-package com.mocktest.controller;
+package com.mocktest.controllers;
 
 import com.mocktest.dto.BookingDto;
 import com.mocktest.dto.SeatDto;

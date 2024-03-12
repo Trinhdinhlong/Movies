@@ -1,5 +1,4 @@
 package com.mocktest.until;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import lombok.RequiredArgsConstructor;
@@ -9,9 +8,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class PasswordEncoderExample {
-     public static String encode(String password) {
+    public static String encode(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
-     }
+    }
     public static boolean checkpw(String rawPassword, String hashedPasswordFromDatabase) {
          return BCrypt.checkpw(rawPassword, hashedPasswordFromDatabase);
     }

@@ -1,4 +1,4 @@
-package com.mocktest.controller;
+package com.mocktest.controllers;
 
 import com.mocktest.dto.MovieDto;
 import com.mocktest.entities.Movie;
@@ -6,6 +6,7 @@ import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.services.MovieService;
 import com.mocktest.services.MovieTypeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class MovieController {
     public ResponseEntity<String> deleteMovie(@PathVariable("id") Long request) {
         movieService.deleteById(request);
         return new ResponseEntity<>(String.valueOf(request), HttpStatus.OK);
-    }
+
     @PostMapping("/movie")
     public ResponseEntity<MovieDto> addMovie(@RequestBody MovieDto request) {
         for (int i = 0; i < request.getTypeMovieId().size(); i++) {
@@ -44,4 +45,11 @@ public class MovieController {
         MovieDto response = movieService.updateById(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PostMapping("/movies")
+    public ResponseEntity<?> addMovies(@Valid @RequestBody List<Movie> movies) {
+        movieService.addAll(movies);
+        return ResponseEntity.ok(movies);
+    }
+}
 }

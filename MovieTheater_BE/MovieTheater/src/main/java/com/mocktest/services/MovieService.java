@@ -3,13 +3,15 @@ package com.mocktest.services;
 import com.mocktest.dto.MovieDto;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Movie;
-import com.mocktest.entities.User;
 import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import com.mocktest.until.PasswordEncoderExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,7 +22,26 @@ import java.util.stream.Collectors;
 @Service
 public class MovieService {
     @Autowired
-    private MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
+
+    public MovieService(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
+    }
+    public Page<Movie> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Movie> moviePage = movieRepository.findAll(pageable);
+        if (!moviePage.hasContent()) {
+            throw new NotFoundException("No data to display!");
+        }
+        return moviePage;
+    }
+    public Movie create(Movie movie) {
+        movie.setCreatedDate(LocalDateTime.now());
+        return movieRepository.save(movie);
+    }
+    public List<Movie> addAll(List<Movie> movie) {
+        return movieRepository.saveAll(movie);
+    }
     public List<MovieDto> getAll() {
         List<Movie> movieList = movieRepository.findAll();
         return movieList.stream()

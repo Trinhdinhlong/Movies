@@ -1,4 +1,4 @@
-package com.mocktest.controller;
+package com.mocktest.controllers;
 import com.mocktest.dto.RoleDto;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Role;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @CrossOrigin("*")
 @RestController

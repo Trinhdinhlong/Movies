@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -56,11 +54,11 @@ public class User implements Serializable {
     @Pattern(regexp = "\\d{10}", message = "Invalid phone number. Phone number must contain exactly 10 digits.")
     private String phone;
     @CreationTimestamp
-    @Column(name = "register_date")
-    private LocalDateTime registerDate;
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
     @UpdateTimestamp
-    @Column(name = "update_Date")
-    private LocalDateTime updateDate;
+    @Column(name = "updated_time")
+    private LocalDateTime updatedTime;
     @Column(name = "Identity_card" ,unique = true)
     @NotNull(message = "The identity card should not be blanked!")
     @Pattern(regexp="[0-9]{9,12}", message="Invalid identity card number")
@@ -86,9 +84,9 @@ public class User implements Serializable {
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
-                ", registerDate=" + registerDate +
-                ", updateDate=" + updateDate +
-                ", identituCard='" + identityCard + '\'' +
+                ", createdDate=" + createdDate +
+                ", updatedTime=" + updatedTime +
+                ", identityCard='" + identityCard + '\'' +
                 ", imageURL='" + imageURL + '\'' +
                 ", role=" + role +
                 '}';

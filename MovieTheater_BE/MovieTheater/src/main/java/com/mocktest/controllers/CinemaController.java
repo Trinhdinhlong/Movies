@@ -1,4 +1,4 @@
-package com.mocktest.controller;
+package com.mocktest.controllers;
 import com.mocktest.dto.RoomDto;
 import com.mocktest.services.RoomService;
 import lombok.RequiredArgsConstructor;

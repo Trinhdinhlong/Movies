@@ -44,6 +44,7 @@ public class RoomService {
             BeanUtils.copyProperties(roomOptional,room );
             return new RoomDto(roomRepository.save(room));
     }
+
     public void deleteById(Long id) {
             if (roomRepository.existsById(id)) {
                 roomRepository.deleteById(id);

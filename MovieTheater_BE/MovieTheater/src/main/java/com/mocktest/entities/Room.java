@@ -29,7 +29,7 @@ public class Room {
     private int seatQuantity;
     @CreationTimestamp
     @Column(name = "created_date")
-    private LocalDateTime createdTimDate;
+    private LocalDateTime createdDate;
     @UpdateTimestamp
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
@@ -46,7 +46,7 @@ public class Room {
                 "id=" + id +
                 ", roomName='" + roomName + '\'' +
                 ", seatQuantity=" + seatQuantity +
-                ", createdTimDate=" + createdTimDate +
+                ", createdDate=" + createdDate +
                 ", updatedTime=" + updatedTime +
                 '}';
     }

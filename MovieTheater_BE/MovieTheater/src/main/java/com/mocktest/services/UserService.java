@@ -30,7 +30,7 @@ public class UserService {
     }
     public UserDto create(UserDto request){
         if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
-            throw new BadRequestException("Password does not meet the requirements.", "BAD_REQUEST");
+            throw new BadRequestException("Password does not meet the requirements.");
         }
         User requests = new User();
         BeanUtils.copyProperties(request, requests);

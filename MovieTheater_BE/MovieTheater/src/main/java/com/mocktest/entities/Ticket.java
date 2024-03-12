@@ -32,7 +32,7 @@ public class Ticket {
     private LocalDateTime endTime;
 
     @Column(name = "created_date")
-    private LocalDateTime createdTimDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
