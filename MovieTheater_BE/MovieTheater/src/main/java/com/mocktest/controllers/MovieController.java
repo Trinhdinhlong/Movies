@@ -1,8 +1,10 @@
 package com.mocktest.controllers;
 
+import com.mocktest.dto.MovieDto;
 import com.mocktest.entities.Movie;
+import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.services.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +13,21 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/movie-management")
 public class MovieController {
-
-    @Autowired
-    private MovieService movieService;
-
+    private final MovieService movieService;
     @GetMapping("/movies")
-    public ResponseEntity<?> getMovies(@RequestParam(defaultValue = "0") int pageNumber,
-                                       @RequestParam(defaultValue = "5") int size) {
-        Page<Movie> movies = movieService.getAll(pageNumber, size);
-        return new ResponseEntity<>(movies, HttpStatus.OK);
+    public ResponseEntity<List<MovieDto>> getAllMovie(){
+        List<MovieDto> response = movieService.getAll();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @DeleteMapping("/movie/{id}")
+    public ResponseEntity<MovieDto> deleteMovie(@RequestBody MovieDto request, @PathVariable Long id) {
+        MovieDto response = movieService.deleteById(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/movie")

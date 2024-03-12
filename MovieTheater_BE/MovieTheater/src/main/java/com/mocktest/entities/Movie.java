@@ -2,6 +2,8 @@ package com.mocktest.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -59,9 +61,10 @@ public class Movie {
     @Column(name = "image_url")
     private String imageURL;
 
+    @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime createdDate;
-
+    @UpdateTimestamp
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
 
@@ -91,7 +94,7 @@ public class Movie {
                 ", startedDate=" + startedDate +
                 ", endDate=" + endDate +
                 ", imageURL='" + imageURL + '\'' +
-                ", createdTimDate=" + createdDate +
+                ", createdDate=" + createdDate +
                 ", updatedTime=" + updatedTime +
                 ", typeMovies=" + typeMovies +
                 '}';

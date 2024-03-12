@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
+    @Query("FROM Ticket t WHERE t.user.userId =?1")
+    List<Ticket> getTicketsByUserId(Long id);
     @Query("SELECT new com.mocktest.dto.BookingDto(t.id, u.userId, u.fullName, u.identityCard, u.phone, " +
             "m.movieNameVN, st.startTime, s, t.ticketType) " +
             "FROM User u, Ticket t, ShowTime st, Seat s, Movie m " +

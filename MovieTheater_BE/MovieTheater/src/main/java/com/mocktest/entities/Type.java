@@ -2,8 +2,11 @@ package com.mocktest.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Setter
@@ -23,6 +26,12 @@ public class Type {
     @JsonIgnore
     @ManyToMany(mappedBy = "typeMovies")
     private Set<Movie> movies;
+    @CreationTimestamp
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+    @UpdateTimestamp
+    @Column(name = "updated_time")
+    private LocalDateTime updatedTime;
 
     @Override
     public String toString() {

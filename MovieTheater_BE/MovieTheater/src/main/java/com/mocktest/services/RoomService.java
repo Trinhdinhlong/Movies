@@ -56,7 +56,7 @@ public class RoomService {
             }
             throw new NotFoundException("Data has not database table Room");
     }
-    public boolean deleteById(Long id) throws NotFoundException {
+    public boolean deleteById(Long id) {
             if (roomRepository.existsById(id)) {
                 roomRepository.deleteById(id);
                 return true;

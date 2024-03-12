@@ -1,9 +1,8 @@
-package com.mocktest.controller;
+package com.mocktest.controllers;
 import com.mocktest.dto.RoleDto;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Role;
 import com.mocktest.exceptions.BadRequestException;
-import com.mocktest.exceptions.MethodArgumentNotValidException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.services.RoleService;
 import com.mocktest.services.UserService;
@@ -11,12 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import com.mocktest.exceptions.AuthenticationException;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @CrossOrigin("*")
 @RestController

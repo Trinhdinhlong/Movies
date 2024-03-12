@@ -16,14 +16,14 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<?> handleNoDataFoundException(NoDataFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> handleNoDataFoundException(NotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<?> handleDuplicateException(DuplicateException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleDuplicateException(BadRequestException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @Override

@@ -3,10 +3,8 @@ package com.mocktest.services;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.User;
 import com.mocktest.exceptions.BadRequestException;
-import com.mocktest.exceptions.MethodArgumentNotValidException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.UserRepository;
-import com.mocktest.exceptions.AuthenticationException;
 import com.mocktest.until.PasswordEncoderExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ public class UserService {
     public List<UserDto> getAll() {
         List<User> users = userRepository.findAll();
         if(users.isEmpty()) {
-            throw new NotFoundException("AAAA");
+            throw new NotFoundException("No data!");
         }else{
             return users.stream()
                     .map(UserDto::new)
@@ -39,17 +37,13 @@ public class UserService {
     }
     public UserDto create(UserDto request){
         if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
-            throw new BadRequestException("Password does not meet the requirements.", "BAD_REQUEST");
+            throw new BadRequestException("Password does not meet the requirements.");
         }
-        try {
             User user = new User();
             BeanUtils.copyProperties(request, user);
             user.setPassword(PasswordEncoderExample.encode(user.getPassword()));
             User userSaved = userRepository.save(user);
             return new UserDto(userSaved);
-        } catch (Exception e) {
-            throw new MethodArgumentNotValidException("Email, IdentityCard or Number phone has Constraint, Email or Phone, IdentityCard is not format", "BAD_REQUEST");
-        }
     }
     public UserDto updateById(UserDto request){
             Optional<User> userOptional = userRepository.findById(request.getUserId());
@@ -86,12 +80,12 @@ public class UserService {
             throw new NotFoundException("User not found");
         }
         if (user.getPassword() == null && user.getUsername() == null) {
-            throw new BadRequestException("Password is null for user: " + user.getUsername(), "NOT FOUND");
+            throw new NotFoundException("Password is null for user: " + user.getUsername());
         }
-        if (PasswordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
+        if (PasswordEncoderExample.checkPassword(request.getPassword(), user.getPassword())) {
             return user;
         } else {
-            throw new AuthenticationException("Pass word is not correct");
+            throw new BadRequestException("Pass word is not correct");
         }
     }
 }

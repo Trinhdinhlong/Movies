@@ -26,7 +26,7 @@ public class Role {
     private String roleName;
     @CreationTimestamp
     @Column(name = "created_date")
-    private LocalDateTime createdTimDate;
+    private LocalDateTime createdDate;
     @UpdateTimestamp
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;

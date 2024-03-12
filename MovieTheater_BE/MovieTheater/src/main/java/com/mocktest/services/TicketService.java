@@ -1,7 +1,7 @@
 package com.mocktest.services;
 
 import com.mocktest.entities.*;
-import com.mocktest.exceptions.NoDataFoundException;
+import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.SeatRepository;
 import com.mocktest.repository.ShowTimeRepository;
 import com.mocktest.repository.TicketRepository;
@@ -32,7 +32,7 @@ public class TicketService {
         List<Ticket> tickets = ticketRepository.getTicketsByUserId(id);
 
         if (tickets == null) {
-            throw new NoDataFoundException("No data!");
+            throw new NotFoundException("No data!");
         }
         return tickets;
     }
@@ -42,9 +42,9 @@ public class TicketService {
         double totalAmount = 0.0;
         List<Ticket> tickets = null;
         ShowTime showTimeFromDb = showTimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new NoDataFoundException("No showtime found!"));
+                .orElseThrow(() -> new NotFoundException("No showtime found!"));
         User userFromDb = userRepository.findById(userId)
-                .orElseThrow(() -> new NoDataFoundException("No user found!"));
+                .orElseThrow(() -> new NotFoundException("No user found!"));
         for (Long seatId : seatIds) {
             Ticket ticket = new Ticket();
             Seat seatNormal = seatRepository.findByIdAndSeatType(seatId, String.valueOf(SeatType.NORMAL));

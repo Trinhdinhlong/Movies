@@ -3,6 +3,8 @@ package com.mocktest.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,6 +29,13 @@ public class ShowTime {
 
     @Column(name = "end_time")
     private LocalDateTime endTime;
+
+    @CreationTimestamp
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+    @UpdateTimestamp
+    @Column(name = "updated_time")
+    private LocalDateTime updatedTime;
 
     @ManyToOne
     @JsonBackReference
