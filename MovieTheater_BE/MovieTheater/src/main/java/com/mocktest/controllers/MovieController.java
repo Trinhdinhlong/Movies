@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/movie-management")
+@RequestMapping("/api/movie-management")
 public class MovieController {
 
     @Autowired
