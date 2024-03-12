@@ -71,7 +71,7 @@ public class Movie {
     @ManyToMany
     @JoinTable(
             name = "movie_type",
-            joinColumns = @JoinColumn(name = "movie_id_id"),
+            joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
     @JsonIgnore
     private Set<Type> typeMovies;

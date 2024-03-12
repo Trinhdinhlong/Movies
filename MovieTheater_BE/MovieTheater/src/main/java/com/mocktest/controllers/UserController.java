@@ -23,13 +23,13 @@ public class UserController {
     private final RoleService roleService;
     @GetMapping("/user")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto) throws BadRequestException,NotFoundException, AuthenticationException{
+    public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto) {
         UserDto userDtoSaved = userService.login(userDto);
         return new ResponseEntity<>(userDtoSaved, HttpStatus.OK);
     }
     @PostMapping("/user")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request) throws BadRequestException, MethodArgumentNotValidException {
+    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request) {
         RoleDto roleDto = roleService.getById(2L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
@@ -39,7 +39,7 @@ public class UserController {
     }
     @PostMapping("/employee")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDto> saveEmployee(@RequestBody @Valid UserDto request) throws BadRequestException, MethodArgumentNotValidException {
+    public ResponseEntity<UserDto> saveEmployee(@RequestBody @Valid UserDto request) {
         RoleDto roleDto = roleService.getById(3L);
         Role role = new Role();
         BeanUtils.copyProperties(roleDto, role);
@@ -48,7 +48,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PutMapping("/profile")
-    public ResponseEntity<UserDto> updateUserEntity(@RequestBody @Valid UserDto request) throws BadRequestException, NotFoundException {
+    public ResponseEntity<UserDto> updateUserEntity(@RequestBody @Valid UserDto request) {
         userService.updateById(request);
         return new ResponseEntity<>(request, HttpStatus.OK);
     }
