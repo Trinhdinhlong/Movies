@@ -17,9 +17,6 @@ public class TicketService {
     private final ShowTimeRepository showTimeRepository;
     private final SeatRepository seatRepository;
     private final UserRepository userRepository;
-    @Autowired
-    private TicketRepository ticketRepository;
-
     public TicketService(TicketRepository ticketRepository,
                          ShowTimeRepository showTimeRepository,
                          SeatRepository seatRepository,

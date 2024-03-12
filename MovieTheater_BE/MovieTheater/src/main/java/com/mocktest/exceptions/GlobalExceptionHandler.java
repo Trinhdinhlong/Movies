@@ -1,5 +1,6 @@
 package com.mocktest.exceptions;
 
+import com.mocktest.dto.ErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,12 @@ import java.util.Map;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> handleDuplicateException(BadRequestException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleDuplicateException(BadRequestException exception) {
+           ErrorResponse errorResponse = ErrorResponse.builder()
+               .message(exception.getMessage())
+               .status("404")
+               .build();
+           return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(NotFoundException.class)
     protected  ResponseEntity<ErrorResponse> handledException(NotFoundException exception){

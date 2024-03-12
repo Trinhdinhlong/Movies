@@ -62,7 +62,7 @@ public class UserService {
         UserDto user = getByUserName(request);
         if (user.getPassword() == null && user.getUsername() == null &&
                 !PasswordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
-            throw new BadRequestException("Password is null for user: " + user.getUsername(), "NOT FOUND");
+            throw new BadRequestException("Password is null for user: " + user.getUsername());
         }
         return user;
     }

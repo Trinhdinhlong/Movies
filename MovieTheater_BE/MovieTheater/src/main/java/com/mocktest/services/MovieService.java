@@ -1,12 +1,9 @@
 package com.mocktest.services;
 
 import com.mocktest.dto.MovieDto;
-import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Movie;
-import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
-import com.mocktest.until.PasswordEncoderExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,13 +31,6 @@ public class MovieService {
             throw new NotFoundException("No data to display!");
         }
         return moviePage;
-    }
-    public Movie create(Movie movie) {
-        movie.setCreatedDate(LocalDateTime.now());
-        return movieRepository.save(movie);
-    }
-    public List<Movie> addAll(List<Movie> movie) {
-        return movieRepository.saveAll(movie);
     }
     public List<MovieDto> getAll() {
         List<Movie> movieList = movieRepository.findAll();
