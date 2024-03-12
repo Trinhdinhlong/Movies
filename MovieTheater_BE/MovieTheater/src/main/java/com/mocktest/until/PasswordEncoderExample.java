@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class PasswordEncoderExample {
-     public static String encode(String password) throws NoSuchAlgorithmException {
+     public static String encode(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
-    }
+     }
     public static boolean checkpw(String rawPassword, String hashedPasswordFromDatabase) {
          return BCrypt.checkpw(rawPassword, hashedPasswordFromDatabase);
     }

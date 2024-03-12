@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -31,6 +32,7 @@ public class MovieDto {
     private LocalDate endDate;
     private String imageURL;
     private Set<Type> typeMovies;
+    private List<Long> typeMovieId;
     public MovieDto(Movie entity) {
         if (entity != null) {
             BeanUtils.copyProperties(entity, this);

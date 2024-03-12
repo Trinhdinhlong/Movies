@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -36,23 +37,13 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(AuthenticationException.class)
-    protected ResponseEntity<ErrorResponse> handledException(AuthenticationException exception) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handledException(MethodArgumentNotValidException exception){
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(exception.getMessage())
                 .status("401")
+                .error(String.valueOf(exception.getFieldError()))
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .error(ex.getError())
-                .timestamp(LocalDateTime.now())
-                .message(ex.getMessage())
-                .status("400")
-                .path("api/user")
-                .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

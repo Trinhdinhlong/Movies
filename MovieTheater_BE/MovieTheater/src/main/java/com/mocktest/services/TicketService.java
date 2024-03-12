@@ -13,18 +13,12 @@ import java.util.List;
 public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
-    public List<BookingDto> getAllBookings() throws NotFoundException {
+    public List<BookingDto> getAllBookings(){
         List<BookingDto> bookingDtoList = ticketRepository.getAllBookings();
-        if(bookingDtoList != null){
-            return bookingDtoList;
-        }
-        throw new NotFoundException("Not Found data enitites");
+        return bookingDtoList;
     }
     public List<SeatDto> getAllSeatBookedInRoom(Long request) throws NotFoundException {
         List<SeatDto> response = ticketRepository.findBookedSeatsByRoomId(request);
-        if(response == null){
-            throw new NotFoundException("Not Found data enitites");
-        }
         return response;
     }
 }
