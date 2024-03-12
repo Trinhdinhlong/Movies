@@ -24,37 +24,26 @@ public class RoleService {
     }
 
     public RoleDto getById(Long id) {
-        Optional<Role> roleOptional = roleRepository.findById(id);
-        Role role = roleOptional.orElseThrow(() -> new NotFoundException("Role not found with id: " + id));
-        return new RoleDto(role);
+            Optional<Role> roleOptional = roleRepository.findById(id);
+            Role role = roleOptional.orElseThrow(() -> new NotFoundException("Role not found with id: " + id));
+            return new RoleDto(role);
     }
-    public RoleDto create(RoleDto roleDto) {
-        Role role = new Role();
-        if (roleDto != null) {
-            BeanUtils.copyProperties(roleDto, role);
-        }
-        Role roleSaved = roleRepository.save(role);
-        return new RoleDto(roleSaved);
+    public RoleDto create(RoleDto request) {
+            Role role = new Role();
+            BeanUtils.copyProperties(request, role);
+            return new RoleDto(roleRepository.save(role));
     }
     public RoleDto updateById(RoleDto roleDto, Long id) {
-        Optional<Role> roleOptional = roleRepository.findById(id);
-        Role role = roleOptional.orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        if (roleDto != null) {
+            Optional<Role> roleOptional = roleRepository.findById(id);
+            Role role = roleOptional.orElseThrow(() -> new NotFoundException("User not found with id: " + id));
             BeanUtils.copyProperties(roleDto, role);
-        }
-        Role roleUpdated = roleRepository.save(role);
-        return new RoleDto(roleUpdated);
+            return new RoleDto(roleRepository.save(role));
     }
-    public boolean deleteById(Long id) {
-        try {
-            if (roleRepository.existsById(id)) {
-                roleRepository.deleteById(id);
-                return true;
+    public void deleteById(Long request) {
+            if (roleRepository.existsById(request)) {
+                roleRepository.deleteById(request);
             } else {
-                throw new EntityNotFoundException("User not found with id: " + id);
+                throw new NotFoundException("User not found with id: " + request);
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Error while deleting user with id: " + id, e);
-        }
     }
 }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -25,7 +26,7 @@ public class Type {
     private String typeName;
     @JsonIgnore
     @ManyToMany(mappedBy = "typeMovies")
-    private Set<Movie> movies;
+    private List<Movie> movies;
     @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime createdDate;

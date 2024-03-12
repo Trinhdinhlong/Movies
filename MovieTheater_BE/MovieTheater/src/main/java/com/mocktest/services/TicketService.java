@@ -17,7 +17,6 @@ public class TicketService {
     private final ShowTimeRepository showTimeRepository;
     private final SeatRepository seatRepository;
     private final UserRepository userRepository;
-    @Autowired
     public TicketService(TicketRepository ticketRepository,
                          ShowTimeRepository showTimeRepository,
                          SeatRepository seatRepository,
@@ -77,7 +76,6 @@ public class TicketService {
 
             ticketRepository.saveAll(tickets);
         }
-
         return tickets;
     }
 }

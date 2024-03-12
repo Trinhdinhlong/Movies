@@ -29,37 +29,25 @@ public class RoomService {
     }
     public RoomDto getById(Long id) {
             Optional<Room> roleOptional = roomRepository.findById(id);
-            if(roleOptional.isEmpty()){
-                Room room = new Room();
-                BeanUtils.copyProperties(roleOptional, room);
-                Room roomSaved = roomRepository.save(room);
-                return new RoomDto(room);
-            }
-            throw new RuntimeException("Error while retrieving role by id: " + id);
+            Room room = new Room();
+            BeanUtils.copyProperties(roleOptional, room);
+            return new RoomDto(roomRepository.save(room));
     }
     public RoomDto create(RoomDto roomDto){
             Room room = new Room();
             BeanUtils.copyProperties(roomDto, room);
-            Room roomSaved = roomRepository.save(room);
-            if(roomSaved != null){
-                return new RoomDto(roomSaved);
-            }
-            throw new NotFoundException("Error while creating user");
+            return new RoomDto(roomRepository.save(room));
     }
     public RoomDto updateById(RoomDto request){
             Optional<Room> roomOptional = roomRepository.findById(request.getId());
-            if (roomOptional.isEmpty()){
-                Room room = new Room();
-                BeanUtils.copyProperties(roomOptional,room );
-                Room roomSaved = roomRepository.save(room);
-                return new RoomDto(roomSaved);
-            }
-            throw new NotFoundException("Data has not database table Room");
+            Room room = new Room();
+            BeanUtils.copyProperties(roomOptional,room );
+            return new RoomDto(roomRepository.save(room));
     }
-    public boolean deleteById(Long id) {
+
+    public void deleteById(Long id) {
             if (roomRepository.existsById(id)) {
                 roomRepository.deleteById(id);
-                return true;
             } else {
                 throw new NotFoundException("User not found with id: " + id);
             }

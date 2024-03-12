@@ -9,6 +9,7 @@ import com.mocktest.until.PasswordEncoderExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,54 +19,37 @@ public class UserService {
     private UserRepository userRepository;
     public List<UserDto> getAll() {
         List<User> users = userRepository.findAll();
-        if(users.isEmpty()) {
-            throw new NotFoundException("No data!");
-        }else{
-            return users.stream()
-                    .map(UserDto::new)
-                    .collect(Collectors.toList());
-        }
+        return users.stream()
+                .map(UserDto::new)
+                .collect(Collectors.toList());
     }
     public UserDto getById(UserDto request){
             Optional<User> userOptional = userRepository.findById(request.getUserId());
-            if(userOptional.isEmpty()){
-                throw new NotFoundException("AAAA");
-            }else {
-                User user = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
-                return new UserDto(user);
-            }
+            User requests = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
+            return new UserDto(requests);
     }
     public UserDto create(UserDto request){
         if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
             throw new BadRequestException("Password does not meet the requirements.");
         }
-            User user = new User();
-            BeanUtils.copyProperties(request, user);
-            user.setPassword(PasswordEncoderExample.encode(user.getPassword()));
-            User userSaved = userRepository.save(user);
-            return new UserDto(userSaved);
+        User requests = new User();
+        BeanUtils.copyProperties(request, requests);
+        requests.setPassword(PasswordEncoderExample.encode(requests.getPassword()));
+        return new UserDto(userRepository.save(requests));
     }
     public UserDto updateById(UserDto request){
-            Optional<User> userOptional = userRepository.findById(request.getUserId());
-            if(userOptional.isEmpty()){
-                throw new NotFoundException("AAA");
-            }else{
-                User userUpdated = new User();
-                BeanUtils.copyProperties(userOptional, userUpdated);
-                userUpdated = userRepository.save(userUpdated);
-                return new UserDto(userUpdated);
-            }
+        Optional<User> userOptional = userRepository.findById(request.getUserId());
+        UserDto response =  new UserDto();
+        BeanUtils.copyProperties(userOptional, response);
+        return response;
     }
-    public UserDto deleteById(UserDto request) throws NotFoundException {
-        if (userRepository.existsById(request.getUserId())) {
-            userRepository.deleteById(request.getUserId());
-            return request;
+    public void deleteById(Long request) throws NotFoundException {
+        if (userRepository.existsById(request)) {
+            userRepository.deleteById(request);
         }else {
-            throw new NotFoundException("data not found in entity User: " + request.getUserId());
+            throw new NotFoundException("data not found in entity User: " + request);
         }
     }
-
-
     public UserDto getByUserName(UserDto request) throws NotFoundException {
         if(request.getUsername() != null){
             User user = userRepository.getByUsername(request);
@@ -76,16 +60,10 @@ public class UserService {
     }
     public UserDto login(UserDto request){
         UserDto user = getByUserName(request);
-        if (user == null) {
-            throw new NotFoundException("User not found");
+        if (user.getPassword() == null && user.getUsername() == null &&
+                !PasswordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
+            throw new BadRequestException("Password is null for user: " + user.getUsername());
         }
-        if (user.getPassword() == null && user.getUsername() == null) {
-            throw new NotFoundException("Password is null for user: " + user.getUsername());
-        }
-        if (PasswordEncoderExample.checkPassword(request.getPassword(), user.getPassword())) {
-            return user;
-        } else {
-            throw new BadRequestException("Pass word is not correct");
-        }
+        return user;
     }
 }
