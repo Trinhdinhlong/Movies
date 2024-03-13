@@ -52,12 +52,9 @@ public class TicketService {
             ticket.setStartTime(showTimeFromDb.getStartTime());
             ticket.setEndTime(showTimeFromDb.getEndTime());
             ticket.setUser(userFromDb);
-            ticket.setTicketType(TicketType.BOOKED);
-
+            ticket.setTicketType(TicketType.Waiting_for_ticket);
             totalAmount += normalPrice;
-
             tickets.add(ticket);
-
             ticketRepository.saveAll(tickets);
         }
         for (Long seatId : seatIds) {
@@ -68,7 +65,7 @@ public class TicketService {
             ticket.setStartTime(showTimeFromDb.getStartTime());
             ticket.setEndTime(showTimeFromDb.getEndTime());
             ticket.setUser(userFromDb);
-            ticket.setTicketType(TicketType.BOOKED);
+            ticket.setTicketType(TicketType.Waiting_for_ticket);
 
             totalAmount += vipPrice;
 

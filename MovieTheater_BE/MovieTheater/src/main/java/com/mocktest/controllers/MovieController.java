@@ -41,9 +41,8 @@ public class MovieController {
             }
         }
         request.setTypeMovies(typeMovies);
-        MovieDto requests = movieService.create(request);
-        System.out.println(requests);
-        return new ResponseEntity<>(requests, HttpStatus.OK);
+        MovieDto response = movieService.create(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/movie")

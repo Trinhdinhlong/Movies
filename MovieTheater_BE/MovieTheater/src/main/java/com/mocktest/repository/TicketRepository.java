@@ -27,8 +27,14 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "FROM Seat s JOIN s.tickets t " +
             "WHERE s.room.id = :roomId AND t.ticketType = 'BOOKED'")
     List<SeatDto> findBookedSeatsByRoomId(@Param("roomId") Long roomId);
-    @Modifying
-    @Transactional
-    @Query("UPDATE Ticket t SET t.ticketType = 'GOTTEN' WHERE t.ticketType = 'BOOKED' AND t.showTime.endTime < :currentTime")
-    void updateTicketStatus(@Param("currentTime") LocalDateTime currentTime);
+    @Query("SELECT t.showTime.movie.movieName AS MovieName, " +
+            "t.createdDate AS BookingDate, " +
+            "SUM(CASE WHEN t.ticketType = :ticketType THEN 1 ELSE 0 END) AS Total, " +
+            "t.ticketType AS TypeTicket " +
+            "FROM Ticket t " +
+            "WHERE t.showTime IS NOT NULL " +
+            "GROUP BY t.showTime.movie.movieName, " +
+            "t.createdDate, " +
+            "t.ticketType")
+
 }

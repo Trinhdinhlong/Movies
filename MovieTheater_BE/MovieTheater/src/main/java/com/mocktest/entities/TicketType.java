@@ -1,5 +1,5 @@
 package com.mocktest.entities;
 
 public enum TicketType {
-    BOOKED, GOTTEN;
+    Waiting_for_ticket, Abort;
 }

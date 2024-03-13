@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -69,12 +70,13 @@ public class Movie {
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "movie_type",
             joinColumns = @JoinColumn(name = "movie_id_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
-    private Set<Type> typeMovies;
+    @JsonIgnoreProperties({"hibernateLazyInitializer"})
+    private Set<Type> typeMovies = new HashSet<>();
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore

@@ -47,8 +47,8 @@ public class MovieService {
     public MovieDto create(MovieDto request){
         Movie requests = new Movie();
         BeanUtils.copyProperties(request, requests);
-        Movie movie = movieRepository.save(requests);
-        return new MovieDto(movie);
+        Movie response = movieRepository.save(requests);
+        return new MovieDto(response);
     }
     public MovieDto updateById(MovieDto request){
         Optional<Movie> userOptional = movieRepository.findById(request.getId());

@@ -30,6 +30,7 @@ public class MovieDto {
     private LocalDate startedDate;
     private LocalDate endDate;
     private String imageURL;
+    @JsonIgnore
     private Set<Type> typeMovies;
     private List<Long> typeMovieId;
     public MovieDto(Movie entity) {
@@ -37,5 +38,20 @@ public class MovieDto {
             BeanUtils.copyProperties(entity, this);
     }
     }
-
+    @Override
+    public String toString() {
+        return "MovieDto{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", movieNameEnglish='" + movieNameEnglish + '\'' +
+                ", movieNameVN='" + movieNameVN + '\'' +
+                ", actor='" + actor + '\'' +
+                ", director='" + director + '\'' +
+                ", duration=" + duration +
+                ", movieProductionCompany='" + movieProductionCompany + '\'' +
+                ", startedDate=" + startedDate +
+                ", endDate=" + endDate +
+                ", imageURL='" + imageURL + '\'' +
+                '}';
+    }
 }
