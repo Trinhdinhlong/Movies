@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +33,7 @@ public class MovieController {
 
     @PostMapping("/movies")
     public ResponseEntity<MovieDto> createMovie(@RequestBody MovieDto request) {
-        List<Type> typeMovies = new ArrayList<>();
+        Set<Type> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
             Type type = movieTypeService.getByTypeId(typeId);
             if (type != null) {

@@ -45,7 +45,7 @@ public class Seat {
     private SeatType seatType;
 
     @ManyToOne
-    @JsonBackReference
+//    @JsonBackReference
     @JoinColumn(name = "room_id", referencedColumnName = "room_id")
     private Room room;
 

@@ -2,6 +2,7 @@ package com.mocktest.services;
 
 import com.mocktest.dto.MovieDto;
 import com.mocktest.entities.Movie;
+import com.mocktest.entities.Type;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import org.springframework.beans.BeanUtils;
@@ -11,8 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,7 +47,8 @@ public class MovieService {
     public MovieDto create(MovieDto request){
         Movie requests = new Movie();
         BeanUtils.copyProperties(request, requests);
-        return new MovieDto(movieRepository.save(requests));
+        Movie movie = movieRepository.save(requests);
+        return new MovieDto(movie);
     }
     public MovieDto updateById(MovieDto request){
         Optional<Movie> userOptional = movieRepository.findById(request.getId());

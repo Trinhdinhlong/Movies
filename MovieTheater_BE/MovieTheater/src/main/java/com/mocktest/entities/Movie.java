@@ -74,7 +74,7 @@ public class Movie {
             name = "movie_type",
             joinColumns = @JoinColumn(name = "movie_id_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
-    private List<Type> typeMovies;
+    private Set<Type> typeMovies;
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore

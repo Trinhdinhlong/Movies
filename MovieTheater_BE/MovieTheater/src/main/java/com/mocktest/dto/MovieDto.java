@@ -30,7 +30,7 @@ public class MovieDto {
     private LocalDate startedDate;
     private LocalDate endDate;
     private String imageURL;
-    private List<Type> typeMovies;
+    private Set<Type> typeMovies;
     private List<Long> typeMovieId;
     public MovieDto(Movie entity) {
         if (entity != null) {
