@@ -2,7 +2,6 @@ package com.mocktest.services;
 
 import com.mocktest.dto.MovieDto;
 import com.mocktest.entities.Movie;
-import com.mocktest.entities.Type;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import org.springframework.beans.BeanUtils;

@@ -23,16 +23,12 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seat_id")
     private Long id;
-
     @Column(name = "seat_column", length = 2)
     private String seatColumn;
-
     @Column(name = "seat_row")
     private int seatRow;
-
     @Column(name = "price")
     private Double price;
-
     @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -49,7 +45,6 @@ public class Seat {
     private Room room;
 
     @OneToMany(mappedBy = "seat", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Ticket> tickets;
 
     @Override

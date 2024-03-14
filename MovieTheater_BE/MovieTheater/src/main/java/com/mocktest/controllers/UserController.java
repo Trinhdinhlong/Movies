@@ -19,7 +19,7 @@ import java.util.List;
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user-management")
+@RequestMapping("/api")
 public class UserController {
     private final UserService userService;
     private final RoleService roleService;
