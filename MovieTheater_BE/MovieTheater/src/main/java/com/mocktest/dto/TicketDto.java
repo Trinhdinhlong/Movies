@@ -12,8 +12,17 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TicketDto {
+    private Long userId;
+    private String fullName;
+    private String identityCard;
+    private String phone;
+    private String email;
+    private String movieName;
+    private String imageUrl;
     private String roomName;
     private LocalDateTime date;
-    private LocalDateTime time;
+    private LocalDateTime startTime;
     private List<Seat> seats;
+    private List<Double> price;
+    private Double total;
 }

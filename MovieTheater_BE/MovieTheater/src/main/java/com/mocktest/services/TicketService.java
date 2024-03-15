@@ -1,5 +1,6 @@
 package com.mocktest.services;
 
+import com.mocktest.dto.TicketDto;
 import com.mocktest.entities.*;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.SeatRepository;
@@ -37,13 +38,16 @@ public class TicketService {
     }
 
     public List<Ticket> createTickets(Long userId, Long showtimeId, List<Long> seatIds,
-                                      double normalPrice, double vipPrice) {
-        double totalAmount = 0.0;
+                                      Double normalPrice, Double vipPrice) {
+        Double total = 0.0;
         List<Ticket> tickets = null;
+
         ShowTime showTimeFromDb = showTimeRepository.findById(showtimeId)
                 .orElseThrow(() -> new NotFoundException("No showtime found!"));
+
         User userFromDb = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("No user found!"));
+
         for (Long seatId : seatIds) {
             Ticket ticket = new Ticket();
             Seat seatNormal = seatRepository.findByIdAndSeatType(seatId, String.valueOf(SeatType.NORMAL));
@@ -54,12 +58,13 @@ public class TicketService {
             ticket.setUser(userFromDb);
             ticket.setTicketType(TicketType.BOOKED);
 
-            totalAmount += normalPrice;
+            total += normalPrice;
 
             tickets.add(ticket);
 
             ticketRepository.saveAll(tickets);
         }
+
         for (Long seatId : seatIds) {
             Ticket ticket = new Ticket();
             Seat seatVip = seatRepository.findByIdAndSeatType(seatId, String.valueOf(SeatType.VIP));
@@ -70,12 +75,13 @@ public class TicketService {
             ticket.setUser(userFromDb);
             ticket.setTicketType(TicketType.BOOKED);
 
-            totalAmount += vipPrice;
+            total += vipPrice;
 
             tickets.add(ticket);
 
             ticketRepository.saveAll(tickets);
         }
+
         return tickets;
     }
 }

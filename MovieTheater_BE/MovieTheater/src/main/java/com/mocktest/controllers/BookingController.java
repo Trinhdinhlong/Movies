@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ticket-management")
 public class BookingController{
+
     private final TicketService ticketService;
 //    @GetMapping("/booking")
 //    public ResponseEntity<List<BookingDto>> getAllBookingTicket(){
@@ -20,6 +21,15 @@ public class BookingController{
 //    @PostMapping("/seat/{roomId}")
 //    public ResponseEntity<List<SeatDto>> getAllSeatBooked(@PathVariable("roomId") Long roomId){
 //        List<SeatDto> response = ticketService.getAllSeatBookedInRoom(roomId);
+    private final TicketService bookingService;
+//    @GetMapping("/booking")
+//    public ResponseEntity<List<BookingDto>> getAllBookingTicket() throws NotFoundException {
+////        List<BookingDto> bookingDto = bookingService.getAllBookings();
+//        return new  ResponseEntity<>(bookingDto, HttpStatus.OK);
+//    }
+//    @PostMapping("/seat/{roomId}")
+//    public ResponseEntity<List<SeatDto>> getAllSeatBooked(@PathVariable("roomId") Long roomId) throws NotFoundException {
+//        List<SeatDto> response = bookingService.getAllSeatBookedInRoom(roomId);
 //        return new ResponseEntity<>(response, HttpStatus.OK);
 //    }
 

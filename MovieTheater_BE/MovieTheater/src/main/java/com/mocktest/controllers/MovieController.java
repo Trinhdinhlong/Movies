@@ -1,5 +1,6 @@
 package com.mocktest.controllers;
 
+import com.mocktest.bean.MovieShowTimeResponse;
 import com.mocktest.dto.MovieDto;
 import com.mocktest.entities.Type;
 import com.mocktest.services.MovieService;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,9 +24,15 @@ import java.util.Set;
 public class MovieController {
     private final MovieService movieService;
     private final MovieTypeService movieTypeService;
+
     @GetMapping("/movies")
-    public ResponseEntity<List<MovieDto>> getAllMovie(){
-        List<MovieDto> response = movieService.getAll();
+    public ResponseEntity<?> getAllMovie(@RequestParam(required = false) String date){
+        List<MovieShowTimeResponse> response;
+        if (date == null) {
+             response = movieService.getAll();
+        } else {
+            response = movieService.getAll(date);
+        }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @DeleteMapping("/movies/{id}")

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -30,8 +31,10 @@ public class MovieDto {
     private LocalDate startedDate;
     private LocalDate endDate;
     private String imageURL;
+    @JsonIgnore
     private List<Type> typeMovies;
     private List<Long> typeMovieId;
+    private LocalTime startTime;
     public MovieDto(Movie entity) {
         if (entity != null) {
             BeanUtils.copyProperties(entity, this);
