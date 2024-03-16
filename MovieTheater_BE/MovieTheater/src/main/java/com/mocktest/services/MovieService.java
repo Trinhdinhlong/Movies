@@ -1,7 +1,9 @@
 package com.mocktest.services;
 
+import com.mocktest.bean.MovieResponse;
 import com.mocktest.dto.MovieDto;
 import com.mocktest.entities.Movie;
+import com.mocktest.entities.ShowTime;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +38,22 @@ public class MovieService {
                 .map(MovieDto::new)
                 .collect(Collectors.toList());
     }
+    public List<MovieResponse> getAllMovieByAdmin(){
+        List<Movie> movieList = movieRepository.findAll();
+        List<MovieResponse> movieResponses = new ArrayList<>();
+        for(Movie movie : movieList){
+            MovieResponse movieResponse = new MovieResponse();
+            movieResponse.setId(movie.getId());
+            movieResponse.setMovieNameEnglish(movie.getMovieNameEnglish());
+            movieResponse.setMovieNameVN(movie.getMovieNameVN());
+            movieResponse.setCreateDate(movie.getStartedDate());
+            movieResponse.setMovieProductionCompany(movie.getMovieProductionCompany());
+            movieResponse.setDuration(movie.getDuration());
+            movieResponse.setVersion(movie.getVersion());
+            movieResponses.add(movieResponse);
+        }
+        return movieResponses;
+    }
     public void deleteById(Long request){
         if (movieRepository.existsById(request)) {
             movieRepository.deleteById(request);
@@ -54,5 +72,11 @@ public class MovieService {
         MovieDto response = new MovieDto();
         BeanUtils.copyProperties(userOptional, response);
         return response;
+    }
+    public Movie getById(Long id) {
+        Optional<Movie> movieOptional = movieRepository.findById(id);
+        Movie movie = new Movie();
+        BeanUtils.copyProperties(movieOptional, movie);
+        return movie;
     }
 }

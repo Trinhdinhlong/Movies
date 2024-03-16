@@ -6,10 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -18,7 +16,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "types", schema = "dbo")
-public class Type implements Serializable {
+public class TypeMovie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "type_id")

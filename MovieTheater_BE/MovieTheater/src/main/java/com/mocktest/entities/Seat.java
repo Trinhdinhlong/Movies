@@ -30,20 +30,21 @@ public class Seat {
     @Column(name = "price")
     private Double price;
     @CreationTimestamp
+    @JsonIgnore
     @Column(name = "created_date")
     private LocalDateTime createdDate;
     @UpdateTimestamp
+    @JsonIgnore
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
-
     @Column(name = "seatType")
     @Enumerated(EnumType.STRING)
     private SeatType seatType;
-
     @ManyToOne
     @JoinColumn(name = "room_id", referencedColumnName = "room_id")
+    @JsonBackReference
     private Room room;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "seat", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ticket> tickets;
 

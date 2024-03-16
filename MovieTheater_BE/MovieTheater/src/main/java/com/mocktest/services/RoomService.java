@@ -1,48 +1,65 @@
 package com.mocktest.services;
 
-import com.mocktest.dto.RoomDto;
+import com.mocktest.bean.RoomRequest;
+import com.mocktest.bean.RoomResponse;
 import com.mocktest.entities.Room;
-import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.RoomRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 @Service
 public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
-    public List<RoomDto> getAll() {
+    public List<RoomResponse> getAll() {
             List<Room> rooms = roomRepository.findAll();
             if(rooms.isEmpty()) {
                 throw new NotFoundException("Error while retrieving all roles");
 
             }
-            return rooms.stream()
-                .map(RoomDto::new)
-                .collect(Collectors.toList());
+            List<RoomResponse> responses = new ArrayList<>();
+            for(Room room : rooms){
+                RoomResponse response = new RoomResponse();
+                response.setId(room.getId());
+                response.setNameRoom(room.getRoomName());
+                response.setSeatQuantity(room.getSeatQuantity());
+                responses.add(response);
+            }
+            return responses;
     }
-    public RoomDto getById(Long id) {
-            Optional<Room> roleOptional = roomRepository.findById(id);
-            Room room = new Room();
-            BeanUtils.copyProperties(roleOptional, room);
-            return new RoomDto(roomRepository.save(room));
+    public RoomResponse getById(Long id) {
+            Optional<Room> roomOptional = roomRepository.findById(id);
+            Room room = roomOptional.orElseThrow(() -> new NotFoundException("Room not found with id"));
+            RoomResponse response = new RoomResponse();
+            response.setId(room.getId());
+            response.setNameRoom(room.getRoomName());
+            response.setSeatQuantity(response.getSeatQuantity());
+            return response;
     }
-    public RoomDto create(RoomDto roomDto){
+    public RoomResponse create(RoomRequest request){
             Room room = new Room();
-            BeanUtils.copyProperties(roomDto, room);
-            return new RoomDto(roomRepository.save(room));
+            room.setRoomName(request.getNameRoom());
+            room.setSeatQuantity(request.getSeatQuantity());
+            room = roomRepository.save(room);
+            RoomResponse response = new RoomResponse();
+            response.setId(room.getId());
+            response.setNameRoom(room.getRoomName());
+            response.setSeatQuantity(request.getSeatQuantity());
+            return response;
     }
-    public RoomDto updateById(RoomDto request){
-            Optional<Room> roomOptional = roomRepository.findById(request.getId());
-            Room room = new Room();
-            BeanUtils.copyProperties(roomOptional,room );
-            return new RoomDto(roomRepository.save(room));
+    public  RoomResponse updateById(RoomResponse response){
+        Optional<Room> roomOptional = roomRepository.findById(response.getId());
+        Room room = roomOptional.orElseThrow(() -> new NotFoundException("Room not found with id"));;
+        RoomResponse responses = new RoomResponse();
+        responses.setId(room.getId());
+        responses.setNameRoom(room.getRoomName());
+        responses.setSeatQuantity(room.getSeatQuantity());
+        return responses;
     }
 
     public void deleteById(Long id) {

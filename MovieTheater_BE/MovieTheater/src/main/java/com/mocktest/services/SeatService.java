@@ -1,9 +1,10 @@
 package com.mocktest.services;
 
 import com.mocktest.bean.SeatDetailResponse;
-import com.mocktest.entities.Seat;
-import com.mocktest.entities.Ticket;
+import com.mocktest.bean.SeatTypeResponse;
+import com.mocktest.entities.*;
 import com.mocktest.exceptions.BadRequestException;
+import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.SeatRepository;
 import com.mocktest.repository.ShowTimeRepository;
 import com.mocktest.repository.TicketRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SeatService {
@@ -48,5 +50,22 @@ public class SeatService {
         return responses;
     }
 
-
+    public Seat getById(Long id) {
+        Optional<Seat> seatOptional = seatRepository.findById(id);
+        Seat requests = seatOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
+        return  requests;
+    }
+    public List<SeatTypeResponse> updateTypeSeatById(List<Long> requests){
+        List<SeatTypeResponse> response = new ArrayList<>();
+        for (Long request : requests){
+            Seat seat = getById(request);
+            seat.setSeatType(SeatType.VIP);
+            seat = seatRepository.save(seat);
+            SeatTypeResponse seatResponse = new SeatTypeResponse();
+            seatResponse.setId(seat.getId());
+            seatResponse.setSeatType(seat.getSeatType());
+            response.add(seatResponse);
+        }
+        return response;
+    }
 }

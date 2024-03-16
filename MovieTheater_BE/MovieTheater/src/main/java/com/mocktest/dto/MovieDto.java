@@ -2,7 +2,7 @@ package com.mocktest.dto;
 
 import com.fasterxml.jackson.annotation.*;
 import com.mocktest.entities.Movie;
-import com.mocktest.entities.Type;
+import com.mocktest.entities.TypeMovie;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,9 +30,11 @@ public class MovieDto {
     private LocalDate startedDate;
     private LocalDate endDate;
     private String imageURL;
+
     @JsonIgnore
-    private Set<Type> typeMovies;
+    private Set<TypeMovie> typeMovies;
     private List<Long> typeMovieId;
+
     public MovieDto(Movie entity) {
         if (entity != null) {
             BeanUtils.copyProperties(entity, this);

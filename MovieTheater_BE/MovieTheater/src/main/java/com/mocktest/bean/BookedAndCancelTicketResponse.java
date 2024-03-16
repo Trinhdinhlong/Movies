@@ -1,9 +1,7 @@
-package com.mocktest.dto;
+package com.mocktest.bean;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mocktest.entities.Seat;
-import com.mocktest.entities.TicketType;
-import com.mocktest.entities.Type;
+import com.mocktest.entities.TicketStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,22 +10,15 @@ import lombok.NoArgsConstructor;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
-import java.util.Set;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BookingDto {
-    private Long id;
-    private Long userId;
-    private String fullName;
-    private String identityCard;
-    private String phone;
+public class BookedAndCancelTicketResponse {
     private String movieNameVN;
-    private LocalDateTime startTime;
-    private Seat seat;
+    private LocalDateTime bookingDate;
+    private double totalAmount;
     @Enumerated(EnumType.STRING)
-    private TicketType ticketType;
+    private TicketStatus ticketType;
 }

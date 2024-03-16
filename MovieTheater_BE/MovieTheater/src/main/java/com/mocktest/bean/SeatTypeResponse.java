@@ -1,27 +1,21 @@
-package com.mocktest.dto;
+package com.mocktest.bean;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mocktest.entities.Room;
 import com.mocktest.entities.SeatType;
-import com.mocktest.entities.TicketType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SeatDto {
-    private String seatColumn;
-    private int seatRow;
+public class SeatTypeResponse {
+    private Long id;
     @Enumerated(EnumType.STRING)
     private SeatType seatType;
-    @Enumerated(EnumType.STRING)
-    private TicketType ticketType;
 }

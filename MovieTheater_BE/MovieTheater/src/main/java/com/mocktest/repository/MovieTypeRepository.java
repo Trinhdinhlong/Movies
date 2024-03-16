@@ -1,8 +1,7 @@
 package com.mocktest.repository;
 
-import com.mocktest.entities.Movie;
-import com.mocktest.entities.Type;
+import com.mocktest.entities.TypeMovie;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MovieTypeRepository extends JpaRepository<Type, Long> {
+public interface MovieTypeRepository extends JpaRepository<TypeMovie, Long> {
 }

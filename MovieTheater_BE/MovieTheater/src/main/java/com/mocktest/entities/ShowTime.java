@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Setter
@@ -23,17 +24,19 @@ public class ShowTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "showtime_id")
     private Long id;
-
+    @JsonIgnore
     @Column(name = "start_time")
-    private LocalDateTime startTime;
-
+    private LocalTime startTime;
+    @JsonIgnore
     @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private LocalTime endTime;
 
     @CreationTimestamp
+    @JsonIgnore
     @Column(name = "created_date")
     private LocalDateTime createdDate;
     @UpdateTimestamp
+    @JsonIgnore
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
 

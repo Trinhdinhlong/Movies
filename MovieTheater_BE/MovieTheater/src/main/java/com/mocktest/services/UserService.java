@@ -23,10 +23,10 @@ public class UserService {
                 .map(UserDto::new)
                 .collect(Collectors.toList());
     }
-    public UserDto getById(UserDto request){
-            Optional<User> userOptional = userRepository.findById(request.getUserId());
+    public User getById(Long id){
+            Optional<User> userOptional = userRepository.findById(id);
             User requests = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
-            return new UserDto(requests);
+            return  requests;
     }
     public UserDto create(UserDto request){
         if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
@@ -39,8 +39,9 @@ public class UserService {
     }
     public UserDto updateById(UserDto request){
         Optional<User> userOptional = userRepository.findById(request.getUserId());
+        User requests = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
         UserDto response =  new UserDto();
-        BeanUtils.copyProperties(userOptional, response);
+        BeanUtils.copyProperties(requests, response);
         return response;
     }
     public void deleteById(Long request) throws NotFoundException {
