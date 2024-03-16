@@ -452,7 +452,7 @@ export default function Home() {
         <div>
           <label
             htmlFor="file-upload"
-            className="block text-sm font-medium text-gray-700 mr-2"
+            className="block text-sm font-medium text-gray-700 mr-2 mb-3"
           >
             Image:
             <span className="text-red-500">*</span>
