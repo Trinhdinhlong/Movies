@@ -13,7 +13,6 @@ export default function Home() {
   const [movProductionComp, setMovProductionComp] = useState("");
   const [director, setDirector] = useState("");
   const [duration, setDuration] = useState("");
-  const [version, setVersion] = useState("");
   const [movType, setMovType] = useState<String[]>([]);
   const [room, setRoom] = useState("");
   const [schedule, setSchedule] = useState<String[]>([]);
@@ -22,7 +21,7 @@ export default function Home() {
 
   function checkFormFilled() {
     const allStringsFilled = movNameEn && movNameVie && fromDate && toDate && actor && 
-                             movProductionComp && director && duration && version && 
+                             movProductionComp && director && duration && 
                              room && content;
     const allArraysFilled = movType.length > 0 && schedule.length > 0;
     const fileSelected = fileName !== undefined;
@@ -51,20 +50,31 @@ export default function Home() {
     }
   }
 
-  function handleAddMovie() {
+  function handleAddMovie(e: any) {
+    e.preventDefault()
     if(checkFormFilled()) {
-      axios.post("", {
-
+      console.log("true")
+      axios.post("http://localhost:8080/api/movie-management/movie", {
+        "content": content,
+        "movieNameEnglish": movNameEn,
+        "movieNameVN": movNameVie,
+        "actor": actor,
+        "director": director,
+        "duration": Number(duration),
+        "movieProductionCompany": movProductionComp,
+        "startedDate": fromDate,
+        "endDate": toDate,
+        "imageURL": fileName?.name
       }).then(response => {
         console.log(response.data)
         router.push("/admin/dashboard/movies")
-      })
+      }).catch(error => console.log(error))
     }
   }
 
   return (
     <div className="bg-[#EFF0F3] w-[84%] flex flex-col items-center text-black overflow-auto">
-      <form className="w-[95%] bg-white m-10 p-10 flex flex-col gap-3" onSubmit={() => handleAddMovie()}>
+      <form className="w-[95%] bg-white m-10 p-10 flex flex-col gap-3" onSubmit={(e) => handleAddMovie(e)}>
         <label
           htmlFor="movie_name"
           className="block text-sm font-medium text-gray-700"
@@ -168,19 +178,6 @@ export default function Home() {
           type="text"
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setDuration(e.target.value)}
-        />
-        <label
-          htmlFor="version"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Version:
-          <span className="text-red-500">*</span>
-        </label>
-        <input
-          id="version"
-          type="text"
-          className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
-          onChange={(e) => setVersion(e.target.value)}
         />
         <label
           htmlFor="version"
