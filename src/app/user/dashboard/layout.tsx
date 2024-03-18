@@ -20,9 +20,7 @@ export default function RegisterLayout({
         <Header handleOpen={handleOpenPopup}/>
       </div>
       {open && (
-        <div className="z-[10] bg-white absolute top-[60px] left-[30%] flex flex-col gap-2 items-start 
-        rounded-[5px] p-2 w-[150px] max-h-[200px] overflow-auto text-black font-[500]
-        border-[1px] border-black">
+        <div className="z-[1] bg-white absolute top-[70px] left-[35%] flex flex-col gap-2 items-start rounded-[5px] p-2 w-[150px] max-h-[200px] overflow-auto text-black font-[500]">
           <span className="cursor-pointer p-2">Action</span>
           <span className="cursor-pointer p-2">Romantic</span>
           <span className="cursor-pointer p-2">Demo1</span>

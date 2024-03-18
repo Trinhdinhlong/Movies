@@ -4,11 +4,21 @@ import dropdown from "@/public/dropdown.svg";
 import search from "@/public/Search.svg";
 import user from "@/public/User.svg";
 import logout from "@/public/Logout.svg";
+import { useRouter } from "next/navigation";
 
 export default function Header({ handleOpen }: any) {
+  const router = useRouter()
+
+  function logOut() {
+    router.push("/login")
+  }
   
   function handleOpenPopup() {
     handleOpen();
+  }
+
+  function handleUserProfile() {
+    router.push("/user/dashboard/edit")
   }
 
   return (
@@ -25,18 +35,20 @@ export default function Header({ handleOpen }: any) {
           </button>
         </div>
         <div className="flex flex-row bg-white gap-2 p-1 px-2 items-center justify-center rounded-[10px] text-black">
-          <input type="text" placeholder="Search" className="outline-none"/>
+          <input type="text" placeholder="Search" className="outline-none px-2"/>
           <div className="">
             <Image src={search} alt="" />
           </div>
         </div>
       </div>
       <div className="flex flex-row items-center justify-center gap-10">
-        <div className="flex flex-row gap-3 items-center justify-center">
+        <div className="flex flex-row gap-3 items-center justify-center cursor-pointer"
+        onClick={handleUserProfile}>
           <Image src={user} alt="" />
           <span>Welcome, julientlam</span>
         </div>
-        <div className="flex flex-row gap-3 items-center justify-center">
+        <div className="flex flex-row gap-3 items-center justify-center cursor-pointer"
+        onClick={logOut}>
           <Image src={logout} alt="" />
           <span>Logout</span>
         </div>

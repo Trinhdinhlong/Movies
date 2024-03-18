@@ -13,7 +13,6 @@ export default function Home() {
   const [movProductionComp, setMovProductionComp] = useState("");
   const [director, setDirector] = useState("");
   const [duration, setDuration] = useState("");
-  const [version, setVersion] = useState("");
   const [movType, setMovType] = useState<String[]>([]);
   const [room, setRoom] = useState("");
   const [schedule, setSchedule] = useState<String[]>([]);
@@ -51,11 +50,8 @@ export default function Home() {
     }
   }
 
-
   function handleAddMovie(e: any) {
     e.preventDefault()
-    console.log(fromDate);
-    console.log(movType, schedule);
     if(checkFormFilled()) {
       console.log("true")
       axios.post("http://localhost:8080/api/movie-management/movie", {
@@ -182,19 +178,6 @@ export default function Home() {
           type="text"
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setDuration(e.target.value)}
-        />
-        <label
-          htmlFor="version"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Version:
-          <span className="text-red-500">*</span>
-        </label>
-        <input
-          id="version"
-          type="text"
-          className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
-          onChange={(e) => setVersion(e.target.value)}
         />
         <label
           htmlFor="version"
