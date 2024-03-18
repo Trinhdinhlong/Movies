@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Set;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,8 +20,9 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookedAndCancelTicketResponse {
     private String movieNameVN;
-    private LocalDateTime bookingDate;
     private double totalAmount;
+    private LocalTime startTime;
+    private Seat seat;
     @Enumerated(EnumType.STRING)
     private TicketStatus ticketType;
 }

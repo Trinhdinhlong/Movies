@@ -1,4 +1,4 @@
-package com.mocktest.dto;
+package com.mocktest.bean;
 
 import com.fasterxml.jackson.annotation.*;
 import com.mocktest.entities.Movie;
@@ -9,16 +9,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class MovieDto {
+public class MovieRequest {
     private Long id;
     private String content;
     private String movieNameEnglish;
@@ -30,15 +29,13 @@ public class MovieDto {
     private LocalDate startedDate;
     private LocalDate endDate;
     private String imageURL;
-
-    @JsonIgnore
-    private Set<TypeMovie> typeMovies;
     private List<Long> typeMovieId;
-
-    public MovieDto(Movie entity) {
+    private List<LocalTime> startTime;
+    private Long roomId;
+    public MovieRequest(Movie entity) {
         if (entity != null) {
             BeanUtils.copyProperties(entity, this);
-    }
+        }
     }
     @Override
     public String toString() {

@@ -94,5 +94,7 @@ public class TicketService {
     public List<BookingListResponse> getAllBookingUser(){
         List<BookingListResponse> responses = ticketRepository.getAllBookingUser();
         return responses;
+
+
     }
 }

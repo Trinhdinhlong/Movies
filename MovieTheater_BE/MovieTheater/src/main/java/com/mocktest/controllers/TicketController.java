@@ -38,5 +38,6 @@ public class TicketController {
     @GetMapping("/ticket/booking")
     public ResponseEntity<List<BookingListResponse>> getAllBookingByAdmin(){
         return new ResponseEntity<>(ticketService.getAllBookingUser(), HttpStatus.OK);
+
     }
 }

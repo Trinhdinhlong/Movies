@@ -73,7 +73,7 @@ public class Movie {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "movie_type",
-            joinColumns = @JoinColumn(name = "movie_id_id"),
+            joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer"})
     private Set<TypeMovie> typeMovies = new HashSet<>();
