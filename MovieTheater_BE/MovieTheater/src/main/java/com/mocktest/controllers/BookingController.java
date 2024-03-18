@@ -2,6 +2,7 @@ package com.mocktest.controllers;
 
 import com.mocktest.services.TicketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,8 +12,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ticket-management")
 public class BookingController{
-
-    private final TicketService ticketService;
+//    @Autowired
+//    private TicketService ticketService;
 //    @GetMapping("/booking")
 //    public ResponseEntity<List<BookingDto>> getAllBookingTicket(){
 //        List<BookingDto> bookingDto = ticketService.getAllBookings();
@@ -21,7 +22,9 @@ public class BookingController{
 //    @PostMapping("/seat/{roomId}")
 //    public ResponseEntity<List<SeatDto>> getAllSeatBooked(@PathVariable("roomId") Long roomId){
 //        List<SeatDto> response = ticketService.getAllSeatBookedInRoom(roomId);
-    private final TicketService bookingService;
+
+//    private final TicketService bookingService;
+
 //    @GetMapping("/booking")
 //    public ResponseEntity<List<BookingDto>> getAllBookingTicket() throws NotFoundException {
 ////        List<BookingDto> bookingDto = bookingService.getAllBookings();

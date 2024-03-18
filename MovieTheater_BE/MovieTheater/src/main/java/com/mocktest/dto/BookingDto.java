@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Data
@@ -26,7 +27,7 @@ public class BookingDto {
     private String identityCard;
     private String phone;
     private String movieNameVN;
-    private LocalDateTime startTime;
+    private LocalTime startTime;
     private Seat seat;
     @Enumerated(EnumType.STRING)
     private TicketType ticketType;

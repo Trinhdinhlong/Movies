@@ -15,6 +15,7 @@ import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("FROM Ticket t WHERE t.user.userId =?1")
     List<Ticket> getTicketsByUserId(Long id);
+
     @Query("SELECT new com.mocktest.dto.BookingDto(t.id, u.userId, u.fullName, u.identityCard, u.phone, " +
             "m.movieNameVN, st.startTime, s, t.ticketType) " +
             "FROM User u, Ticket t, ShowTime st, Seat s, Movie m " +
@@ -23,10 +24,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "AND t.seat.id = s.id " +
             "AND st.movie.id = m.id")
     List<BookingDto> getAllBookings();
+
     @Query("SELECT new com.mocktest.dto.SeatDto(s.seatColumn, s.seatRow, s.seatType, t.ticketType) " +
             "FROM Seat s JOIN s.tickets t " +
             "WHERE s.room.id = :roomId AND t.ticketType = 'BOOKED'")
     List<SeatDto> findBookedSeatsByRoomId(@Param("roomId") Long roomId);
+
     @Modifying
     @Transactional
     @Query("UPDATE Ticket t SET t.ticketType = 'GOTTEN' WHERE t.ticketType = 'BOOKED' AND t.showTime.endTime < :currentTime")
