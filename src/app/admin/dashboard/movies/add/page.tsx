@@ -73,7 +73,7 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-[#EFF0F3] w-[84%] flex flex-col items-center text-black overflow-auto">
+    <div className="bg-[#EFF0F3] w-full h-full overflow-auto flex flex-col items-center text-black overflow-auto">
       <form className="w-[95%] bg-white m-10 p-10 flex flex-col gap-3" onSubmit={(e) => handleAddMovie(e)}>
         <label
           htmlFor="movie_name"

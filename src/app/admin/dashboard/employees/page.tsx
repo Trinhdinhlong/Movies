@@ -4,26 +4,8 @@ import minimize from "@/public/minimize.svg";
 
 export default function Home(props : any) {
   return (
-    <div>
+    <div className="w-full">
       <div className="flex flex-row text-black w-full">
-        <div className="flex flex-col bg-white w-[16%] h-screen">
-          <div className="flex flex-row justify-end px-5 py-3">
-            <Image src={minimize} alt="" />
-          </div>
-          <span className="px-5 py-3">Employees</span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black">
-            Movies
-          </span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black">
-            Cinema Room
-          </span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black">
-            Booking List
-          </span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black border-b-[1px] border-b-black">
-            Promotion
-          </span>
-        </div>
         <div className="min-h-screen bg-gray-100 p-8 w-full">
           <div className="bg-white shadow rounded-md p-6">
             <div className="flex justify-between items-center mb-4">
