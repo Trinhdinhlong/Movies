@@ -1,10 +1,11 @@
 "use client"
 
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 interface Ticket {
-    id: string;
     name: string;
+    amount: number;
     date: string;
     price: string;
     status: string;
@@ -12,7 +13,11 @@ interface Ticket {
 
 export default function Home() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  useEffect(() => {}, []);
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/ticket/booked").then(response => {
+      setTickets(response.data)
+    })
+  }, []);
 
   return (
     <div className="bg-[#EFF0F3] w-full h-full px-10 py-20">
@@ -48,9 +53,9 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {tickets.map((ticket) => (
-                <tr key={ticket.id} className="border-b-[1px] border-solid border-[#BEC8CF]">
-                  <td className="py-[10px]">{ticket.id}</td>
+              {tickets.map((ticket, index) => (
+                <tr key={ticket.name} className="border-b-[1px] border-solid border-[#BEC8CF]">
+                  <td className="py-[10px]">{index}</td>
                   <td className="py-[10px]">{ticket.name}</td>
                   <td className="py-[10px]">{ticket.date}</td>
                   <td className="py-[10px]">{ticket.price}</td>
