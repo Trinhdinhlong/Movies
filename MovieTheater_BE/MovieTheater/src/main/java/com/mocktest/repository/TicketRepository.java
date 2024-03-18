@@ -23,7 +23,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "SET t.ticketType = :ticketType " +
             "WHERE t.id = :id")
     void UpdateStatusTicket(@Param("id") Long id, @Param("ticketType") TicketStatus ticketType);
-    @Query("SELECT new com.mocktest.bean.BookedAndCancelTicketResponse(m.movieNameVN, t.createdDate, SUM(s2.price), t.ticketType) " +
+    @Query("SELECT new com.mocktest.bean.BookedAndCancelTicketResponse(m.movieNameVN, SUM(s2.price), t.createdDate ,t.ticketType) " +
             "FROM Ticket t " +
             "INNER JOIN t.showTime s " +
             "INNER JOIN s.movie m " +

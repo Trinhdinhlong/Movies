@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -13,6 +16,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HistoryTicketResponse {
-     private LocalTime createDate;
+     private LocalDateTime createDate;
      private String movieNameVN;
 }

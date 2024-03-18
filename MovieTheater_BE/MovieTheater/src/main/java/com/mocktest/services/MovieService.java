@@ -5,10 +5,9 @@ import com.mocktest.bean.MovieShowTimeResponse;
 import com.mocktest.bean.MovieRequest;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.ShowTime;
-import com.mocktest.entities.Type;
+import com.mocktest.entities.TypeMovie;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
-import com.mocktest.repository.ShowTimeRepository;
 import com.mocktest.repository.TypeRepository;
 import com.mocktest.until.ParseTime;
 import org.springframework.beans.BeanUtils;
@@ -22,9 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,7 +79,7 @@ public class MovieService {
             movieResponse.setId(movie.getId());
             movieResponse.setMovieNameEnglish(movie.getMovieNameEnglish());
             movieResponse.setMovieNameVN(movie.getMovieNameVN());
-            movieResponse.setCreateDate(movie.getStartedDate());
+            movieResponse.setStartedDate(movie.getStartedDate());
             movieResponse.setMovieProductionCompany(movie.getMovieProductionCompany());
             movieResponse.setDuration(movie.getDuration());
             movieResponse.setVersion(movie.getVersion());
@@ -98,9 +95,9 @@ public class MovieService {
         }
     }
     public MovieResponse create(MovieRequest request){
-        List<Type> typeMovies = new ArrayList<>();
+        Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
-            Type type = typeRepository.findById(typeId)
+            TypeMovie type = typeRepository.findById(typeId)
                     .orElseThrow(() -> new NotFoundException("Not found id type!"));
             if (type != null) {
                 typeMovies.add(type);

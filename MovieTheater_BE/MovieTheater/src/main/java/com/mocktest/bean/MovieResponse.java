@@ -29,6 +29,7 @@ public class MovieResponse {
     private String movieProductionCompany;
     private LocalDate startedDate;
     private LocalDate endDate;
+    private String version;
     private String imageURL;
     private Set<TypeMovie> typeMovies;
     private List<ShowTime> showTimes;
@@ -47,5 +48,6 @@ public class MovieResponse {
         this.imageURL = movie.getImageURL();
         this.typeMovies = movie.getTypeMovies();
         this.showTimes = movie.getShowTimes();
+        this.version = movie.getVersion();
     }
 }

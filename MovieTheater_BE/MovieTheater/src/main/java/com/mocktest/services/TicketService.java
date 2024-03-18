@@ -46,13 +46,9 @@ public class TicketService {
         }
         return bookingTicketResponseList;
     }
-    public TicketStatusResponse UpdateStatusTicket(Long id){
-        Ticket ticket = ticketRepository.getById(id);
-        ticket.setTicketType(TicketStatus.Abort);
-        TicketStatusResponse response = new TicketStatusResponse();
-        response.setId(ticket.getId());
-        response.setTicketType(ticket.getTicketType());
-        return response;
+    public boolean UpdateStatusTicket(Long id){
+        ticketRepository.UpdateStatusTicket(id, TicketStatus.Abort);
+        return true;
     }
     public List<BookedAndCancelTicketResponse> getAllBookedList(){
         List<BookedAndCancelTicketResponse> responses = new ArrayList<>();

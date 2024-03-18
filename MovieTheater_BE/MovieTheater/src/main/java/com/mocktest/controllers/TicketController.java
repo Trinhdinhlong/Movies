@@ -1,7 +1,6 @@
 package com.mocktest.controllers;
 
 import com.mocktest.bean.*;
-import com.mocktest.entities.Ticket;
 import com.mocktest.services.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,7 @@ public class TicketController {
     }
     @PutMapping("/ticket/{id}")
     public ResponseEntity<TicketStatusResponse> UpdateStatusTicket(@PathVariable("id") Long id){
-        return new ResponseEntity<>(ticketService.UpdateStatusTicket(id), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/ticket/booked")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten(){
