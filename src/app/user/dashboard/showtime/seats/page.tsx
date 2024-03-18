@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <div className="w-full bg-[#EFF0F3] text-black flex flex-col items-center overflow-auto">
       <div className="flex flex-col items-center w-[70%] gap-2 mb-10">
-        <div className="bg-white rounded-[5px] flex flex-col gap-20 py-10 mt-20 justify-center">
+        <div className="bg-white rounded-[5px] w-full flex flex-col gap-20 py-10 mt-20 justify-center">
           <div className="flex flex-row justify-center gap-20">
             <div className="w-[25%] shrink-0 flex flex-row flex-wrap gap-5 items-start">
               {listSeatLeft.map((seat) => (
