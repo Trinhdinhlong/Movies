@@ -32,7 +32,7 @@ export default function Home() {
   const [listMovie, setListMovie] = useState<Movie[]>([]);
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/movie")
+      .get("http://localhost:8080/api/movies")
       .then((response) => {
         setListMovie(response.data);
       });
