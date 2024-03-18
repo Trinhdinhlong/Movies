@@ -39,7 +39,6 @@ public class User implements Serializable {
                     ", one digit and one special character")
     private String password;
     @Column(name = "full_name")
-    @Pattern(regexp = "^[^a-zA-Z0-9]*$", message = "Full name must not contain letters or digits")
     private String fullName;
     @Column(name = "date_of_birth")
     @PastOrPresent(message = "Date of birth must be in the past or present")

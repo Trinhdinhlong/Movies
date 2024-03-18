@@ -35,7 +35,7 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [listMovie, setListMovie] = useState<Movie[]>([])
     useEffect(() => {
-        axios.get("http://localhost:8080/api/movie-management/listmovie").then(response => {
+        axios.get("http://localhost:8080/api/movies/user").then(response => {
             setListMovie(response.data)
         })
     },[])

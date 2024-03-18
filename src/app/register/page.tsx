@@ -45,7 +45,7 @@ export default function Register() {
     if (checkAllFieldsFilled()) {
       const dobArray = extractDob();
       axios
-        .post("http://localhost:8080/api/user/register", {
+        .post("http://localhost:8080/api/user", {
           "username": account,
           "password": password,
           "fullName": fullName,

@@ -9,14 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("FROM Ticket t " +
             "JOIN ShowTime s ON s.id = t.showTime.id " +
             "WHERE s.id = :showTimeId AND t.endTime > :now")
-    List<Ticket> getAllSeatBookedInTicket(Long showTimeId, LocalDateTime now);
+    List<Ticket> getAllSeatBookedInTicket(Long showTimeId, LocalTime now);
     @Transactional
     @Modifying
     @Query("UPDATE Ticket t " +

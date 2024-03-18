@@ -23,7 +23,7 @@ export default function Register() {
   function handleLogin(e: any) {
     e.preventDefault();
     if (checkAllFieldsFilled()) {
-      axios.post("http://localhost:8080/api/login", {
+      axios.post("http://localhost:8080/api/user/login", {
         "username":account,
         "password": password
       }).then(response => {

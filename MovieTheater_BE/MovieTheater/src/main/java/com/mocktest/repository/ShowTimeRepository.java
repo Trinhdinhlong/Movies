@@ -11,5 +11,5 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
             "FROM ShowTime s \n" +
             "INNER JOIN s.movie m \n" +
             "WHERE m.id = :id\n")
-    public Long getDurationMovieInShowTime(Long id);
+    Long getDurationMovieInShowTime(Long id);
 }

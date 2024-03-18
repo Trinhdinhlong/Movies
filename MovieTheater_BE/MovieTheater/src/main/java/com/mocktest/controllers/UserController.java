@@ -17,12 +17,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final RoleService roleService;
-    @GetMapping("/user")
+    @PostMapping("/login")
     public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto){
         UserDto userDtoSaved = userService.login(userDto);
         return new ResponseEntity<>(userDtoSaved, HttpStatus.OK);
     }
-    @PostMapping("/user")
+    @PostMapping("/register")
     public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request){
         Role role = roleService.getById(2L);
         request.setRole(role);

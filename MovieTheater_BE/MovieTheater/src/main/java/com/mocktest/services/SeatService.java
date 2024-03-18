@@ -11,6 +11,7 @@ import com.mocktest.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class SeatService {
             throw new BadRequestException("Room Id and Movie Id not correct");
         }
         List<Seat> seats = seatRepository.getAllSeatsByRoom(roomId);
-        List<Ticket> tickets = ticketRepository.getAllSeatBookedInTicket(showTimeId, LocalDateTime.now());
+        List<Ticket> tickets = ticketRepository.getAllSeatBookedInTicket(showTimeId, LocalTime.now());
         List<SeatDetailResponse> responses = new ArrayList<>();
         for (Seat seat : seats) {
             SeatDetailResponse response = new SeatDetailResponse();
