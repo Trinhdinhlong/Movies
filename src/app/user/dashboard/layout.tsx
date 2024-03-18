@@ -33,7 +33,7 @@ export default function RegisterLayout({
           <span className="cursor-pointer p-2">Demo2</span>
         </div>
       )}
-      <div className="flex flex-row w-full h-[90%] overflow-hidden">
+      <div className="flex flex-row w-full h-[90%]">
         {children}
       </div>
     </div>

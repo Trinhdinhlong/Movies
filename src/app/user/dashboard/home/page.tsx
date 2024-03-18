@@ -38,7 +38,7 @@ export default function Home() {
       });
   }, []);
   return (
-    <div className="flex flex-col w-full relative">
+    <div className="flex flex-col w-full relative h-full overflow-auto">
       <div className="h-screen bg-[#B8ADC1]">
         <div className="w-full flex flex-col">
           <Image src={list} alt="" className="w-full" />
