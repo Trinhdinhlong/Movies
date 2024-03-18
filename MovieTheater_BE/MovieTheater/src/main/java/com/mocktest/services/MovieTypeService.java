@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 public class MovieTypeService {
     @Autowired
     private MovieTypeRepository movieTypeRepository;
-
     public TypeMovie getByTypeId(Long id){
         TypeMovie type = movieTypeRepository.getById(id);
         return type;

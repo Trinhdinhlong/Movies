@@ -1,17 +1,15 @@
 package com.mocktest.bean;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mocktest.entities.Seat;
 import com.mocktest.entities.TicketStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Set;
 
 @Data
 @Builder
