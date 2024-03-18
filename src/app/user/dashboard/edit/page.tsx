@@ -51,7 +51,7 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-[#EFF0F3] p-10 text-black h-[90%] overflow-auto">
+    <div className="bg-[#EFF0F3] p-10 text-black h-full overflow-auto">
       <div className="bg-white flex flex-col items-center gap-3 pb-10">
         <span className="font-[700] border-b-[1px] w-full py-5 text-center text-[1.2rem]">
           Account Information
