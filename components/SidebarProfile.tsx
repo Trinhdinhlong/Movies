@@ -12,7 +12,7 @@ export default function SidebarProfile() {
   }
 
   return (
-    <div className="text-black w-[20%]">
+    <div className="text-black w-[15%]">
       <div className="flex flex-col h-screen bg-white left-0 top-0 overflow-x-hidden">
         <div id="test" className="flex flex-col items-center gap-5 py-[10px]">
             <Image src={avaBlank} alt="" className="pt-4"/>

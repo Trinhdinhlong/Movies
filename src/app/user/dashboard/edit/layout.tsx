@@ -15,9 +15,9 @@ export default function EditLayout({
     setOpen(!open);
   }
   return (
-    <div className="flex flex-1 flex-row">
+    <div className="flex flex-1 flex-row w-full">
       <SidebarProfile />
-      <div className="w-[84%] h-full">{children}</div>
+      <div className="w-[85%] h-full">{children}</div>
     </div>
   );
 }
