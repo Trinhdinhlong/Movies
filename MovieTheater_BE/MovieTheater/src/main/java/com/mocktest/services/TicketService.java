@@ -53,8 +53,8 @@ public class TicketService {
             Seat seatNormal = seatRepository.findByIdAndSeatType(seatId, String.valueOf(SeatType.NORMAL));
             ticket.setSeat(seatNormal);
             ticket.setShowTime(showTimeFromDb);
-            ticket.setStartTime(showTimeFromDb.getStartTime());
-            ticket.setEndTime(showTimeFromDb.getEndTime());
+//            ticket.setStartTime(showTimeFromDb.getStartTime());
+//            ticket.setEndTime(showTimeFromDb.getEndTime());
             ticket.setUser(userFromDb);
             ticket.setTicketType(TicketType.BOOKED);
 
@@ -70,8 +70,8 @@ public class TicketService {
             Seat seatVip = seatRepository.findByIdAndSeatType(seatId, String.valueOf(SeatType.VIP));
             ticket.setSeat(seatVip);
             ticket.setShowTime(showTimeFromDb);
-            ticket.setStartTime(showTimeFromDb.getStartTime());
-            ticket.setEndTime(showTimeFromDb.getEndTime());
+//            ticket.setStartTime(showTimeFromDb.getStartTime());
+//            ticket.setEndTime(showTimeFromDb.getEndTime());
             ticket.setUser(userFromDb);
             ticket.setTicketType(TicketType.BOOKED);
 

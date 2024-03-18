@@ -1,6 +1,5 @@
 package com.mocktest.repository;
 
-import com.mocktest.dto.MovieDto;
 import com.mocktest.entities.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
 

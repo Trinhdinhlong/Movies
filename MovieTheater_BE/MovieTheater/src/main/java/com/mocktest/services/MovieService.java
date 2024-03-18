@@ -1,11 +1,15 @@
 package com.mocktest.services;
 
+import com.mocktest.bean.MovieResponse;
 import com.mocktest.bean.MovieShowTimeResponse;
-import com.mocktest.dto.MovieDto;
+import com.mocktest.bean.MovieRequest;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.ShowTime;
+import com.mocktest.entities.Type;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
+import com.mocktest.repository.ShowTimeRepository;
+import com.mocktest.repository.TypeRepository;
 import com.mocktest.until.ParseTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +32,10 @@ import java.util.stream.Collectors;
 public class MovieService {
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private TypeRepository typeRepository;
+    @Autowired
+    private ShowTimeService showTimeService;
 
     public Page<Movie> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -46,16 +54,18 @@ public class MovieService {
     public List<MovieShowTimeResponse> getAll(String date) {
         LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         LocalTime time = ParseTime.convertToTime(dateTime);
-        List<Movie> movieList = movieRepository.findAll();
 
-        movieList  = movieList.stream().filter( movie -> ((movie.getStartedDate().isBefore(dateTime.toLocalDate())) && (movie.getEndDate().isAfter(dateTime.toLocalDate()))))
+        List<Movie> movieList = movieRepository.findAll();
+        LocalDate dateNow = dateTime.toLocalDate();
+        movieList  = movieList.stream()
+                .filter( movie -> {
+                    return ((movie.getStartedDate().isBefore(dateNow)) && (movie.getEndDate().isAfter(dateNow)));
+                })
                 .map(data -> {
                     List<ShowTime> showTimes = data.getShowTimes();
                     if(!CollectionUtils.isEmpty(showTimes)) {
                         data.setShowTimes(showTimes.stream().filter(showTime -> {
-                            System.out.println("showtime: " + showTime);
-                            LocalTime startTime = ParseTime.convertToTime(showTime.getStartTime());
-                            return !startTime.isBefore(time);
+                            return !(showTime.getStartTime()).isBefore(time);
                         }).collect(Collectors.toList()));
                     }
                     return data;
@@ -72,14 +82,43 @@ public class MovieService {
             throw new NotFoundException("data not found in entity User: " + request);
         }
     }
-    public MovieDto create(MovieDto request){
-        Movie requests = new Movie();
-        BeanUtils.copyProperties(request, requests);
-        return new MovieDto(movieRepository.save(requests));
+    public MovieResponse create(MovieRequest request){
+        List<Type> typeMovies = new ArrayList<>();
+        for (Long typeId : request.getTypeMovieId()) {
+            Type type = typeRepository.findById(typeId)
+                    .orElseThrow(() -> new NotFoundException("Not found id type!"));
+            if (type != null) {
+                typeMovies.add(type);
+            }
+        }
+
+        Movie movie = new Movie();
+
+        movie.setTypeMovies(typeMovies);
+        BeanUtils.copyProperties(request, movie);
+        movieRepository.save(movie);
+
+        movie.setShowTimes(showTimeService.createShowTime(request, movie));
+
+        return MovieResponse.builder()
+                .id(movie.getId())
+                .content(movie.getContent())
+                .movieNameEnglish(movie.getMovieNameEnglish())
+                .movieNameVN(movie.getMovieNameVN())
+                .actor(movie.getActor())
+                .director(movie.getDirector())
+                .duration(movie.getDuration())
+                .movieProductionCompany(movie.getMovieProductionCompany())
+                .startedDate(movie.getStartedDate())
+                .endDate(movie.getEndDate())
+                .imageURL(movie.getImageURL())
+                .typeMovies(movie.getTypeMovies())
+                .showTimes(movie.getShowTimes())
+                .build();
     }
-    public MovieDto updateById(MovieDto request){
+    public MovieRequest updateById(MovieRequest request){
         Optional<Movie> userOptional = movieRepository.findById(request.getId());
-        MovieDto response = new MovieDto();
+        MovieRequest response = new MovieRequest();
         BeanUtils.copyProperties(userOptional, response);
         return response;
     }
