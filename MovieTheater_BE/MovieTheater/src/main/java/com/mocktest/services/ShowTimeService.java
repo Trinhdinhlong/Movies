@@ -4,6 +4,7 @@ import com.mocktest.bean.MovieRequest;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.Room;
 import com.mocktest.entities.ShowTime;
+import com.mocktest.entities.User;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import com.mocktest.repository.RoomRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,5 +44,15 @@ public class ShowTimeService {
                             .build()
             );
         }).collect(Collectors.toList());
+    }
+
+    public ShowTime getById(Long showTimeId) {
+        Optional<ShowTime> showTimeOptional = showTimeRepository.findById(showTimeId);
+        ShowTime requests = showTimeOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
+        return  requests;
+    }
+
+    public Integer getDuration(Long showTimeId) {
+        return showTimeRepository.getDurationMovieInShowTime(showTimeId);
     }
 }

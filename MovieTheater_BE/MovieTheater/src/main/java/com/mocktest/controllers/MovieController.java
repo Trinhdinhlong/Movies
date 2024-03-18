@@ -3,15 +3,12 @@ package com.mocktest.controllers;
 import com.mocktest.bean.MovieResponse;
 import com.mocktest.bean.MovieShowTimeResponse;
 import com.mocktest.bean.MovieRequest;
-import com.mocktest.entities.Movie;
-import com.mocktest.entities.Type;
 import com.mocktest.services.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -41,19 +38,6 @@ public class MovieController {
     public ResponseEntity<String> deleteMovie(@PathVariable("id") Long request) {
         movieService.deleteById(request);
         return new ResponseEntity<>(String.valueOf(request), HttpStatus.OK);
-    }
-    @PostMapping("/movies")
-    public ResponseEntity<MovieDto> createMovie(@RequestBody MovieDto request) {
-        Set<TypeMovie> typeMovies = new HashSet<>();
-        for (Long typeId : request.getTypeMovieId()) {
-            TypeMovie type = movieTypeService.getByTypeId(typeId);
-            if (type != null) {
-                typeMovies.add(type);
-            }
-        }
-        request.setTypeMovies(typeMovies);
-        MovieDto response = movieService.create(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PostMapping("/movie")
     public ResponseEntity<?> createMovie(@RequestBody MovieRequest request) {

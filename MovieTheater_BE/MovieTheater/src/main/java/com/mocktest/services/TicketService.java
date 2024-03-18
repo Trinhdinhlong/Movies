@@ -4,8 +4,6 @@ import com.mocktest.entities.*;
 import com.mocktest.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,7 @@ public class TicketService {
             ticket.setSeat(seat);
             ticket.setShowTime(showTime);
             ticket.setUser(user);
-            int durationMovie = showTimeService.getDurationMovie(bookingTicketRequest.getShowTimeId()).intValue();
+            int durationMovie = showTimeService.getDuration(bookingTicketRequest.getShowTimeId()).intValue();
             LocalTime endTime = ticket.getStartTime().plusMinutes(durationMovie);
             ticket.setEndTime(endTime);
             Ticket ticketSaved = ticketRepository.save(ticket);
@@ -85,7 +83,7 @@ public class TicketService {
         List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket();
         for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
             HistoryTicketResponse historyTicketResponse = new HistoryTicketResponse();
-            historyTicketResponse.setCreateDate(bookedTicketResponse.getBookingDate());
+            historyTicketResponse.setCreateDate(bookedTicketResponse.getStartTime());
             historyTicketResponse.setMovieNameVN(bookedTicketResponse.getMovieNameVN());
             responses.add(historyTicketResponse);
         }
