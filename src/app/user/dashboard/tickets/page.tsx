@@ -14,7 +14,9 @@ export default function Home() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   useEffect(() => {
     axios.get("http://localhost:8080/api/ticket/booked")
-    console.log()
+      .then(response => {
+        setTickets(response.data);
+      })
   }, []);
 
   return (
@@ -52,7 +54,7 @@ export default function Home() {
             </thead>
             <tbody>
               {tickets.map((ticket, index) => (
-                <tr key={ticket.movieNameVN} className="border-b-[1px] border-solid border-[#BEC8CF]">
+                <tr key={index} className="border-b-[1px] border-solid border-[#BEC8CF]">
                   <td className="py-[10px]">{index}</td>
                   <td className="py-[10px]">{ticket.movieNameVN}</td>
                   <td className="py-[10px]">{ticket.startTime}</td>

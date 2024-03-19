@@ -16,18 +16,22 @@ export default function Header({ handleOpen }: any) {
   function handleOpenPopup() {
     handleOpen();
   }
-
+  function handleShowTime() {
+    router.push("/user/dashboard/showtime")
+  }
   function handleUserProfile() {
     router.push("/user/dashboard/edit")
   }
-
+  function handleUserHome() {
+    router.push("/user/dashboard/home")
+  }
   return (
     <div className="z-[0] w-full h-full flex flex-row px-5 gap-5 justify-between">
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center cursor-pointer" onClick={handleUserHome}>
         <Image src={logo} alt="MovieTheaterLogo" />
       </div>
       <div className="h-full flex flex-row items-center justify-between gap-14">
-        <span className="block">Showtime</span>
+        <span className="block cursor-pointer" onClick={handleShowTime} >Showtime</span>
         <div className="flex flex-row">
           <button className="flex flex-row items-center justify-center gap-2 cursor-pointer" onClick={() => handleOpenPopup()}>
             <span>Movies</span>

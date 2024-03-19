@@ -10,6 +10,9 @@ export default function SidebarProfile() {
   function handleBookedTicket() {
     router.push("/user/dashboard/tickets")
   }
+  function handleProfile() {
+    router.push("/user/dashboard/edit")
+  }
 
   return (
     <div className="text-black w-[15%]">
@@ -18,7 +21,8 @@ export default function SidebarProfile() {
             <Image src={avaBlank} alt="" className="pt-4"/>
             <span className="font-[700] block">julientlam</span>
         </div>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black block cursor-pointer">
+        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black block cursor-pointer"
+           onClick={handleProfile}>
           Account information
         </span>
         <span className="px-5 py-3 border-t-[1px] border-solid border-t-black block cursor-pointer">
