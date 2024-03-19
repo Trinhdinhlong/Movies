@@ -33,6 +33,13 @@ public class MovieController {
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/type")
+    public ResponseEntity<?> getMovieType() {
+        List<Type> res = movieService.getMovieTypes();
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
     @DeleteMapping("/movies/{id}")
     public ResponseEntity<String> deleteMovie(@PathVariable("id") Long request) {
         movieService.deleteById(request);

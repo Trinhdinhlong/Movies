@@ -122,4 +122,9 @@ public class MovieService {
         BeanUtils.copyProperties(userOptional, response);
         return response;
     }
+
+    public List<Type> getMovieTypes() {
+        List<Type> types = typeRepository.findAll();
+        return types;
+    }
 }
