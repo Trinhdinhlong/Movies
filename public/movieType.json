@@ -1,0 +1,62 @@
+[
+    {
+        "id": 1,
+        "typeName": "Action",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 2,
+        "typeName": "Comedy",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 3,
+        "typeName": "Drama",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 4,
+        "typeName": "Horror",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 5,
+        "typeName": "Sci-Fi",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 6,
+        "typeName": "Thriller",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 7,
+        "typeName": "Romance",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 8,
+        "typeName": "Fantasy",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 9,
+        "typeName": "Documentary",
+        "createdDate": null,
+        "updatedTime": null
+    },
+    {
+        "id": 10,
+        "typeName": "Animation",
+        "createdDate": null,
+        "updatedTime": null
+    }
+]

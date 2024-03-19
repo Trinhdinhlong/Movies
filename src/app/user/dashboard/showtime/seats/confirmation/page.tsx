@@ -9,7 +9,7 @@ import UserConfirmation from "components/UserConfirmation";
 export default function Home(props: any) {
   const [movName, setMovName] = useState("");
   const movNameTemp = "Oppen";
-
+  //movieName, date, time, seat, price 
   return (
     <div className="bg-[#EFF0F3] w-full overflow-auto flex flex-col items-center gap-10 py-10 pb-20">
       <span className="font-bold text-[1.5rem]">CONFIRM BOOKING TICKET</span>

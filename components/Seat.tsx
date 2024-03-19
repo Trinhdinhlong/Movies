@@ -24,12 +24,11 @@ export default function Seat(props: any) {
 
   function handleOnClick() {
     if (props.available) {
-      // Prevent toggling selection if the seat is sold
       setSelecting(!selecting);
     }
+    props.handleAddSeat(props.id)
   }
 
-  // Determine the outline color
   const outlineColor = !props.available
     ? seatSold.outline
     : selecting
@@ -38,7 +37,6 @@ export default function Seat(props: any) {
     ? seatVip.outline
     : seatCanChoose.outline;
 
-  // Determine the inside color
   const insideColor = !props.available
     ? seatSold.inside
     : selecting
