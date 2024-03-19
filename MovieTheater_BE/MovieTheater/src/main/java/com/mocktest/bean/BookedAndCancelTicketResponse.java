@@ -12,13 +12,14 @@ import javax.persistence.Enumerated;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
+import org.springframework.http.HttpHeaders;
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookedAndCancelTicketResponse {
+
     private String movieNameVN;
     private double totalAmount;
     private LocalDateTime startTime;

@@ -1,5 +1,6 @@
 package com.mocktest.controllers;
 
+import com.mocktest.bean.MovieDetailResponse;
 import com.mocktest.bean.MovieResponse;
 import com.mocktest.bean.MovieShowTimeResponse;
 import com.mocktest.bean.MovieRequest;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin("*")
 @RestController
@@ -18,8 +20,17 @@ import java.util.List;
 public class MovieController {
     @Autowired
     private MovieService movieService;
-
     @GetMapping("/movies")
+    public ResponseEntity<Map<String, List<MovieDetailResponse>>> getAllMoviesByCategories() {
+        Map<String, List<MovieDetailResponse>> categorizedMovies = movieService.getAllByCategories();
+
+        if (categorizedMovies.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        System.out.println(categorizedMovies);
+        return new ResponseEntity<>(categorizedMovies, HttpStatus.OK);
+    }
+    @GetMapping("/movies/showtime")
     public ResponseEntity<?> getAllMovie(@RequestParam(required = false) String date){
         List<MovieShowTimeResponse> response;
         if (date == null) {

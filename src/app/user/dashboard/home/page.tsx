@@ -14,7 +14,6 @@ interface TypeMovie {
 
 interface Movie {
   id: number;
-  content: string;
   movieNameEnglish: string;
   movieNameVN: string;
   actor: string;
@@ -24,7 +23,7 @@ interface Movie {
   startedDate: string;
   endDate: string;
   imageURL: string;
-  typeMovies: TypeMovie[];
+  version: string;
 }
 
 export default function Home() {

@@ -14,6 +14,7 @@ export default function Home() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   useEffect(() => {
     axios.get("http://localhost:8080/api/ticket/booked")
+    console.log()
   }, []);
 
   return (

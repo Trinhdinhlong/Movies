@@ -1,5 +1,6 @@
 package com.mocktest.services;
 
+import com.mocktest.bean.MovieDetailResponse;
 import com.mocktest.bean.MovieResponse;
 import com.mocktest.bean.MovieShowTimeResponse;
 import com.mocktest.bean.MovieRequest;
@@ -105,13 +106,10 @@ public class MovieService {
         }
 
         Movie movie = new Movie();
-
         movie.setTypeMovies(typeMovies);
         BeanUtils.copyProperties(request, movie);
         movieRepository.save(movie);
-
         movie.setShowTimes(showTimeService.createShowTime(request, movie));
-
         return MovieResponse.builder()
                 .id(movie.getId())
                 .content(movie.getContent())
@@ -139,5 +137,38 @@ public class MovieService {
         Movie movie = new Movie();
         BeanUtils.copyProperties(movieOptional, movie);
         return movie;
+    }
+    public Map<String, List<MovieDetailResponse>> getAllByCategories() {
+        List<Movie> movieList = movieRepository.findAll();
+        LocalDate currentDate = LocalDate.now();
+        List<Movie> filteredMovies = movieList.stream()
+                .filter(movie -> movie.getEndDate().isAfter(currentDate) || movie.getEndDate().isEqual(currentDate))
+                .collect(Collectors.toList());
+        Map<TypeMovie, List<Movie>> categorizedMovies = filteredMovies.stream()
+                .flatMap(movie -> movie.getTypeMovies().stream().map(typeMovie -> new AbstractMap.SimpleEntry<>(typeMovie, movie)))
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+        categorizedMovies.forEach((typeMovie, movies) -> {
+            movies.sort(Comparator.comparing(Movie::getStartedDate).reversed());
+        });
+        Map<String, List<MovieDetailResponse>> categorizedResponses = new HashMap<>();
+        categorizedMovies.forEach((typeMovie, movies) -> {
+            List<MovieDetailResponse> movieResponses = movies.stream().map(movie -> {
+                MovieDetailResponse movieResponse = new MovieDetailResponse();
+                movieResponse.setId(movie.getId());
+                movieResponse.setMovieNameEnglish(movie.getMovieNameEnglish());
+                movieResponse.setMovieNameVN(movie.getMovieNameVN());
+                movieResponse.setActor(movie.getActor());
+                movieResponse.setDirector(movie.getDirector());
+                movieResponse.setDuration(movie.getDuration());
+                movieResponse.setMovieProductionCompany(movie.getMovieProductionCompany());
+                movieResponse.setStartedDate(movie.getStartedDate());
+                movieResponse.setEndDate(movie.getEndDate());
+                movieResponse.setImageURL(movie.getImageURL());
+                movieResponse.setVersion(movie.getVersion());
+                return movieResponse;
+            }).collect(Collectors.toList());
+            categorizedResponses.put(typeMovie.getTypeName(), movieResponses);
+        });
+        return categorizedResponses;
     }
 }

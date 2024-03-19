@@ -3,6 +3,7 @@ package com.mocktest.controllers;
 import com.mocktest.bean.*;
 import com.mocktest.services.TicketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,11 @@ public class TicketController {
     public ResponseEntity<TicketStatusResponse> UpdateStatusTicket(@PathVariable("id") Long id){
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @GetMapping("/ticket/booked")
+    @GetMapping("ticket/booked")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten(){
-        return new ResponseEntity<>(ticketService.getAllBookedList(), HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Access-Control-Allow-Origin", "*");
+        return ResponseEntity.ok().headers(headers).body(ticketService.getAllBookedList());
     }
     @GetMapping("/ticket/cancel")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasAbort(){
