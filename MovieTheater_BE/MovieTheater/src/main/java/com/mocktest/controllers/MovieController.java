@@ -4,6 +4,7 @@ import com.mocktest.bean.MovieDetailResponse;
 import com.mocktest.bean.MovieResponse;
 import com.mocktest.bean.MovieShowTimeResponse;
 import com.mocktest.bean.MovieRequest;
+import com.mocktest.entities.TypeMovie;
 import com.mocktest.services.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class MovieController {
 
     @GetMapping("/type")
     public ResponseEntity<?> getMovieType() {
-        List<Type> res = movieService.getMovieTypes();
+        List<TypeMovie> res = movieService.getMovieTypes();
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 

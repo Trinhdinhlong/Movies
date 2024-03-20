@@ -134,16 +134,17 @@ public class MovieService {
     }
 
 
-    public List<Type> getMovieTypes() {
-        List<Type> types = typeRepository.findAll();
+    public List<TypeMovie> getMovieTypes() {
+        List<TypeMovie> types = typeRepository.findAll();
         return types;
+    }
 
     public Movie getById(Long id) {
-        Optional<Movie> movieOptional = movieRepository.findById(id);
-        Movie movie = new Movie();
-        BeanUtils.copyProperties(movieOptional, movie);
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("No movie data!"));
         return movie;
     }
+
     public Map<String, List<MovieDetailResponse>> getAllByCategories() {
         List<Movie> movieList = movieRepository.findAll();
         LocalDate currentDate = LocalDate.now();
