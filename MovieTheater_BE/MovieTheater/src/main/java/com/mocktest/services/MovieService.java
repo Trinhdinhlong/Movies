@@ -30,7 +30,7 @@ public class MovieService {
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
-    private TypeRepository typeService;
+    private TypeRepository typeRepository;
     @Autowired
     private ShowTimeService showTimeService;
     public List<MovieShowTimeResponse> getAll() {
@@ -89,7 +89,7 @@ public class MovieService {
     public MovieResponse create(MovieRequest request){
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
-            TypeMovie type = typeService.findById(typeId)
+            TypeMovie type = typeRepository.findById(typeId)
                     .orElseThrow(() -> new NotFoundException("Not found id type!"));
             if (type != null) {
                 typeMovies.add(type);
