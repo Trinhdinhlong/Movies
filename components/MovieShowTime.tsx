@@ -13,13 +13,11 @@ export default function MovieShowTime(props: any) {
     <div className="flex flex-row py-[5px] gap-10 border-b-[1px]">
       <div className="">
         <Image src={defaultMovieAva || props.imageUrl} alt="" width={200} />
-        <Image src={defaultMovieAva || props.imageUrl} alt="" width={200} />
       </div>
       <div className="flex flex-col gap-2 w-full">
         <span className="text-[#337AB7] text-[1.5rem]">
           {props.movieVie || defaultMovieStringVie}
         </span>
-        <span>{props.movieEn || defaultMovieStringEn}</span>
         <span>{props.movieEn || defaultMovieStringEn}</span>
         <div className="flex flex-row p-[10px] gap-5">
           {props.showtime.map((el: any) => (
