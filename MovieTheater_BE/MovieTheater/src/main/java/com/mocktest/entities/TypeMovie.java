@@ -32,7 +32,6 @@ public class TypeMovie {
     @UpdateTimestamp
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
-
     @Override
     public String toString() {
         return "Type{" +

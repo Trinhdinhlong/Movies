@@ -13,9 +13,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("FROM User u WHERE u.username = :#{#dto.username}")
-    User getByUsername(@Param("dto") UserDto dto);
+    @Query("FROM User u WHERE u.username = :username")
+    User getByUsername(String username);
     @Override
     @Query ("FROM User u WHERE u.role.roleName = 'Employee'")
     List<User> findAll();
+
 }

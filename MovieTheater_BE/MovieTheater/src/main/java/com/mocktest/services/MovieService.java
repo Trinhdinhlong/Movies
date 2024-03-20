@@ -30,18 +30,9 @@ public class MovieService {
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
-    private TypeRepository typeRepository;
+    private TypeRepository typeService;
     @Autowired
     private ShowTimeService showTimeService;
-
-    public Page<Movie> getAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Movie> moviePage = movieRepository.findAll(pageable);
-        if (!moviePage.hasContent()) {
-            throw new NotFoundException("No data to display!");
-        }
-        return moviePage;
-    }
     public List<MovieShowTimeResponse> getAll() {
         List<Movie> movieList = movieRepository.findAll();
         return movieList.stream().map(data -> new MovieShowTimeResponse(data))
@@ -98,7 +89,7 @@ public class MovieService {
     public MovieResponse create(MovieRequest request){
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
-            TypeMovie type = typeRepository.findById(typeId)
+            TypeMovie type = typeService.findById(typeId)
                     .orElseThrow(() -> new NotFoundException("Not found id type!"));
             if (type != null) {
                 typeMovies.add(type);

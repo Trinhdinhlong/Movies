@@ -1,6 +1,4 @@
 package com.mocktest.until;
-import java.security.NoSuchAlgorithmException;
-
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
