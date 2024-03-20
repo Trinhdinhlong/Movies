@@ -1,7 +1,6 @@
 package com.mocktest.controllers;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Role;
-import com.mocktest.entities.User;
 import com.mocktest.services.RoleService;
 import com.mocktest.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class UserController {
     private final UserService userService;
     private final RoleService roleService;
     @PostMapping("/login")
-    public ResponseEntity<User> LoginUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.login(userDto), HttpStatus.OK);
     }
     @PostMapping("/register")
@@ -28,6 +27,10 @@ public class UserController {
         request.setRole(role);
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    @GetMapping("/employee/booking/{username}")
+    public ResponseEntity<UserDto> findUser(@PathVariable("username") String username){
+        return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
     }
     @PostMapping("/employee")
     public ResponseEntity<UserDto> saveEmployee(@RequestBody UserDto request){

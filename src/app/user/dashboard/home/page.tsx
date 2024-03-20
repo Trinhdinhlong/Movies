@@ -45,7 +45,7 @@ export default function Home() {
             <div className="mt-5 ml-5">
               <span className="font-[700] block mb-2">Hoạt Hình</span>
               <div className="flex flex-row gap-5 flex-wrap">
-                {listMovie.map((movie) => (
+                {Object.keys(() => (
                   <MovieBlock
                     key={movie.id}
                     movieName={movie.movieNameEnglish}

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
-public class UserService {
+public class UserService{
     @Autowired
     private UserRepository userRepository;
     public List<UserDto> getAll() {
@@ -51,16 +51,16 @@ public class UserService {
             throw new NotFoundException("data not found in entity User: " + request);
         }
     }
-    public User getByUserName(UserDto request) throws NotFoundException {
-        if(request.getUsername() != null){
-           return userRepository.getByUsername(request);
+    public UserDto getByUserName(String request) throws NotFoundException {
+        if(request != null){
+           return new UserDto(userRepository.getByUsername(request));
 
         }else {
             throw new NotFoundException("User not found with username: " + request);
         }
     }
-    public User login(UserDto request){
-        User user = getByUserName(request);
+    public UserDto login(UserDto request){
+        UserDto user = getByUserName(request.getUsername());
         if (user.getPassword() == null && user.getUsername() == null &&
                 !PasswordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
             throw new BadRequestException("Password is null for user: " + user.getUsername());
@@ -68,19 +68,5 @@ public class UserService {
         return user;
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            // Kiểm tra và thiết lập xác thực người dùng
-//            UserDetails userDetails = (UserDetails) getByUserName(username);
-//
-//            if (userDetails != null && validateToken(jwt, userDetails)) {
-//                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-//                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//                usernamePasswordAuthenticationToken
-//                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-//            }
-//        }
-//    }
+
 }

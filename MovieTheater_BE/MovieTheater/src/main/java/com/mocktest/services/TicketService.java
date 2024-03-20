@@ -46,9 +46,11 @@ public class TicketService {
         }
         return bookingTicketResponseList;
     }
-    public boolean UpdateStatusTicket(Long id){
+    public void UpdateStatusTicket(Long id){
         ticketRepository.UpdateStatusTicket(id, TicketStatus.Abort);
-        return true;
+    }
+    public CofirmTicketResponse getCofirmAdminByTicketId(Long id){
+        return ticketRepository.getTicketById(id);
     }
     public List<BookedAndCancelTicketResponse> getAllBookedList(){
         List<BookedAndCancelTicketResponse> responses = new ArrayList<>();

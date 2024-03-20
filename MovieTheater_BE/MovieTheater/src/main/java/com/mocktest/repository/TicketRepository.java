@@ -1,6 +1,7 @@
 package com.mocktest.repository;
 import com.mocktest.bean.BookedAndCancelTicketResponse;
 import com.mocktest.bean.BookingListResponse;
+import com.mocktest.bean.CofirmTicketResponse;
 import com.mocktest.entities.Ticket;
 import com.mocktest.entities.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,5 +39,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN s.movie m " +
             "INNER JOIN t.seat s2")
     List<BookingListResponse> getAllBookingUser();
-
+    @Query("SELECT new com.mocktest.bean.CofirmTicketResponse( t.id, r.roomName, t.startTime, s2.seatColumn, s2.seatRow, s2.price, u.username, u.fullName, u.identityCard, u.phone) \n" +
+            "FROM Ticket t \n" +
+            "INNER JOIN ShowTime s ON s.id = t.showTime.id \n" +
+            "INNER JOIN Room r ON r.id = s.room.id \n" +
+            "INNER JOIN Movie m ON m.id = s.movie.id \n" +
+            "INNER JOIN User u ON u.userId = t.user.userId \n" +
+            "INNER JOIN Seat s2 ON s2.id = t.seat.id \n" +
+            "WHERE t.id = :id")
+    CofirmTicketResponse getTicketById(Long id);
 }

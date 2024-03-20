@@ -1,5 +1,4 @@
 package com.mocktest.controllers;
-
 import com.mocktest.bean.*;
 import com.mocktest.services.TicketService;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 @RequiredArgsConstructor
 @RestController
@@ -21,7 +19,12 @@ public class TicketController {
     }
     @PutMapping("/ticket/{id}")
     public ResponseEntity<TicketStatusResponse> UpdateStatusTicket(@PathVariable("id") Long id){
+        ticketService.UpdateStatusTicket(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/ticket/admin/{id}")
+    public ResponseEntity<CofirmTicketResponse> getCofirmByAdmin(@PathVariable("id") Long id){
+        return new ResponseEntity<>(ticketService.getCofirmAdminByTicketId(id), HttpStatus.OK);
     }
     @GetMapping("ticket/booked")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten(){
