@@ -26,8 +26,18 @@ public class MovieShowTimeResponse {
     private List<ShowTime> showTimes;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Room room;
+    private Long roomId;
 
+    public MovieShowTimeResponse(Movie movie, Room room){
+        id = movie.getId();
+        movieNameEnglish = movie.getMovieNameEnglish();
+        movieNameVN = movie.getMovieNameVN();
+        imageURL = movie.getImageURL();
+        showTimes = movie.getShowTimes();
+        startDate = movie.getStartedDate();
+        endDate = movie.getEndDate();
+        roomId = room.getId();
+    }
     public MovieShowTimeResponse(Movie movie){
         id = movie.getId();
         movieNameEnglish = movie.getMovieNameEnglish();
@@ -36,6 +46,5 @@ public class MovieShowTimeResponse {
         showTimes = movie.getShowTimes();
         startDate = movie.getStartedDate();
         endDate = movie.getEndDate();
-        room = new Room(1l, "Room 1", 60, null, null, null, null);
     }
 }

@@ -42,9 +42,11 @@ public class MovieService {
     public List<MovieShowTimeResponse> getAll(String date) {
         LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         LocalTime time = ParseTime.convertToTime(dateTime);
+        LocalDate dateNow = dateTime.toLocalDate();
 
         List<Movie> movieList = movieRepository.findAll();
-        LocalDate dateNow = dateTime.toLocalDate();
+        List<ShowTime> showTimesWithRoomId = showTimeService.getAllShowTime();
+
         movieList  = movieList.stream()
                 .filter( movie -> {
                     return ((movie.getStartedDate().isBefore(dateNow)) && (movie.getEndDate().isAfter(dateNow)));
@@ -59,9 +61,20 @@ public class MovieService {
                     return data;
                 }).collect(Collectors.toList());
 
-        return movieList.stream().filter(movie -> movie.getShowTimes().size() > 0)
+        List<MovieShowTimeResponse> responses = movieList.stream().filter(movie -> movie.getShowTimes().size() > 0)
                 .map(data -> new MovieShowTimeResponse(data))
                 .collect(Collectors.toList());
+
+        showTimesWithRoomId.stream().forEach(st ->
+                {
+                    responses.stream().forEach(res -> {
+                        if (res.getId().equals(st.getMovie().getId()))
+                            res.setRoomId(st.getRoom().getId());
+                    });
+                }
+        );
+
+        return responses;
     }
     public List<MovieResponse> getAllMovieByAdmin(){
         List<Movie> movieList = movieRepository.findAll();
