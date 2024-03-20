@@ -2,7 +2,7 @@ package com.mocktest.bean;
 
 import com.fasterxml.jackson.annotation.*;
 import com.mocktest.entities.Movie;
-import com.mocktest.entities.Type;
+import com.mocktest.entities.TypeMovie;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,5 +37,20 @@ public class MovieRequest {
             BeanUtils.copyProperties(entity, this);
         }
     }
-
+    @Override
+    public String toString() {
+        return "MovieDto{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", movieNameEnglish='" + movieNameEnglish + '\'' +
+                ", movieNameVN='" + movieNameVN + '\'' +
+                ", actor='" + actor + '\'' +
+                ", director='" + director + '\'' +
+                ", duration=" + duration +
+                ", movieProductionCompany='" + movieProductionCompany + '\'' +
+                ", startedDate=" + startedDate +
+                ", endDate=" + endDate +
+                ", imageURL='" + imageURL + '\'' +
+                '}';
+    }
 }

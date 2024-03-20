@@ -1,6 +1,7 @@
 package com.mocktest.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -39,9 +41,11 @@ public class User implements Serializable {
     @Column(name = "full_name")
     private String fullName;
     @Column(name = "date_of_birth")
+    @PastOrPresent(message = "Date of birth must be in the past or present")
     private LocalDate dateOfBirth;
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Gender must not be null")
     private Gender gender;
     @Column(name = "email", unique = true)
     @NotNull(message = "The email should not be blanked!")
@@ -69,9 +73,9 @@ public class User implements Serializable {
     @JsonBackReference
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     private Role role;
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ticket> tickets;
-
     @Override
     public String toString() {
         return "User{" +

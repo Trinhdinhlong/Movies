@@ -23,10 +23,10 @@ public class UserService {
                 .map(UserDto::new)
                 .collect(Collectors.toList());
     }
-    public UserDto getById(UserDto request){
-            Optional<User> userOptional = userRepository.findById(request.getUserId());
+    public User getById(Long id){
+            Optional<User> userOptional = userRepository.findById(id);
             User requests = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
-            return new UserDto(requests);
+            return  requests;
     }
     public UserDto create(UserDto request){
         if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
@@ -39,8 +39,9 @@ public class UserService {
     }
     public UserDto updateById(UserDto request){
         Optional<User> userOptional = userRepository.findById(request.getUserId());
+        User requests = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
         UserDto response =  new UserDto();
-        BeanUtils.copyProperties(userOptional, response);
+        BeanUtils.copyProperties(requests, response);
         return response;
     }
     public void deleteById(Long request) throws NotFoundException {
@@ -50,20 +51,36 @@ public class UserService {
             throw new NotFoundException("data not found in entity User: " + request);
         }
     }
-    public UserDto getByUserName(UserDto request) throws NotFoundException {
+    public User getByUserName(UserDto request) throws NotFoundException {
         if(request.getUsername() != null){
-            User user = userRepository.getByUsername(request);
-            return new UserDto(user);
+           return userRepository.getByUsername(request);
+
         }else {
-            throw new NotFoundException("User not found with username: " + request.getUsername());
+            throw new NotFoundException("User not found with username: " + request);
         }
     }
-    public UserDto login(UserDto request){
-        UserDto user = getByUserName(request);
+    public User login(UserDto request){
+        User user = getByUserName(request);
         if (user.getPassword() == null && user.getUsername() == null &&
                 !PasswordEncoderExample.checkpw(request.getPassword(), user.getPassword())) {
             throw new BadRequestException("Password is null for user: " + user.getUsername());
         }
         return user;
     }
+
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+//            // Kiểm tra và thiết lập xác thực người dùng
+//            UserDetails userDetails = (UserDetails) getByUserName(username);
+//
+//            if (userDetails != null && validateToken(jwt, userDetails)) {
+//                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+//                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//                usernamePasswordAuthenticationToken
+//                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+//            }
+//        }
+//    }
 }

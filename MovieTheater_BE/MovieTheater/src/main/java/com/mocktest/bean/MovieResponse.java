@@ -1,10 +1,8 @@
 package com.mocktest.bean;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.ShowTime;
-import com.mocktest.entities.Type;
+import com.mocktest.entities.TypeMovie;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -30,8 +29,9 @@ public class MovieResponse {
     private String movieProductionCompany;
     private LocalDate startedDate;
     private LocalDate endDate;
+    private String version;
     private String imageURL;
-    private List<Type> typeMovies;
+    private Set<TypeMovie> typeMovies;
     private List<ShowTime> showTimes;
 
     public MovieResponse(Movie movie) {
@@ -48,5 +48,6 @@ public class MovieResponse {
         this.imageURL = movie.getImageURL();
         this.typeMovies = movie.getTypeMovies();
         this.showTimes = movie.getShowTimes();
+        this.version = movie.getVersion();
     }
 }

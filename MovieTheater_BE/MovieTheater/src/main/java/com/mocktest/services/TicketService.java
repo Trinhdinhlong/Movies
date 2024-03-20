@@ -1,87 +1,94 @@
 package com.mocktest.services;
-
-import com.mocktest.dto.TicketDto;
+import com.mocktest.bean.*;
 import com.mocktest.entities.*;
-import com.mocktest.exceptions.NotFoundException;
-import com.mocktest.repository.SeatRepository;
-import com.mocktest.repository.ShowTimeRepository;
 import com.mocktest.repository.TicketRepository;
-import com.mocktest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class TicketService {
-    private final TicketRepository ticketRepository;
-    private final ShowTimeRepository showTimeRepository;
-    private final SeatRepository seatRepository;
-    private final UserRepository userRepository;
-    public TicketService(TicketRepository ticketRepository,
-                         ShowTimeRepository showTimeRepository,
-                         SeatRepository seatRepository,
-                         UserRepository userRepository) {
-        this.ticketRepository = ticketRepository;
-        this.showTimeRepository = showTimeRepository;
-        this.seatRepository = seatRepository;
-        this.userRepository = userRepository;
-    }
-
-    public List<Ticket> getTicketsByUserId(Long id) {
-        List<Ticket> tickets = ticketRepository.getTicketsByUserId(id);
-
-        if (tickets == null) {
-            throw new NotFoundException("No data!");
-        }
-        return tickets;
-    }
-
-    public List<Ticket> createTickets(Long userId, Long showtimeId, List<Long> seatIds,
-                                      Double normalPrice, Double vipPrice) {
-        Double total = 0.0;
-        List<Ticket> tickets = null;
-
-        ShowTime showTimeFromDb = showTimeRepository.findById(showtimeId)
-                .orElseThrow(() -> new NotFoundException("No showtime found!"));
-
-        User userFromDb = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("No user found!"));
-
-        for (Long seatId : seatIds) {
+    @Autowired
+    private TicketRepository ticketRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ShowTimeService showTimeService;
+    @Autowired
+    private SeatService seatService;
+    public List<BookingTicketResponse> saveTicket(List<BookingTicketRequest> bookingTicketRequests){
+        List<BookingTicketResponse> bookingTicketResponseList = new ArrayList<>();
+        for (BookingTicketRequest bookingTicketRequest : bookingTicketRequests) {
+            User user = userService.getById(bookingTicketRequest.getUserId());
+            ShowTime showTime = showTimeService.getById(bookingTicketRequest.getShowTimeId());
+            Seat seat = seatService.getById(bookingTicketRequest.getSeatId());
             Ticket ticket = new Ticket();
-            Seat seatNormal = seatRepository.findByIdAndSeatType(seatId, String.valueOf(SeatType.NORMAL));
-            ticket.setSeat(seatNormal);
-            ticket.setShowTime(showTimeFromDb);
-//            ticket.setStartTime(showTimeFromDb.getStartTime());
-//            ticket.setEndTime(showTimeFromDb.getEndTime());
-            ticket.setUser(userFromDb);
-            ticket.setTicketType(TicketType.BOOKED);
-
-            total += normalPrice;
-
-            tickets.add(ticket);
-
-            ticketRepository.saveAll(tickets);
+            BookingTicketResponse bookingTicketResponse = new BookingTicketResponse();
+            ticket.setStartTime(showTime.getStartTime());
+            ticket.setTicketType(TicketStatus.Waiting_for_ticket);
+            ticket.setSeat(seat);
+            ticket.setShowTime(showTime);
+            ticket.setUser(user);
+            int durationMovie = showTimeService.getDuration(bookingTicketRequest.getShowTimeId()).intValue();
+            LocalTime endTime = ticket.getStartTime().plusMinutes(durationMovie);
+            ticket.setEndTime(endTime);
+            Ticket ticketSaved = ticketRepository.save(ticket);
+            bookingTicketResponse.setUsername(ticketSaved.getUser().getUsername());
+            bookingTicketResponse.setCreatedTime(ticketSaved.getCreatedDate());
+            bookingTicketResponse.setStartTime(ticketSaved.getStartTime());
+            bookingTicketResponse.setSeatColumn(ticketSaved.getSeat().getSeatColumn());
+            bookingTicketResponse.setSeatRow(ticketSaved.getSeat().getSeatRow());
+            bookingTicketResponse.setSeatType(ticketSaved.getSeat().getSeatType());
+            bookingTicketResponse.setPrice(ticketSaved.getSeat().getPrice());
+            bookingTicketResponseList.add(bookingTicketResponse);
         }
-
-        for (Long seatId : seatIds) {
-            Ticket ticket = new Ticket();
-            Seat seatVip = seatRepository.findByIdAndSeatType(seatId, String.valueOf(SeatType.VIP));
-            ticket.setSeat(seatVip);
-            ticket.setShowTime(showTimeFromDb);
-//            ticket.setStartTime(showTimeFromDb.getStartTime());
-//            ticket.setEndTime(showTimeFromDb.getEndTime());
-            ticket.setUser(userFromDb);
-            ticket.setTicketType(TicketType.BOOKED);
-
-            total += vipPrice;
-
-            tickets.add(ticket);
-
-            ticketRepository.saveAll(tickets);
+        return bookingTicketResponseList;
+    }
+    public boolean UpdateStatusTicket(Long id){
+        ticketRepository.UpdateStatusTicket(id, TicketStatus.Abort);
+        return true;
+    }
+    public List<BookedAndCancelTicketResponse> getAllBookedList(){
+        List<BookedAndCancelTicketResponse> responses = new ArrayList<>();
+        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket();
+        System.out.println(bookedTicketResponseList);
+        for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
+            TicketStatus ticketType = bookedTicketResponse.getTicketType();
+            if(ticketType == TicketStatus.Got_the_ticket || ticketType == TicketStatus.Waiting_for_ticket){
+                responses.add(bookedTicketResponse);
+            }
         }
+        return responses;
+    }
+    public List<BookedAndCancelTicketResponse> getAllCancelList(){
+        List<BookedAndCancelTicketResponse> responses = new ArrayList<>();
+        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket();
+        System.out.println(bookedTicketResponseList);
+        for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
+            TicketStatus ticketType = bookedTicketResponse.getTicketType();
+            if(ticketType == TicketStatus.Abort){
+                responses.add(bookedTicketResponse);
+            }
+        }
+        return responses;
+    }
+    public List<HistoryTicketResponse> getAllHistoryList(){
+        List<HistoryTicketResponse> responses = new ArrayList<>();
+        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket();
+        for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
+            HistoryTicketResponse historyTicketResponse = new HistoryTicketResponse();
+            historyTicketResponse.setCreateDate(bookedTicketResponse.getStartTime());
+            historyTicketResponse.setMovieNameVN(bookedTicketResponse.getMovieNameVN());
+            responses.add(historyTicketResponse);
+        }
+        return responses;
+    }
+    public List<BookingListResponse> getAllBookingUser(){
+        List<BookingListResponse> responses = ticketRepository.getAllBookingUser();
+        return responses;
 
-        return tickets;
+
     }
 }

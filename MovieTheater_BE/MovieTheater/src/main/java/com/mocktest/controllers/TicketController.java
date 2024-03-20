@@ -1,28 +1,45 @@
 package com.mocktest.controllers;
 
-import com.mocktest.dto.TicketDto;
+import com.mocktest.bean.*;
 import com.mocktest.services.TicketService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/ticket-management")
+@RequestMapping("/api")
 public class TicketController {
-    @Autowired
-    private TicketService ticketService;
-
-    @GetMapping("/ticket")
-    public ResponseEntity<?> getTicket(@RequestBody TicketDto ticketDto) {
-        Long userId = ticketDto.getUserId();
-
+    private final TicketService ticketService;
+    @PostMapping("ticket/booking")
+    public ResponseEntity<List<BookingTicketResponse>> saveAllBooking
+            (@RequestBody List<BookingTicketRequest> bookingTicketRequest){
+        return new ResponseEntity<>(ticketService.saveTicket(bookingTicketRequest), HttpStatus.OK);
+    }
+    @PutMapping("/ticket/{id}")
+    public ResponseEntity<TicketStatusResponse> UpdateStatusTicket(@PathVariable("id") Long id){
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @GetMapping("ticket/booked")
+    public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Access-Control-Allow-Origin", "*");
+        return ResponseEntity.ok().headers(headers).body(ticketService.getAllBookedList());
+    }
+    @GetMapping("/ticket/cancel")
+    public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasAbort(){
+        return new ResponseEntity<>(ticketService.getAllCancelList(), HttpStatus.OK);
+    }
+    @GetMapping("/ticket/history")
+    public ResponseEntity<List<HistoryTicketResponse>> getAllTicketHistory(){
+        return new ResponseEntity<>(ticketService.getAllHistoryList(), HttpStatus.OK);
+    }
+    @GetMapping("/ticket/booking")
+    public ResponseEntity<List<BookingListResponse>> getAllBookingByAdmin(){
+        return new ResponseEntity<>(ticketService.getAllBookingUser(), HttpStatus.OK);
 
-    @PostMapping("/ticket")
-    public ResponseEntity<?> createTicket(@RequestBody TicketDto ticketDto) {
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

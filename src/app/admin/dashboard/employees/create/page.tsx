@@ -17,26 +17,8 @@ export default function Home() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [image, setImage] = useState("");
   return (
-    <div className="bg-[#EFF0F3]">
+    <div className="bg-[#EFF0F3] h-full overflow-auto">
       <div className="flex flex-row text-black w-full">
-        <div className="z-[1] flex flex-col bg-white w-[16%] h-screen sticky left-0 top-0 overflow-x-hidden">
-          <div className="flex flex-row justify-end px-5 py-3">
-            <Image src={minimize} alt="" />
-          </div>
-          <span className="px-5 py-3">Employees</span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black">
-            Movies
-          </span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black">
-            Cinema Room
-          </span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black">
-            Booking List
-          </span>
-          <span className="px-5 py-3 border-t-[1px] border-solid border-t-black border-b-[1px] border-b-black">
-            Promotion
-          </span>
-        </div>
         <div className="flex flex-col items-center justify-center p-5 w-full overflow-auto">
           <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full">
             <div className="mb-4">

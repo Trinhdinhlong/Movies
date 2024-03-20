@@ -1,47 +1,37 @@
 package com.mocktest.controllers;
-import com.mocktest.dto.RoleDto;
 import com.mocktest.dto.UserDto;
 import com.mocktest.entities.Role;
-import com.mocktest.exceptions.BadRequestException;
-import com.mocktest.exceptions.NotFoundException;
+import com.mocktest.entities.User;
 import com.mocktest.services.RoleService;
 import com.mocktest.services.UserService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user-management")
+@RequestMapping("/api")
 public class UserController {
     private final UserService userService;
     private final RoleService roleService;
-    @GetMapping("/user")
-    public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto){
-        UserDto userDtoSaved = userService.login(userDto);
-        return new ResponseEntity<>(userDtoSaved, HttpStatus.OK);
+    @PostMapping("/login")
+    public ResponseEntity<User> LoginUser(@RequestBody UserDto userDto){
+        return new ResponseEntity<>(userService.login(userDto), HttpStatus.OK);
     }
-    @PostMapping("/user")
+    @PostMapping("/register")
     public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request){
-        RoleDto roleDto = roleService.getById(2L);
-        Role role = new Role();
-        BeanUtils.copyProperties(roleDto, role);
+        Role role = roleService.getById(2L);
         request.setRole(role);
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     @PostMapping("/employee")
     public ResponseEntity<UserDto> saveEmployee(@RequestBody UserDto request){
-        RoleDto roleDto = roleService.getById(3L);
-        Role role = new Role();
-        BeanUtils.copyProperties(roleDto, role);
+        Role role= roleService.getById(3L);
         request.setRole(role);
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

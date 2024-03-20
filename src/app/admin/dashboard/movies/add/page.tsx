@@ -13,7 +13,6 @@ export default function Home() {
   const [movProductionComp, setMovProductionComp] = useState("");
   const [director, setDirector] = useState("");
   const [duration, setDuration] = useState("");
-  const [version, setVersion] = useState("");
   const [movType, setMovType] = useState<String[]>([]);
   const [room, setRoom] = useState("");
   const [schedule, setSchedule] = useState<String[]>([]);
@@ -51,14 +50,11 @@ export default function Home() {
     }
   }
 
-
   function handleAddMovie(e: any) {
     e.preventDefault()
-    console.log(fromDate);
-    console.log(movType, schedule);
     if(checkFormFilled()) {
       console.log("true")
-      axios.post("http://localhost:8080/api/movie-management/movie", {
+      axios.post("http://localhost:8080/api/movie", {
         "content": content,
         "movieNameEnglish": movNameEn,
         "movieNameVN": movNameVie,
@@ -77,7 +73,7 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-[#EFF0F3] w-[84%] flex flex-col items-center text-black overflow-auto">
+    <div className="bg-[#EFF0F3] w-full h-full overflow-auto flex flex-col items-center text-black overflow-auto">
       <form className="w-[95%] bg-white m-10 p-10 flex flex-col gap-3" onSubmit={(e) => handleAddMovie(e)}>
         <label
           htmlFor="movie_name"
@@ -182,19 +178,6 @@ export default function Home() {
           type="text"
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setDuration(e.target.value)}
-        />
-        <label
-          htmlFor="version"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Version:
-          <span className="text-red-500">*</span>
-        </label>
-        <input
-          id="version"
-          type="text"
-          className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
-          onChange={(e) => setVersion(e.target.value)}
         />
         <label
           htmlFor="version"
@@ -452,7 +435,7 @@ export default function Home() {
         <div>
           <label
             htmlFor="file-upload"
-            className="block text-sm font-medium text-gray-700 mr-2"
+            className="block text-sm font-medium text-gray-700 mr-2 mb-3"
           >
             Image:
             <span className="text-red-500">*</span>
