@@ -28,14 +28,19 @@ interface Movie {
 }
 
 export default function Home() {
-  const [open, setOpen] = useState(false);
   const [listMovie, setListMovie] = useState<Movie[]>([]);
+  const [listMovieType, setMovieType] = useState<TypeMovie[]>([])
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:8080/api/movie-management/movie")
+  //     .then((response) => {
+  //       setListMovie(response.data);
+  //     });
+  // }, []);
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/movie-management/movie")
-      .then((response) => {
-        setListMovie(response.data);
-      });
+    fetch("/movieType.json")
+      .then((response) => response.json())
+      .then((data) => setMovieType(data));
   }, []);
   return (
     <div className="flex flex-col w-full relative h-full overflow-auto">
