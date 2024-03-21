@@ -44,16 +44,16 @@ public class UserService{
         BeanUtils.copyProperties(requests, response);
         return response;
     }
-    public void deleteById(Long request) throws NotFoundException {
+    public void deleteById(Long request) {
         if (userRepository.existsById(request)) {
             userRepository.deleteById(request);
         }else {
             throw new NotFoundException("data not found in entity User: " + request);
         }
     }
-    public UserDto getByUserName(String request) throws NotFoundException {
+    public UserDto getByUserName(String request) {
         if(request != null){
-           return new UserDto(userRepository.getByUsername(request));
+           return new UserDto(userRepository.getUserByUsername(request));
 
         }else {
             throw new NotFoundException("User not found with username: " + request);

@@ -43,6 +43,10 @@ public class ShowTimeService {
         }).collect(Collectors.toList());
     }
 
+    public List<ShowTime> getAllShowTime() {
+        return showTimeRepository.findAll();
+    }
+
     public ShowTime getById(Long showTimeId) {
         Optional<ShowTime> showTimeOptional = showTimeRepository.findById(showTimeId);
         ShowTime requests = showTimeOptional.orElseThrow(() -> new NotFoundException("User not found with id"));

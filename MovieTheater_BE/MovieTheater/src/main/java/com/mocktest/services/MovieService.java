@@ -29,7 +29,7 @@ public class MovieService {
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
-    private TypeRepository typeService;
+    private TypeRepository typeRepository;
     @Autowired
     private ShowTimeService showTimeService;
     @Autowired
@@ -78,9 +78,11 @@ public class MovieService {
     public List<MovieShowTimeResponse> getAll(String date) {
         LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         LocalTime time = ParseTime.convertToTime(dateTime);
+        LocalDate dateNow = dateTime.toLocalDate();
 
         List<Movie> movieList = movieRepository.findAll();
-        LocalDate dateNow = dateTime.toLocalDate();
+        List<ShowTime> showTimesWithRoomId = showTimeService.getAllShowTime();
+
         movieList  = movieList.stream()
                 .filter( movie -> {
                     return ((movie.getStartedDate().isBefore(dateNow)) && (movie.getEndDate().isAfter(dateNow)));
@@ -95,9 +97,20 @@ public class MovieService {
                     return data;
                 }).collect(Collectors.toList());
 
-        return movieList.stream().filter(movie -> movie.getShowTimes().size() > 0)
+        List<MovieShowTimeResponse> responses = movieList.stream().filter(movie -> movie.getShowTimes().size() > 0)
                 .map(data -> new MovieShowTimeResponse(data))
                 .collect(Collectors.toList());
+
+        showTimesWithRoomId.stream().forEach(st ->
+                {
+                    responses.stream().forEach(res -> {
+                        if (res.getId().equals(st.getMovie().getId()))
+                            res.setRoomId(st.getRoom().getId());
+                    });
+                }
+        );
+
+        return responses;
     }
     public List<MovieResponse> getAllMovieByAdmin(){
         List<Movie> movieList = movieRepository.findAll();
@@ -132,7 +145,7 @@ public class MovieService {
     public MovieResponse create(MovieRequest request){
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
-            TypeMovie type = typeService.findById(typeId)
+            TypeMovie type = typeRepository.findById(typeId)
                     .orElseThrow(() -> new NotFoundException("Not found id type!"));
             if (type != null) {
                 typeMovies.add(type);
@@ -166,10 +179,16 @@ public class MovieService {
         BeanUtils.copyProperties(userOptional, response);
         return response;
     }
+
+
+    public List<TypeMovie> getMovieTypes() {
+        List<TypeMovie> types = typeRepository.findAll();
+        return types;
+    }
+
     public Movie getById(Long id) {
-        Optional<Movie> movieOptional = movieRepository.findById(id);
-        Movie movie = new Movie();
-        BeanUtils.copyProperties(movieOptional, movie);
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("No movie data!"));
         return movie;
     }
     public List<MovieWithCategoryResponse> getAllByCategories() {

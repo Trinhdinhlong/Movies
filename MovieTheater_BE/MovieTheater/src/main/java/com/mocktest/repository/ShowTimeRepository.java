@@ -1,10 +1,10 @@
 package com.mocktest.repository;
 
+import com.mocktest.entities.Room;
 import com.mocktest.entities.ShowTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.time.LocalTime;
 import java.util.List;
 
@@ -15,4 +15,6 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
             "INNER JOIN s.movie m \n" +
             "WHERE m.id = :id\n")
     int getDurationMovieInShowTime(Long id);
+
+    List<ShowTime> findByRoomId(Long id);
 }

@@ -28,7 +28,8 @@ public class ImageController {
             return imageFileName;
         }
     @GetMapping("/images/{imageName}")
-    public ResponseEntity<ByteArrayResource> getImage(@PathVariable("imageName") String imageName) throws IOException{
+    public ResponseEntity<ByteArrayResource> getImage(@PathVariable("imageName") String imageName)
+            throws IOException{
         ByteArrayResource byteArrayResource = getImageByName(imageName);
         return ResponseEntity.ok()
                 .contentLength(byteArrayResource.contentLength())
