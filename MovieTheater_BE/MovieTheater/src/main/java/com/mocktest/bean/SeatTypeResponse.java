@@ -16,6 +16,8 @@ import javax.persistence.Enumerated;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SeatTypeResponse {
     private Long id;
+    private String seatColumn;
+    private int seatRow;
     @Enumerated(EnumType.STRING)
     private SeatType seatType;
 }

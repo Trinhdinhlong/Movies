@@ -4,16 +4,13 @@ import com.mocktest.bean.MovieRequest;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.Room;
 import com.mocktest.entities.ShowTime;
-import com.mocktest.entities.User;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import com.mocktest.repository.RoomRepository;
 import com.mocktest.repository.ShowTimeRepository;
-import com.mocktest.until.ParseTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;

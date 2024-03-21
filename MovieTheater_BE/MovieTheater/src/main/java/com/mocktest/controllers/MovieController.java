@@ -1,9 +1,7 @@
 package com.mocktest.controllers;
 
-import com.mocktest.bean.MovieDetailResponse;
-import com.mocktest.bean.MovieResponse;
-import com.mocktest.bean.MovieShowTimeResponse;
-import com.mocktest.bean.MovieRequest;
+import com.mocktest.bean.*;
+import com.mocktest.entities.Movie;
 import com.mocktest.services.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +19,8 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
     @GetMapping("/movies")
-    public ResponseEntity<Map<String, List<MovieDetailResponse>>> getAllMoviesByCategories() {
-        Map<String, List<MovieDetailResponse>> categorizedMovies = movieService.getAllByCategories();
-
-        if (categorizedMovies.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        System.out.println(categorizedMovies);
-        return new ResponseEntity<>(categorizedMovies, HttpStatus.OK);
+    public ResponseEntity<List<MovieWithCategoryResponse>> getAllMoviesByCategories() {
+        return new ResponseEntity<>(movieService.getAllByCategories(), HttpStatus.OK);
     }
     @GetMapping("/movies/showtime")
     public ResponseEntity<?> getAllMovie(@RequestParam(required = false) String date){
@@ -57,9 +49,8 @@ public class MovieController {
     }
 
     @PutMapping("/movie")
-    public ResponseEntity<MovieRequest> updateMovie(@RequestBody MovieRequest request){
-        MovieRequest response = movieService.updateById(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<Movie> updateMovie(@RequestBody MovieDetailRequest request){
+        return new ResponseEntity<>(movieService.UpdateMovie(request), HttpStatus.OK);
     }
 
 }

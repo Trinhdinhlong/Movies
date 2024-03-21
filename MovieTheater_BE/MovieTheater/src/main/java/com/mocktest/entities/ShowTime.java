@@ -24,10 +24,10 @@ public class ShowTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "showtime_id")
     private Long id;
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name = "start_time")
     private LocalTime startTime;
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name = "end_time")
     private LocalTime endTime;
 

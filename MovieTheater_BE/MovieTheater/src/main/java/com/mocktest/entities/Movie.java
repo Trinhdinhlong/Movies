@@ -75,11 +75,9 @@ public class Movie {
             name = "movie_type",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
-    @JsonIgnoreProperties({"hibernateLazyInitializer"})
     private Set<TypeMovie> typeMovies = new HashSet<>();
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<ShowTime> showTimes;
     @AssertTrue(message = "End date must be after start date")
     private boolean isValidEndDate() {

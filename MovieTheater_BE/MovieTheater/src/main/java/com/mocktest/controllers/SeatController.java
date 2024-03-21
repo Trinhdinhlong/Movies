@@ -1,5 +1,6 @@
 package com.mocktest.controllers;
 
+import com.mocktest.bean.SeatDetailResponse;
 import com.mocktest.bean.SeatTypeResponse;
 import com.mocktest.services.SeatService;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,9 @@ public class SeatController {
     @PutMapping("/seats")
     public ResponseEntity<List<SeatTypeResponse>> updateStatusSeat(@RequestBody List<Long> request){
         return new ResponseEntity<>( seatService.updateTypeSeatById(request), HttpStatus.OK);
+    }
+    @GetMapping("room/{id}/seats")
+    public ResponseEntity<List<SeatTypeResponse>> getAllSeatByRoom(@PathVariable("id") Long id){
+        return new ResponseEntity<>(seatService.getAllSeatByRoom(id), HttpStatus.OK);
     }
 }

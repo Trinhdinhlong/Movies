@@ -39,6 +39,10 @@ public class UserController {
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+    @GetMapping("/user/{username}")
+    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username){
+        return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
+    }
     @GetMapping("/employee")
     public ResponseEntity<List<UserDto>> listEmployee(){
         List<UserDto> response = userService.getAll();

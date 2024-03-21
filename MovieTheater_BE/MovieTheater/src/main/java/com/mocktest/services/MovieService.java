@@ -1,14 +1,13 @@
 package com.mocktest.services;
 
-import com.mocktest.bean.MovieDetailResponse;
-import com.mocktest.bean.MovieResponse;
-import com.mocktest.bean.MovieShowTimeResponse;
-import com.mocktest.bean.MovieRequest;
+import com.mocktest.bean.*;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.ShowTime;
 import com.mocktest.entities.TypeMovie;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
+import com.mocktest.repository.RoomRepository;
+import com.mocktest.repository.ShowTimeRepository;
 import com.mocktest.repository.TypeRepository;
 import com.mocktest.until.ParseTime;
 import org.springframework.beans.BeanUtils;
@@ -33,12 +32,49 @@ public class MovieService {
     private TypeRepository typeService;
     @Autowired
     private ShowTimeService showTimeService;
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private ShowTimeRepository showTimeRepository;
     public List<MovieShowTimeResponse> getAll() {
         List<Movie> movieList = movieRepository.findAll();
         return movieList.stream().map(data -> new MovieShowTimeResponse(data))
                 .collect(Collectors.toList());
     }
-
+    public Movie UpdateMovie(MovieDetailRequest request){
+        Movie movie = movieRepository.getById(request.getId());
+        Set<TypeMovie> typeMovies = new HashSet<>();
+        for (Long typeId : request.getTypeMovieId()) {
+            TypeMovie type = typeService.findById(typeId)
+                    .orElseThrow(() -> new NotFoundException("Not found id type!"));
+            if (type != null) {
+                typeMovies.add(type);
+            }
+        }
+        movie.setMovieNameVN(request.getMovieNameVN());
+        movie.setMovieNameEnglish(request.getMovieNameEnglish());
+        movie.setContent(request.getContent());
+        movie.setActor(request.getActor());
+        movie.setDirector(request.getDirector());
+        movie.setDuration(request.getDuration());
+        movie.setMovieProductionCompany(request.getMovieProductionCompany());
+        movie.setStartedDate(request.getStartedDate());
+        movie.setEndDate(request.getEndDate());
+        movie.setImageURL(request.getImageURL());
+        movie.setTypeMovies(typeMovies);
+        for (Long id : request.getShowTimeId()){
+            ShowTime showTime = showTimeService.getById(id);
+            if(showTime == null){
+                break;
+            }
+            if(showTime.getRoom().getId() == request.getRoomId()){
+                break;
+            }
+            showTime.setRoom(roomRepository.getById(request.getRoomId()));
+            showTimeRepository.save(showTime);
+        }
+        return movieRepository.save(movie);
+    }
     public List<MovieShowTimeResponse> getAll(String date) {
         LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         LocalTime time = ParseTime.convertToTime(dateTime);
@@ -65,16 +101,23 @@ public class MovieService {
     }
     public List<MovieResponse> getAllMovieByAdmin(){
         List<Movie> movieList = movieRepository.findAll();
+        System.out.println(movieList);
         List<MovieResponse> movieResponses = new ArrayList<>();
         for(Movie movie : movieList){
             MovieResponse movieResponse = new MovieResponse();
             movieResponse.setId(movie.getId());
+            movieResponse.setContent(movieResponse.getContent());
             movieResponse.setMovieNameEnglish(movie.getMovieNameEnglish());
             movieResponse.setMovieNameVN(movie.getMovieNameVN());
+            movieResponse.setActor(movie.getActor());
+            movieResponse.setDirector(movieResponse.getDirector());
             movieResponse.setStartedDate(movie.getStartedDate());
             movieResponse.setMovieProductionCompany(movie.getMovieProductionCompany());
             movieResponse.setDuration(movie.getDuration());
             movieResponse.setVersion(movie.getVersion());
+            movieResponse.setTypeMovies(movie.getTypeMovies());
+            movieResponse.setShowTimes(movie.getShowTimes());
+            movieResponse.setImageURL(movie.getImageURL());
             movieResponses.add(movieResponse);
         }
         return movieResponses;
@@ -129,7 +172,7 @@ public class MovieService {
         BeanUtils.copyProperties(movieOptional, movie);
         return movie;
     }
-    public Map<String, List<MovieDetailResponse>> getAllByCategories() {
+    public List<MovieWithCategoryResponse> getAllByCategories() {
         List<Movie> movieList = movieRepository.findAll();
         LocalDate currentDate = LocalDate.now();
         List<Movie> filteredMovies = movieList.stream()
@@ -160,6 +203,10 @@ public class MovieService {
             }).collect(Collectors.toList());
             categorizedResponses.put(typeMovie.getTypeName(), movieResponses);
         });
-        return categorizedResponses;
+       return categorizedResponses.entrySet().stream().map(entry ->
+                        MovieWithCategoryResponse.builder()
+                                .categoryName(entry.getKey())
+                                .movies(entry.getValue())
+                                .build()).collect(Collectors.toList());
     }
 }
