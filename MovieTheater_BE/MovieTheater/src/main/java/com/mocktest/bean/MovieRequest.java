@@ -29,6 +29,7 @@ public class MovieRequest {
     private LocalDate startedDate;
     private LocalDate endDate;
     private String imageURL;
+    private String version;
     private List<Long> typeMovieId;
     private List<LocalTime> startTime;
     private Long roomId;

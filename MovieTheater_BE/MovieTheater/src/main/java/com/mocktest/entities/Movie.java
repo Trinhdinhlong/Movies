@@ -32,11 +32,9 @@ public class Movie {
     private String content;
     @Column(name = "movie_name_english")
     @NotNull(message = "The movie name english is not blank!")
-    @Pattern(regexp = "^[^\\p{L}\\d]*$", message = "Movie name English must not contain characters")
     private String movieNameEnglish;
     @Column(name = "movie_name_vn")
     @NotNull(message = "The movie name vn is not blank!")
-    @Pattern(regexp = "^[^\\p{L}\\d]*$", message = "Movie name VN must not contain characters")
     private String movieNameVN;
     @Column(name = "actor")
     @NotNull(message = "The actor is not blank!")
@@ -68,7 +66,6 @@ public class Movie {
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
     @Column(name = "version")
-    @Pattern(regexp = "^(2D|3D)$", message = "Version must be either '2D' or '3D'")
     private String version;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

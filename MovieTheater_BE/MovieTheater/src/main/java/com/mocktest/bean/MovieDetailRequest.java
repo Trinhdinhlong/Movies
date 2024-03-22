@@ -29,4 +29,5 @@ public class MovieDetailRequest {
     private List<Long> typeMovieId;
     private List<Long> showTimeId;
     private Long roomId;
+    private String version;
 }

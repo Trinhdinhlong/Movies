@@ -47,14 +47,15 @@ public class TicketService {
         return bookingTicketResponseList;
     }
     public void UpdateStatusTicket(Long id){
-        ticketRepository.UpdateStatusTicket(id, TicketStatus.Abort);
+        ticketRepository.UpdateStatusTicket(id, TicketStatus.Got_the_ticket);
     }
     public CofirmTicketResponse getCofirmAdminByTicketId(Long id){
+        System.out.println(ticketRepository.getTicketById(id));
         return ticketRepository.getTicketById(id);
     }
-    public List<BookedAndCancelTicketResponse> getAllBookedList(){
+    public List<BookedAndCancelTicketResponse> getAllBookedList(Long userId){
         List<BookedAndCancelTicketResponse> responses = new ArrayList<>();
-        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket();
+        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket(userId);
         System.out.println(bookedTicketResponseList);
         for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
             TicketStatus ticketType = bookedTicketResponse.getTicketType();
@@ -64,9 +65,9 @@ public class TicketService {
         }
         return responses;
     }
-    public List<BookedAndCancelTicketResponse> getAllCancelList(){
+    public List<BookedAndCancelTicketResponse> getAllCancelList(Long userId){
         List<BookedAndCancelTicketResponse> responses = new ArrayList<>();
-        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket();
+        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket(userId);
         System.out.println(bookedTicketResponseList);
         for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
             TicketStatus ticketType = bookedTicketResponse.getTicketType();
@@ -76,12 +77,12 @@ public class TicketService {
         }
         return responses;
     }
-    public List<HistoryTicketResponse> getAllHistoryList(){
+    public List<HistoryTicketResponse> getAllHistoryList(Long userId){
         List<HistoryTicketResponse> responses = new ArrayList<>();
-        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket();
+        List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket(userId);
         for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
             HistoryTicketResponse historyTicketResponse = new HistoryTicketResponse();
-            historyTicketResponse.setCreateDate(bookedTicketResponse.getStartTime());
+            historyTicketResponse.setCreateDate(bookedTicketResponse.getStartDate());
             historyTicketResponse.setMovieNameVN(bookedTicketResponse.getMovieNameVN());
             responses.add(historyTicketResponse);
         }

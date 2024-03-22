@@ -45,7 +45,7 @@ public class MovieService {
         Movie movie = movieRepository.getById(request.getId());
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
-            TypeMovie type = typeService.findById(typeId)
+            TypeMovie type = typeRepository.findById(typeId)
                     .orElseThrow(() -> new NotFoundException("Not found id type!"));
             if (type != null) {
                 typeMovies.add(type);
@@ -60,18 +60,21 @@ public class MovieService {
         movie.setMovieProductionCompany(request.getMovieProductionCompany());
         movie.setStartedDate(request.getStartedDate());
         movie.setEndDate(request.getEndDate());
+        movie.setVersion(request.getVersion());
         movie.setImageURL(request.getImageURL());
         movie.setTypeMovies(typeMovies);
-        for (Long id : request.getShowTimeId()){
-            ShowTime showTime = showTimeService.getById(id);
-            if(showTime == null){
-                break;
+        if(request.getRoomId() != null) {
+            for (Long id : request.getShowTimeId()) {
+                ShowTime showTime = showTimeService.getById(id);
+                if (showTime == null) {
+                    break;
+                }
+                if (showTime.getRoom().getId() == request.getRoomId()) {
+                    break;
+                }
+                showTime.setRoom(roomRepository.getById(request.getRoomId()));
+                showTimeRepository.save(showTime);
             }
-            if(showTime.getRoom().getId() == request.getRoomId()){
-                break;
-            }
-            showTime.setRoom(roomRepository.getById(request.getRoomId()));
-            showTimeRepository.save(showTime);
         }
         return movieRepository.save(movie);
     }
@@ -169,6 +172,7 @@ public class MovieService {
                 .startedDate(movie.getStartedDate())
                 .endDate(movie.getEndDate())
                 .imageURL(movie.getImageURL())
+                .version(movie.getVersion())
                 .typeMovies(movie.getTypeMovies())
                 .showTimes(movie.getShowTimes())
                 .build();
@@ -192,7 +196,7 @@ public class MovieService {
         return movie;
     }
     public List<MovieWithCategoryResponse> getAllByCategories() {
-        List<Movie> movieList = movieRepository.findAll();
+        List<Movie> movieList = movieRepository.findAll(LocalDate.now());
         LocalDate currentDate = LocalDate.now();
         List<Movie> filteredMovies = movieList.stream()
                 .filter(movie -> movie.getEndDate().isAfter(currentDate) || movie.getEndDate().isEqual(currentDate))

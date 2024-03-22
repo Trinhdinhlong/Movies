@@ -1,9 +1,7 @@
 package com.mocktest.controllers;
 
-import com.mocktest.bean.MovieDetailResponse;
-import com.mocktest.bean.MovieResponse;
-import com.mocktest.bean.MovieShowTimeResponse;
-import com.mocktest.bean.MovieRequest;
+import com.mocktest.bean.*;
+import com.mocktest.entities.Movie;
 import com.mocktest.entities.TypeMovie;
 import com.mocktest.services.MovieService;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +46,11 @@ public class MovieController {
     public ResponseEntity<List<MovieResponse>> getAllMovieByAdmin(){
         List<MovieResponse> movieResponses = movieService.getAllMovieByAdmin();
         return new ResponseEntity<>(movieResponses, HttpStatus.OK);
+    }
+    @GetMapping("/movies/admin/{movieId}")
+    public ResponseEntity<Movie> getAllMovieByAdminAndMovieId(@PathVariable("movieId") Long movieId){
+        Movie responses = movieService.getById(movieId);
+        return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
     @DeleteMapping("/movies/{id}")

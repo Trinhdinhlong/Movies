@@ -18,8 +18,8 @@ public class UserController {
     private final UserService userService;
     private final RoleService roleService;
     @PostMapping("/login")
-    public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.login(userDto), HttpStatus.OK);
+    public ResponseEntity<String> LoginUser(@RequestBody UserDto userDto){
+        return new ResponseEntity<>(userService.login(userDto).getUsername(), HttpStatus.OK);
     }
     @PostMapping("/register")
     public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request){

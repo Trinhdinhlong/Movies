@@ -40,8 +40,18 @@ public class UserService{
     public UserDto updateById(UserDto request){
         Optional<User> userOptional = userRepository.findById(request.getUserId());
         User requests = userOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
+        requests.setPassword(PasswordEncoderExample.encode(request.getPassword()));
+        requests.setFullName(request.getFullName());
+        requests.setDateOfBirth(request.getDateOfBirth());
+        requests.setGender(request.getGender());
+        requests.setEmail(request.getEmail());
+        requests.setAddress(request.getAddress());
+        requests.setPhone(request.getPhone());
+        requests.setIdentityCard(request.getIdentityCard());
+        requests.setImageURL(request.getImageURL());
+        User user = userRepository.save(requests);
         UserDto response =  new UserDto();
-        BeanUtils.copyProperties(requests, response);
+        BeanUtils.copyProperties(requests, user);
         return response;
     }
     public void deleteById(Long request) {

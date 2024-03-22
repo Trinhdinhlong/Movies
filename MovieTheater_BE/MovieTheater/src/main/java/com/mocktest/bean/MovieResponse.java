@@ -1,6 +1,7 @@
 package com.mocktest.bean;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mocktest.entities.Movie;
+import com.mocktest.entities.Room;
 import com.mocktest.entities.ShowTime;
 import com.mocktest.entities.TypeMovie;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class MovieResponse {
     private String imageURL;
     private Set<TypeMovie> typeMovies;
     private List<ShowTime> showTimes;
+    private Room room;
 
     public MovieResponse(Movie movie) {
         this.id = movie.getId();
