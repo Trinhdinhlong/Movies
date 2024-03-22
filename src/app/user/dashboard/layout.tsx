@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "components/Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RegisterLayout({
   children,

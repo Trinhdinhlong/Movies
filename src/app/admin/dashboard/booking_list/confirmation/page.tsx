@@ -7,6 +7,7 @@ import MovieConfirmation from "components/TableMovieConfirm";
 import UserConfirmation from "components/UserConfirmation";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import MovieConfirmationSingleTicket from "components/MovieConfirmationSingleTicket";
 
 interface Params {
   slug: string;
@@ -22,11 +23,20 @@ interface SearchParams {
   [key: string]: string;
 }
 
-interface SeatObj {
-  id: number;
-  price: number;
+interface TicketInfo {
+  ticketId: number;
+  movieNameVN: string;
+  movieNameEN: string;
+  room_name: string;
+  startDate: string;
+  start_time: string;
   seatColumn: string;
   seatRow: number;
+  price: number;
+  username: string;
+  fullName: string;
+  identityCard: string;
+  phone: string;
 }
 
 export default function Home({
@@ -36,50 +46,39 @@ export default function Home({
   params: Params;
   searchParams: SearchParams;
 }) {
+    const [ticketInfo, setTicketInfo] = useState<TicketInfo>();
+    const type = searchParams.type;
+    const ticketId = searchParams.ticketId;
+    const [claimed, setClaimed] = useState(false)
   const router = useRouter();
-  const seatsObj = JSON.parse(searchParams.seats);
-  const seatObjArray: SeatObj[] = seatsObj as SeatObj[];
-  const roomId = searchParams.roomId;
-  const showTime = searchParams.showTime;
-  const date = searchParams.date;
-  const movieName = searchParams.movieName;
-  const showTimeId = searchParams.showTimeId;
-  const arrayData: { seatId: number; showTimeId: string; userId: number }[] =
-    [];
-  seatObjArray.map((el) =>
-    arrayData.push({
-      seatId: el.id,
-      showTimeId: showTimeId,
-      userId: 1,
-    })
-  );
-  const [roomName, setRoomName] = useState<Room>();
-  //movieName, date, time, seat, price
+
 
   useEffect(() => {
     axios
-      .get(`https://9817-14-232-224-226.ngrok-free.app/api/room/${roomId}`, {
+      .get(`https://9817-14-232-224-226.ngrok-free.app/api/ticket/admin/${ticketId}`, {
         headers: {
           "ngrok-skip-browser-warning": "skip-browser-warning",
         },
       })
       .then((response) => {
-        setRoomName(response.data);
+        setTicketInfo(response.data);
       });
   }, []);
 
-  async function handleConfirmBooking() {
-    await axios.post(
-      "https://9817-14-232-224-226.ngrok-free.app/api/ticket/booking",
-      arrayData,
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      }
-    ).then(response => console.log(response.data));
-    router.push("/user/dashboard/home")
-  }
+    async function handleConfirmBooking() {
+      await axios.put(
+        `https://9817-14-232-224-226.ngrok-free.app/api/ticket/${ticketId}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        }
+      ).then(response => setClaimed(true));
+    }
+
+    function handleBack() {
+      router.push("/admin/dashboard/booking_list")
+    }
 
   return (
     <div className="bg-[#EFF0F3] w-full overflow-auto flex flex-col items-center gap-10 py-10 pb-20">
@@ -92,14 +91,15 @@ export default function Home({
             </div>
             <div className="grow flex flex-col gap-5">
               <span className="text-[1.3rem] text-[#337AB7] font-[400] block">
-                {movieName.toUpperCase()}
+                {ticketInfo?.movieNameEN.toUpperCase()}
               </span>
-              <MovieConfirmation
-                seatsObj={seatObjArray}
-                roomName={roomName?.nameRoom}
-                showTime={showTime}
-                date={date}
-                showTimeId={showTimeId}
+              <MovieConfirmationSingleTicket
+                roomName={ticketInfo?.room_name}
+                showTime={ticketInfo?.start_time}
+                date={ticketInfo?.startDate}
+                colName={ticketInfo?.seatColumn || ""}
+                rowName={ticketInfo?.seatRow || 0}
+                price={ticketInfo?.price}
               />
               <span className="text-[1.3rem] text-[#337AB7] font-[400] block">
                 Check your booking ticket confirmation
@@ -108,9 +108,11 @@ export default function Home({
             </div>
           </div>
         </div>
-        <button className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px] self-end mt-2"
-        onClick={handleConfirmBooking}>
-          Confirm booking ticket
+        <button
+          className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px] self-end mt-2"
+          onClick={type.includes('Waiting') && !claimed ? handleConfirmBooking : handleBack}
+        >
+          {type.includes('Waiting') && !claimed ? "Confirm the ticket" : "Back"}
         </button>
       </div>
     </div>

@@ -8,7 +8,7 @@ export default function EditLayout({
   return (
     <div className="flex flex-1 flex-row">
       <SidebarProfile />
-      <div className="w-[80%] h-full">{children}</div>
+      <div className="w-[85%] h-full">{children}</div>
     </div>
   );
 }

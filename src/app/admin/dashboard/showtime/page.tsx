@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import MovieShowTime from "components/MovieShowTime";
+import MovieShowTimeAdmin from "components/MovieShowTimeAdmin";
 import { useEffect, useState } from "react";
 
 interface Showtime {
@@ -58,7 +59,7 @@ export default function Home() {
         </span>
         <div className="flex flex-col bg-white gap-2 w-full py-10 px-10">
           {listMovies.map((movie) => (
-            <MovieShowTime
+            <MovieShowTimeAdmin
               key={movie.id}
               movieEn={movie.movieNameEnglish}
               movieVie={movie.movieNameVN}
@@ -73,4 +74,3 @@ export default function Home() {
     </div>
   );
 }
-

@@ -1,36 +1,56 @@
-"use client"
+"use client";
 
 import avaBlank from "@/public/avaBlank.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function SidebarProfile() {
-  const router = useRouter()
+  const router = useRouter();
 
-  function handleBookedTicket() {
-    router.push("/user/dashboard/tickets")
+  function handleTicketBooked() {
+    router.push(`/user/dashboard/tickets/booked`);
+  }
+  function handleTicketCancel() {
+    router.push(`/user/dashboard/tickets/canceled`);
+  }
+
+  function handleHistory() {
+    router.push("/user/dashboard/tickets/history")
+  }
+
+  function handleUserInformation() {
+    router.push("/user/dashboard/edit")
   }
 
   return (
-    <div className="text-black w-[15%]">
-      <div className="flex flex-col h-screen bg-white left-0 top-0 overflow-x-hidden">
-        <div id="test" className="flex flex-col items-center gap-5 py-[10px]">
-            <Image src={avaBlank} alt="" className="pt-4"/>
-            <span className="font-[700] block">julientlam</span>
+    <div className="w-1/6 min-w-max bg-white p-4">
+      <div className="flex flex-col items-center">
+        <div className="w-24 h-24 mb-3">
+          <Image src={avaBlank} alt=""/>
         </div>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black block cursor-pointer">
-          Account information
-        </span>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black block cursor-pointer">
-          History
-        </span>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black block cursor-pointer"
-        onClick={handleBookedTicket}>
-          Booked ticket
-        </span>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black border-b-[1px] border-b-black block cursor-pointer">
-          Canceled ticket
-        </span>
+        <h2 className="text-center text-xl mb-5">julientlam</h2>
+        <div className="flex items-center mb-6">
+          <span className="text-yellow-400 mr-2">⭐</span>
+          <span>Score: 36.500</span>
+        </div>
+        <div className="w-full">
+          <span className="block py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out cursor-pointer"
+          onClick={handleUserInformation}>
+            Account Information
+          </span>
+          <span className="block py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out cursor-pointer"
+          onClick={handleHistory}>
+            History
+          </span>
+          <span className="block py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out cursor-pointer"
+          onClick={() => handleTicketBooked()}>
+            Booked ticket
+          </span>
+          <span className="block py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out cursor-pointer"
+          onClick={() => handleTicketCancel()}>
+            Canceled ticket
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -17,19 +17,19 @@ interface SeatDetail {
   available: boolean;
 }
 
+interface SeatChosen {
+  id: number;
+  seatColumn: string;
+  seatRow: number;
+  price: number;
+}
+
 interface Params {
   slug: string;
 }
 
 interface SearchParams {
   [key: string]: string;
-}
-
-interface SeatChosen {
-  id: number;
-  seatColumn: string;
-  seatRow: number;
-  price: number;
 }
 
 export default function Home({
@@ -39,7 +39,7 @@ export default function Home({
   params: Params;
   searchParams: SearchParams;
 }) {
-  const router = useRouter()
+  const router = useRouter();
   const movieId = searchParams.movieId;
   const movieName = searchParams.movieName;
   const showTimeId = searchParams.showTimeId;
@@ -47,12 +47,15 @@ export default function Home({
   const date = searchParams.date;
   const roomId = searchParams.movieId;
   const [listSeat, setListSeat] = useState<SeatDetail[]>([]);
-  const [selectedSeat, setSelectedSeat] = useState<SeatChosen[]>([]);
+  const [selectedSeat, setSelectedSeat] = useState<SeatChosen[]>([
+    { id: 1, price: 500, seatColumn: "A", seatRow: 10 },
+  ]);
 
   useEffect(() => {
     axios
       .get(
-        `https://9817-14-232-224-226.ngrok-free.app/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`, {
+        `https://9817-14-232-224-226.ngrok-free.app/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`,
+        {
           headers: {
             "ngrok-skip-browser-warning": "skip-browser-warning",
           },
@@ -61,7 +64,7 @@ export default function Home({
       .then((response) => {
         setListSeat(response.data);
       });
-  }, [movieId, roomId, showTimeId]);
+  }, [movieId, showTimeId]);
 
   const listSeatLeft = listSeat.filter(
     (seat) =>
@@ -76,12 +79,8 @@ export default function Home({
       seat.seatColumn !== "C"
   );
 
-  function doesInclude(target: SeatChosen) {
-    return selectedSeat.filter(el => el.id === target.id).length > 0
-  }
-
   function handleAddSeat(target: SeatChosen) {
-    if (doesInclude(target)) {
+    if (selectedSeat.includes(target)) {
       setSelectedSeat((seat) => seat.filter((el) => el.id !== target.id));
     } else {
       setSelectedSeat((seat) => [...seat, target]);
@@ -89,20 +88,18 @@ export default function Home({
   }
 
   function redirectConfirmation() {
-    const resultJson = JSON.stringify(selectedSeat)
-    const result = encodeURIComponent(resultJson)
-    const url = `http://localhost:3000/user/dashboard/showtime/seats/confirmation?seats=${result}&roomId=${roomId}&showTime=${showTime}&date=${date}&movieName=${movieName}&showTimeId=${showTimeId}`;
-    router.push(url)
+    const resultJson = JSON.stringify(selectedSeat);
+    const result = encodeURIComponent(resultJson);
+    const url = `http://localhost:3000/admin/dashboard/showtime/seats/confirmation?seats=${result}&roomId=${roomId}&showTime=${showTime}&date=${date}&movieName=${movieName}&showTimeId=${showTimeId}`;
+    router.push(url);
   }
 
-  console.log(selectedSeat);
-
   return (
-    <div className="w-full bg-[#EFF0F3] text-black flex flex-col items-center overflow-auto">
+    <div className="w-full bg-[#EFF0F3] text-black flex flex-col h-full items-center overflow-auto">
       <div className="flex flex-col items-center w-[70%] gap-2 mb-10">
         <div className="bg-white rounded-[5px] w-full flex flex-col gap-20 py-10 mt-20 justify-center">
           <div className="flex flex-row justify-center gap-20">
-            <div className="w-[15%] shrink-0 flex flex-row flex-wrap gap-5 items-start">
+            <div className="w-[20%] shrink-0 flex flex-row flex-wrap gap-5 items-start">
               {listSeatLeft.map((seat) => (
                 <Seat
                   key={seat.id}
@@ -116,7 +113,7 @@ export default function Home({
                 />
               ))}
             </div>
-            <div className="w-[15%] shrink-0 flex flex-row flex-wrap gap-5">
+            <div className="w-[20%] shrink-0 flex flex-row flex-wrap gap-5">
               {listSeatRight.map((seat) => (
                 <Seat
                   key={seat.id}

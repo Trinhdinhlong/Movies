@@ -3,37 +3,56 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
-  const router = useRouter()
+  const router = useRouter();
 
   function handleEmployees() {
-    router.push("/admin/dashboard/employees")
+    router.push("/admin/dashboard/employees");
   }
 
   function handleMovies() {
-    router.push("/admin/dashboard/movies")
+    router.push("/admin/dashboard/movies");
+  }
+
+  function handleBookingList() {
+    router.push("/admin/dashboard/booking_list")
+  }
+
+  function handleCinemaRoom() {
+    router.push("/admin/dashboard/cinema_room")
   }
 
   return (
-    <div className="text-black w-[15%]">
-      <div className="z-[1] flex flex-col h-screen bg-white left-0 top-0 overflow-x-hidden">
-        <div className="flex flex-row justify-end px-5 py-3">
-          <Image src={minimize} alt="" />
+    <aside className="w-1/6 bg-white min-h-screen shadow-lg">
+      <div className="flex flex-col">
+        <div className="py-6 px-4 text-gray-600">
+          <button className="text-xl hover:text-gray-800">
+            {/* Icon or text can go here */}
+            {'<'}
+          </button>
         </div>
-        <span className="px-5 py-3 cursor-pointer" onClick={handleEmployees}>Employees</span>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black cursor-pointer"
-        onClick={handleMovies}>
-          Movies
-        </span>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black cursor-pointer">
-          Cinema Room
-        </span>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black cursor-pointer">
-          Booking List
-        </span>
-        <span className="px-5 py-3 border-t-[1px] border-solid border-t-black border-b-[1px] border-b-black cursor-pointer">
-          Promotion
-        </span>
+        <nav className="flex flex-col mt-4">
+          {/* Replace 'a' with NavLink if using react-router-dom */}
+          <span className="py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out"
+          onClick={handleEmployees}>
+            Employees
+          </span>
+          <span className="py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out"
+          onClick={handleMovies}>
+            Movies
+          </span>
+          <span className="py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out"
+          onClick={handleCinemaRoom}>
+            Cinema Room
+          </span>
+          <span className="py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out"
+          onClick={handleBookingList}>
+            Booking List
+          </span>
+          <span className="py-4 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-6 transition duration-300 ease-in-out">
+            Promotion
+          </span>
+        </nav>
       </div>
-    </div>
+    </aside>
   );
 }

@@ -1,80 +1,46 @@
-"use client";
+"use client"
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface TypeMovie {
-  id: number;
-  typeName: string;
-  createdDate: string | null; // Assuming this can be null based on the provided JSON
-  updatedTime: string | null;
-}
-
-interface ShowTime {
-  id: number;
-  startTime: string;
-  endTime: string;
-}
-
-interface Movie {
-  id: number;
-  movieNameEnglish: string;
+interface TicketDetails {
+  ticketId: number;
+  userId: number;
+  fullName: string;
+  identityCard: string;
+  phoneNumber: string;
   movieNameVN: string;
-  actor: string;
-  duration: number;
-  movieProductionCompany: string;
-  startedDate: string;
-  version: string;
-  imageURL: string;
-  typeMovies: TypeMovie[];
-  showTimes: ShowTime[];
+  startTime: string;
+  seatColumn: string;
+  seatRow: number;
+  ticketType: string;
 }
 
-export default function ListMovie() {
-  const [listMovieType, setMovieType] = useState<Movie[]>([]);
+export default function Home() {
+  const [bookings, setBookings] = useState<TicketDetails[]>([]);
   const router = useRouter()
   useEffect(() => {
     axios
-      .get("https://9817-14-232-224-226.ngrok-free.app/api/movies/admin", {
+      .get(`https://9817-14-232-224-226.ngrok-free.app/api/ticket/booking`, {
         headers: {
           "ngrok-skip-browser-warning": "skip-browser-warning",
         },
       })
       .then((response) => {
-        setMovieType(response.data);
-      })
-      .catch((error) => console.error(error));
+        setBookings(response.data);
+      });
   }, []);
 
-  function handleDelete(id: any) {
-    axios
-      .delete(`https://9817-14-232-224-226.ngrok-free.app/api/movies/${id}`, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
-      .then((response) => {
-        location.reload()
-      })
-  }
-
-  function handleCreate() {
-    router.push("/admin/dashboard/movies/add")
-  }
-
-  function handleUpdate(id: any) {
-    router.push(`/admin/dashboard/movies/edit?id=${id}`)
+  function handleConfirmTicket(type: string, ticketId: number) {
+    router.push(`/admin/dashboard/booking_list/confirmation?type=${type}&ticketId=${ticketId}`)
   }
 
   return (
     <div className="bg-[#EFF0F3] w-full h-full flex flex-col items-center overflow-auto">
-      <div className="w-[96%] bg-white mt-8 mb-8">
+      <div className="w-[96%] bg-white mt-8 mb-10">
         <div className="flex justify-between items-center p-4 bg-white">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-          onClick={handleCreate}>
-            Add new
-          </button>
+          <h1 className="text-xl font-semibold">Booking List</h1>
           <div className="flex space-x-2">
             <input
               className="px-4 py-2 border rounded-md"
@@ -93,51 +59,50 @@ export default function ListMovie() {
                   #
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Movie (ENG)
+                  Booking ID
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Movie (VN)
+                  Member ID
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Released date
+                  Full name
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Movie Production Company
+                  Identity card
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Duration
+                  Phone number
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Version
+                  Movie
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Detail
+                  Time
                 </th>
                 <th scope="col" className="py-3 px-6">
-                  Delete
+                  Seat
+                </th>
+                <th scope="col" className="py-3 px-6">
+                  Action
                 </th>
               </tr>
             </thead>
             <tbody>
-              {listMovieType.map((el, index) => (
+              {bookings.map((el, index) => (
                 <tr className="bg-white border-b">
                   <td className="py-4 px-6">{index+1}</td>
-                  <td className="py-4 px-6">{el.movieNameEnglish}</td>
+                  <td className="py-4 px-6">{el.ticketId}</td>
+                  <td className="py-4 px-6">{el.userId}</td>
+                  <td className="py-4 px-6">{el.fullName}</td>
+                  <td className="py-4 px-6">{el.identityCard}</td>
+                  <td className="py-4 px-6">{el.phoneNumber}</td>
                   <td className="py-4 px-6">{el.movieNameVN}</td>
-                  <td className="py-4 px-6">{el.startedDate}</td>
-                  <td className="py-4 px-6">{el.movieProductionCompany}</td>
-                  <td className="py-4 px-6">{el.duration}</td>
-                  <td className="py-4 px-6">{el.version}</td>
+                  <td className="py-4 px-6">{el.startTime}</td>
+                  <td className="py-4 px-6">{el.seatColumn + el.seatRow}</td>
                   <td className="py-4 px-6">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-                    onClick={() => handleUpdate(el.id)}>
-                      Detail
-                    </button>
-                  </td>
-                  <td className="py-4 px-6">
-                    <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none"
-                    onClick={() => handleDelete(el.id)}>
-                      Delete
+                    <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
+                    onClick={() => handleConfirmTicket(el.ticketType, el.ticketId)}>
+                      {el.ticketType}
                     </button>
                   </td>
                 </tr>
@@ -147,7 +112,7 @@ export default function ListMovie() {
         </div>
         <div className="flex justify-between items-center p-4 bg-white">
           <span className="text-sm text-gray-700">
-            Showing 1 to 4 of 4 entries
+            Showing 1 to 6 of 6 entries
           </span>
           <div className="flex space-x-1">
             <button className="px-3 py-1 border rounded-md hover:bg-gray-200 focus:outline-none">

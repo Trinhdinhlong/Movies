@@ -2,7 +2,7 @@ import Image from "next/image";
 import defaultMovieAva from "@/public/defaultAva.jpg";
 import Link from "next/link";
 
-export default function MovieShowTime(props: any) {
+export default function MovieShowTimeAdmin(props: any) {
   const movieNameEn = props.movieEn
   const movieId = props.movieId;
   const roomId = props.room;
@@ -23,7 +23,7 @@ export default function MovieShowTime(props: any) {
           {props.showtime.map((el: any) => (
             <Link
               key={el.id}
-              href={`/user/dashboard/showtime/seats?movieId=${movieId}&showTimeId=${el.id}&roomId=${roomId}&showTime=${el.startTime.slice(0, -3)}&date=20-03-2024&movieName=${movieNameEn}`}
+              href={`/admin/dashboard/showtime/seats?movieId=${movieId}&showTimeId=${el.id}&roomId=${roomId}&showTime=${el.startTime.slice(0, -3)}&date=20-03-2024&movieName=${movieNameEn}`}
               className="bg-[#E0E5E8] py-[5px] px-[18px] rounded-[5px] cursor-pointer"
             >
               <span className="font-[600]">{el.startTime.slice(0, -3)}</span>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import loginIcon from "../../../public/loginIcon.svg"
+import loginIcon from "../../../public/loginIcon.svg";
 import axios from "axios";
 
 export default function Register() {
@@ -12,10 +12,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
 
   const checkAllFieldsFilled = () => {
-    const fields = [
-      account,
-      password
-    ];
+    const fields = [account, password];
     const allFilled = fields.every((field) => field.trim() !== "");
     return allFilled;
   };
@@ -23,12 +20,24 @@ export default function Register() {
   function handleLogin(e: any) {
     e.preventDefault();
     if (checkAllFieldsFilled()) {
-      axios.post("http://localhost:8080/api/login", {
-        "username":account,
-        "password": password
-      }).then(response => {
-        router.push("user/dashboard/home")
-      })
+      axios
+        .post(
+          "https://9817-14-232-224-226.ngrok-free.app/api/login",
+          {
+            username: account,
+            password: password,
+          },
+          {
+            headers: {
+              "ngrok-skip-browser-warning": "skip-browser-warning",
+            },
+          }
+        )
+        .then((response) => {
+          localStorage.setItem("isLogin", "true")
+          localStorage.setItem("account", response.data)
+          router.push("user/dashboard/home")
+        });
     }
   }
 
@@ -66,16 +75,20 @@ export default function Register() {
           />
           <button className="flex flex-row justify-center items-center p-[10px] bg-[#337AB7] rounded-[7px] mb-8 text-white mt-3">
             <div className="flex flex-row gap-2">
-                <Image src={loginIcon} alt=""/>
-                <span>Login</span>
+              <Image src={loginIcon} alt="" />
+              <span>Login</span>
             </div>
           </button>
         </form>
       </div>
       <span className="text-black">
         Have account already?{" "}
-        <span className="underline cursor-pointer"
-        onClick={() => handleRedirectRegister()}>Register</span>
+        <span
+          className="underline cursor-pointer"
+          onClick={() => handleRedirectRegister()}
+        >
+          Register
+        </span>
       </span>
     </div>
   );

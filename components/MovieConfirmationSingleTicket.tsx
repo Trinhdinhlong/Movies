@@ -11,24 +11,21 @@ interface SeatObj {
   seatRow: number;
 }
 
-export default function MovieConfirmation({
-  seatsObj,
+export default function MovieConfirmationSingleTicket({
+  rowName,
+  colName,
+  price,
   roomName,
   showTime,
   date,
-  showTimeId,
 }: {
-  seatsObj: SeatObj[];
+  rowName: number;
+  colName: string;
+  price: number | undefined;
   roomName: string | undefined;
   showTime: string | undefined;
   date: string | undefined;
-  showTimeId: string | undefined;
 }) {
-  let total = 0;
-  seatsObj.map((el) => {
-    total += el.price;
-  });
-
   return (
     <div className="w-full flex-flex-col">
       <div className="flex flex-row w-full px-[15px] py-[7px] border-b-[1px] border-solid border-black">
@@ -54,9 +51,7 @@ export default function MovieConfirmation({
           Seat:
         </span>
         <span className="block grow w-1/2 text-[0.9rem] flex flex-row gap-1">
-          {seatsObj.map((el) => (
-            <span key={el.id}>{el.seatColumn + el.seatRow}</span>
-          ))}
+          <span>{colName + rowName}</span>
         </span>
       </div>
       <div className="flex flex-row w-full px-[15px] py-[7px] border-b-[1px] border-solid border-black">
@@ -65,11 +60,9 @@ export default function MovieConfirmation({
         </span>
         <div className="grow flex flex-col w-1/2 text-[0.9rem]">
           <div className="flex flex-col">
-            {seatsObj.map((el) => (
-              <span className="block mr-3" key={el.id}>
-                {el.seatColumn + el.seatRow}: {el.price}
-              </span>
-            ))}
+            <span className="block mr-3">
+              {colName + rowName}: {price}
+            </span>
           </div>
         </div>
       </div>
@@ -78,7 +71,7 @@ export default function MovieConfirmation({
           Total:
         </span>
         <span className="block grow text-[#439B57] w-1/2 text-[0.9rem]">
-          {total}
+          {price}
         </span>
       </div>
     </div>

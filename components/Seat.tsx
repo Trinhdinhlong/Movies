@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 
@@ -26,7 +26,14 @@ export default function Seat(props: any) {
     if (props.available) {
       setSelecting(!selecting);
     }
-    props.handleAddSeat(props.id)
+    if (props.available) {
+      props.handleAddSeat({
+        id: props.id,
+        price: props.price,
+        seatRow: props.seatRow,
+        seatColumn: props.seatColumn,
+      });
+    }
   }
 
   const outlineColor = !props.available
@@ -51,13 +58,13 @@ export default function Seat(props: any) {
         items-center justify-center rounded-[10px]
         pt-[0.4rem] pl-[0.5rem] pb-[0.588rem] pr-[0.353rem]
         cursor-pointer bg-[${outlineColor}]`}
-        style={{backgroundColor: outlineColor}}
+      style={{ backgroundColor: outlineColor }}
       onClick={handleOnClick}
     >
       <span
         className={`w-[2rem] h-[1.875rem] text-center
         rounded-[5px] `}
-        style={{backgroundColor: insideColor}}
+        style={{ backgroundColor: insideColor }}
       >
         {props.seatColumn + props.seatRow}
       </span>
