@@ -4,19 +4,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 interface Ticket {
-  movieNameVN: string;
-  totalAmount: number;
-  startTime: string;
-  ticketType: string;
+    name: string;
+    amount: number;
+    date: string;
+    price: string;
+    status: string;
 }
 
 export default function Home() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   useEffect(() => {
-    axios.get("http://localhost:8080/api/ticket/booked")
-      .then(response => {
-        setTickets(response.data);
-      })
+    axios.get("http://localhost:8080/api/ticket/booked").then(response => setTickets(response.data))
   }, []);
 
   return (
@@ -54,13 +52,13 @@ export default function Home() {
             </thead>
             <tbody>
               {tickets.map((ticket, index) => (
-                <tr key={index} className="border-b-[1px] border-solid border-[#BEC8CF]">
+                <tr key={ticket.name} className="border-b-[1px] border-solid border-[#BEC8CF]">
                   <td className="py-[10px]">{index}</td>
-                  <td className="py-[10px]">{ticket.movieNameVN}</td>
-                  <td className="py-[10px]">{ticket.startTime}</td>
-                  <td className="py-[10px]">{ticket.totalAmount}</td>
+                  <td className="py-[10px]">{ticket.name}</td>
+                  <td className="py-[10px]">{ticket.date}</td>
+                  <td className="py-[10px]">{ticket.price}</td>
                   <td className="py-[10px] text-[#2036F8]">
-                    {ticket.ticketType}
+                    {ticket.status}
                   </td>
                 </tr>
               ))}

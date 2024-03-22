@@ -5,6 +5,8 @@ import Image from "next/image";
 import continueImage from "@/public/Continue.png";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 interface SeatDetail {
   id: number;
@@ -15,16 +17,23 @@ interface SeatDetail {
   available: boolean;
 }
 
-export default function Home() {
+export default function Home(props: any) {
+  const searchParams = useSearchParams();
+  const movieId = searchParams.get("movieId");
+  const showTimeId = searchParams.get("showTimeId");
+  const roomId = searchParams.get("movieId");
   const [listSeat, setListSeat] = useState<SeatDetail[]>([]);
+  const [selectedSeat, setSelectedSeat] = useState<number[]>([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/movie/1/room/1/showtime/1/seats")
+      .get(
+        `http://localhost:8080/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`
+      )
       .then((response) => {
         setListSeat(response.data);
       });
-  }, []);
+  }, [movieId, roomId, showTimeId]);
 
   const listSeatLeft = listSeat.filter(
     (seat) =>
@@ -38,6 +47,16 @@ export default function Home() {
       seat.seatColumn !== "B" &&
       seat.seatColumn !== "C"
   );
+
+  function handleAddSeat(id: any) {
+    if (selectedSeat.includes(id)) {
+      setSelectedSeat((seat) => seat.filter((el) => el !== id));
+    } else {
+      setSelectedSeat((seat) => [...seat, id]);
+    }
+  }
+
+  console.log(selectedSeat);
 
   return (
     <div className="w-full bg-[#EFF0F3] text-black flex flex-col items-center overflow-auto">
@@ -54,6 +73,7 @@ export default function Home() {
                   price={seat.price}
                   seatType={seat.seatType}
                   available={seat.available}
+                  handleAddSeat={handleAddSeat}
                 />
               ))}
             </div>
@@ -67,6 +87,7 @@ export default function Home() {
                   price={seat.price}
                   seatType={seat.seatType}
                   available={seat.available}
+                  handleAddSeat={handleAddSeat}
                 />
               ))}
             </div>
@@ -94,10 +115,13 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <button className="self-end flex flex-row gap-3 items-center justify-center bg-[#337AB7] text-white rounded-[5px] py-[5px] px-[10px]">
+        <Link
+          href={`/user/dashboard/showtime/seat/confirmation?seats=${selectedSeat}&`}
+          className="self-end flex flex-row gap-3 items-center justify-center bg-[#337AB7] text-white rounded-[5px] py-[5px] px-[10px]"
+        >
           <Image src={continueImage} alt="" />
           <span className="font-[500]">Continue</span>
-        </button>
+        </Link>
       </div>
     </div>
   );

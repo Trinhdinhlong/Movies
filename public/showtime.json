@@ -1,0 +1,76 @@
+[{
+    "id": 12,
+    "movieNameEnglish": "Movie B (English)",
+    "movieNameVN": "Phim B (Vietnamese)",
+    "imageURL": "image_url_a.jpg",
+    "showTimes": [
+        {
+            "id": 2,
+            "startTime": "08:00:00",
+            "endTime": "09:30:00",
+            "createdDate": "2024-03-18T19:25:35.507",
+            "updatedTime": "2024-03-18T19:25:35.507"
+        },
+        {
+            "id": 3,
+            "startTime": "10:00:00",
+            "endTime": "11:30:00",
+            "createdDate": "2024-03-18T19:25:35.507",
+            "updatedTime": "2024-03-18T19:25:35.507"
+        },
+        {
+            "id": 4,
+            "startTime": "12:00:00",
+            "endTime": "13:30:00",
+            "createdDate": "2024-03-18T19:25:35.52",
+            "updatedTime": "2024-03-18T19:25:35.52"
+        }
+    ],
+    "startDate": "2024-01-01",
+    "endDate": "2024-03-20",
+    "room": {
+        "id": 1,
+        "roomName": "Room 1",
+        "seatQuantity": 60,
+        "createdDate": null,
+        "updatedTime": null
+    }
+},
+{
+    "id": 13,
+    "movieNameEnglish": "Movie C (English)",
+    "movieNameVN": "Phim C (Vietnamese)",
+    "imageURL": "image_url_a.jpg",
+    "showTimes": [
+        {
+            "id": 5,
+            "startTime": "08:00:00",
+            "endTime": "09:40:00",
+            "createdDate": "2024-03-18T19:34:56.66",
+            "updatedTime": "2024-03-18T19:34:56.66"
+        },
+        {
+            "id": 6,
+            "startTime": "10:00:00",
+            "endTime": "11:40:00",
+            "createdDate": "2024-03-18T19:34:56.67",
+            "updatedTime": "2024-03-18T19:34:56.67"
+        },
+        {
+            "id": 7,
+            "startTime": "12:00:00",
+            "endTime": "13:40:00",
+            "createdDate": "2024-03-18T19:34:56.677",
+            "updatedTime": "2024-03-18T19:34:56.677"
+        }
+    ],
+    "startDate": "2024-02-01",
+    "endDate": "2024-03-25",
+    "room": {
+        "id": 1,
+        "roomName": "Room 1",
+        "seatQuantity": 60,
+        "createdDate": null,
+        "updatedTime": null
+    }
+}]
