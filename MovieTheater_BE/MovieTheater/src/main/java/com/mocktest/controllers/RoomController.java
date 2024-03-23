@@ -25,4 +25,8 @@ public class RoomController {
     public ResponseEntity<List<RoomResponse>> getAllRoom(){
         return new ResponseEntity<>(roomService.getAll(), HttpStatus.OK);
     }
+    @GetMapping("/room/{id}")
+    public ResponseEntity<RoomResponse> getRoomById(@PathVariable("id") Long id){
+        return new ResponseEntity<>(roomService.getById(id), HttpStatus.OK);
+    }
 }

@@ -49,7 +49,10 @@ public class ShowTime {
 
     @ManyToOne
     @JoinColumn(name = "room_id", referencedColumnName = "room_id")
+    @JsonBackReference
     private Room room;
+    @Column(name = "isActive")
+    private String Active = "true";
 
     @Override
     public String toString() {

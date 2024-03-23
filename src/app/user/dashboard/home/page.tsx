@@ -6,15 +6,12 @@ import MovieBlock from "components/MovieBlock";
 import axios from "axios";
 
 interface TypeMovie {
-  id: number;
-  typeName: string;
-  createdDate: string;
-  updatedTime: string;
+  categoryName: string;
+  movies: Movie[];
 }
 
 interface Movie {
   id: number;
-  content: string;
   movieNameEnglish: string;
   movieNameVN: string;
   actor: string;
@@ -24,24 +21,19 @@ interface Movie {
   startedDate: string;
   endDate: string;
   imageURL: string;
-  typeMovies: TypeMovie[];
 }
 
 export default function Home() {
   const [listMovie, setListMovie] = useState<Movie[]>([]);
   const [listMovieType, setMovieType] = useState<TypeMovie[]>([])
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:8080/api/movie-management/movie")
-  //     .then((response) => {
-  //       setListMovie(response.data);
-  //     });
-  // }, []);
   useEffect(() => {
-    fetch("/movieType.json")
-      .then((response) => response.json())
-      .then((data) => setMovieType(data));
+    axios
+      .get("http://localhost:8080/api/movies")
+      .then((response) => {
+        setMovieType(response.data);
+      });
   }, []);
+  console.log(listMovieType)
   return (
     <div className="flex flex-col w-full relative h-full overflow-auto">
       <div className="h-screen bg-[#B8ADC1]">
@@ -51,12 +43,9 @@ export default function Home() {
             <div className="mt-5 ml-5">
               <span className="font-[700] block mb-2">Hoạt Hình</span>
               <div className="flex flex-row gap-5 flex-wrap">
-                {listMovie.map((movie) => (
-                  <MovieBlock
-                    key={movie.id}
-                    movieName={movie.movieNameEnglish}
-                    imageURL={movie.imageURL}
-                  />
+                {listMovieType.map((movie) => (
+                  <div><span>{movie.categoryName}</span>
+                    {movie.movies.map(el => <MovieBlock imageURL={el.imageURL} movie />)}</div>
                 ))}
               </div>
             </div>

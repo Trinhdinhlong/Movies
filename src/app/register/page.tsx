@@ -49,7 +49,7 @@ export default function Register() {
           "username": account,
           "password": password,
           "fullName": fullName,
-          "dateOfBirth": dobArray[0]+ "-" + dobArray[1].padStart(2,'0') + "-" + dobArray[2].padStart(2,'0'),
+          "dateOfBirth": dobArray[0]+ "-" + dobArray[2].padStart(2,'0') + "-" + dobArray[1].padStart(2,'0'),
           "gender": gender.toUpperCase(),
           "email": email,
           "address": address,

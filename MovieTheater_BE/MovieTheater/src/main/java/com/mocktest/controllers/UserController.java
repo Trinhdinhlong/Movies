@@ -18,8 +18,8 @@ public class UserController {
     private final UserService userService;
     private final RoleService roleService;
     @PostMapping("/login")
-    public ResponseEntity<UserDto> LoginUser(@RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.login(userDto), HttpStatus.OK);
+    public ResponseEntity<String> LoginUser(@RequestBody UserDto userDto){
+        return new ResponseEntity<>(userService.login(userDto).getUsername(), HttpStatus.OK);
     }
     @PostMapping("/register")
     public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request){
@@ -38,6 +38,10 @@ public class UserController {
         request.setRole(role);
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    @GetMapping("/user/{username}")
+    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username){
+        return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
     }
     @GetMapping("/employee")
     public ResponseEntity<List<UserDto>> listEmployee(){

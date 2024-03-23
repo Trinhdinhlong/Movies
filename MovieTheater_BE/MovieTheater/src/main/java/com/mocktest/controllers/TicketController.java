@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RequiredArgsConstructor
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api")
 public class TicketController {
@@ -15,7 +16,7 @@ public class TicketController {
     @PostMapping("ticket/booking")
     public ResponseEntity<List<BookingTicketResponse>> saveAllBooking
             (@RequestBody List<BookingTicketRequest> bookingTicketRequest){
-        return new ResponseEntity<>(ticketService.saveTicket(bookingTicketRequest), HttpStatus.OK);
+         return new ResponseEntity<>(ticketService.saveTicket(bookingTicketRequest), HttpStatus.OK);
     }
     @PutMapping("/ticket/{id}")
     public ResponseEntity<TicketStatusResponse> UpdateStatusTicket(@PathVariable("id") Long id){
@@ -24,21 +25,24 @@ public class TicketController {
     }
     @GetMapping("/ticket/admin/{id}")
     public ResponseEntity<CofirmTicketResponse> getCofirmByAdmin(@PathVariable("id") Long id){
+        System.out.println(id);
+        System.out.println(ticketService.getCofirmAdminByTicketId(id));
         return new ResponseEntity<>(ticketService.getCofirmAdminByTicketId(id), HttpStatus.OK);
     }
-    @GetMapping("ticket/booked")
-    public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten(){
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Access-Control-Allow-Origin", "*");
-        return ResponseEntity.ok().headers(headers).body(ticketService.getAllBookedList());
+    @GetMapping("ticket/booked/{userId}")
+    public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten
+            (@PathVariable("userId") Long userId){
+        return new ResponseEntity<> (ticketService.getAllBookedList(userId), HttpStatus.OK);
     }
-    @GetMapping("/ticket/cancel")
-    public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasAbort(){
-        return new ResponseEntity<>(ticketService.getAllCancelList(), HttpStatus.OK);
+    @GetMapping("/ticket/cancel/{userId}")
+    public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasAbort
+            (@PathVariable("userId") Long userId){
+        return new ResponseEntity<>(ticketService.getAllCancelList(userId), HttpStatus.OK);
     }
-    @GetMapping("/ticket/history")
-    public ResponseEntity<List<HistoryTicketResponse>> getAllTicketHistory(){
-        return new ResponseEntity<>(ticketService.getAllHistoryList(), HttpStatus.OK);
+    @GetMapping("/ticket/history/{userId}")
+    public ResponseEntity<List<HistoryTicketResponse>> getAllTicketHistory
+            (@PathVariable("userId") Long userId){
+        return new ResponseEntity<>(ticketService.getAllHistoryList(userId), HttpStatus.OK);
     }
     @GetMapping("/ticket/booking")
     public ResponseEntity<List<BookingListResponse>> getAllBookingByAdmin(){

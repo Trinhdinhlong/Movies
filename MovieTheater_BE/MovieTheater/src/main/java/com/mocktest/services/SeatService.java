@@ -1,6 +1,7 @@
 package com.mocktest.services;
 
 import com.mocktest.bean.SeatDetailResponse;
+import com.mocktest.bean.SeatRequest;
 import com.mocktest.bean.SeatTypeResponse;
 import com.mocktest.entities.*;
 import com.mocktest.exceptions.BadRequestException;
@@ -29,7 +30,9 @@ public class SeatService {
             throw new BadRequestException("Room Id and Movie Id not correct");
         }
         List<Seat> seats = seatRepository.getAllSeatsByRoom(roomId);
+        System.out.println(LocalTime.now());
         List<Ticket> tickets = ticketRepository.getAllSeatBookedInTicket(showTimeId, LocalTime.now());
+        System.out.println(tickets);
         List<SeatDetailResponse> responses = new ArrayList<>();
         for (Seat seat : seats) {
             SeatDetailResponse response = new SeatDetailResponse();
@@ -56,17 +59,32 @@ public class SeatService {
         Seat requests = seatOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
         return  requests;
     }
-    public List<SeatTypeResponse> updateTypeSeatById(List<Long> requests){
+    public List<SeatTypeResponse> updateTypeSeatById(List<SeatRequest> requests){
         List<SeatTypeResponse> response = new ArrayList<>();
-        for (Long request : requests){
-            Seat seat = getById(request);
-            seat.setSeatType(SeatType.VIP);
+        for (SeatRequest seatRequest : requests){
+            Seat seat = getById(seatRequest.getId());
+            seat.setSeatType(seatRequest.getSeatType());
             seat = seatRepository.save(seat);
             SeatTypeResponse seatResponse = new SeatTypeResponse();
             seatResponse.setId(seat.getId());
+            seatResponse.setSeatColumn(seat.getSeatColumn());
+            seatResponse.setSeatRow(seat.getSeatRow());
             seatResponse.setSeatType(seat.getSeatType());
             response.add(seatResponse);
         }
         return response;
+    }
+    public List<SeatTypeResponse> getAllSeatByRoom(Long id){
+        List<Seat> seats = seatRepository.getAllSeatsByRoom(id);
+        List<SeatTypeResponse> responses = new ArrayList<>();
+        for (Seat seat : seats){
+            SeatTypeResponse seatTypeResponse = new SeatTypeResponse();
+            seatTypeResponse.setId(seat.getId());
+            seat.setSeatRow(seat.getSeatRow());
+            seatTypeResponse.setSeatColumn(seat.getSeatColumn());
+            seatTypeResponse.setSeatType(seat.getSeatType());
+            responses.add(seatTypeResponse);
+        }
+        return responses;
     }
 }

@@ -54,7 +54,7 @@ export default function Home() {
     e.preventDefault()
     if(checkFormFilled()) {
       console.log("true")
-      axios.post("http://localhost:8080/api/movie", {
+      axios.post("http://localhost:8080/api/movie-management/movie", {
         "content": content,
         "movieNameEnglish": movNameEn,
         "movieNameVN": movNameVie,

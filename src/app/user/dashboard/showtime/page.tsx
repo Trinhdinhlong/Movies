@@ -46,12 +46,15 @@ export default function Home() {
 
     let currentDate = new Date();
     let formattedDate = formatDate(currentDate);
+    console.log(formattedDate)
     axios
       .get(
-        `http://localhost:8080/api/movie-management/movies?date=${formattedDate}`
+        `http://localhost:8080/api/movies/showtime?date=10-03-2024 08:00`
       )
       .then((response) => setListMovies(response.data));
   }, []);
+
+  console.log(listMovies)
 
   return (
     <div className="w-full bg-[#EFF0F3] text-black flex flex-col items-center h-full overflow-auto">

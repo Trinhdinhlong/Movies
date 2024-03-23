@@ -29,8 +29,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN t.showTime s " +
             "INNER JOIN s.movie m " +
             "INNER JOIN t.seat s2 " +
+            "WHERE t.user.userId = :userId " +
             "GROUP BY m.movieNameVN, t.createdDate, t.ticketType")
-    List<BookedAndCancelTicketResponse> getTotalPriceByTicket();
+    List<BookedAndCancelTicketResponse> getTotalPriceByTicket(Long userId);
 
     @Query("SELECT new com.mocktest.bean.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.ticketType) " +
             "FROM Ticket t " +
@@ -39,7 +40,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN s.movie m " +
             "INNER JOIN t.seat s2")
     List<BookingListResponse> getAllBookingUser();
-    @Query("SELECT new com.mocktest.bean.CofirmTicketResponse( t.id, r.roomName, t.startTime, s2.seatColumn, s2.seatRow, s2.price, u.username, u.fullName, u.identityCard, u.phone) \n" +
+    @Query("SELECT new com.mocktest.bean.CofirmTicketResponse" +
+            "( t.id, r.roomName,m.movieNameVN, m.movieNameEnglish,t.createdDate, t.startTime, s2.seatColumn," +
+            " s2.seatRow, s2.price, u.username, u.fullName, u.identityCard, u.phone) \n" +
             "FROM Ticket t \n" +
             "INNER JOIN ShowTime s ON s.id = t.showTime.id \n" +
             "INNER JOIN Room r ON r.id = s.room.id \n" +
@@ -48,4 +51,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN Seat s2 ON s2.id = t.seat.id \n" +
             "WHERE t.id = :id")
     CofirmTicketResponse getTicketById(Long id);
+    @Query("FROM Ticket t " +
+            "WHERE t.showTime.id = :id AND t.endTime > :now")
+    Ticket getTicketActive(Long id, LocalTime now);
 }

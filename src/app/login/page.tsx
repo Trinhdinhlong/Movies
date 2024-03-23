@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import loginIcon from "../../../public/loginIcon.svg"
+import axios from "axios";
 
 export default function Register() {
   const router = useRouter();
@@ -27,11 +27,8 @@ export default function Register() {
         "username":account,
         "password": password
       }).then(response => {
-        if(response.data.role.roleName === "User") {
-        router.push("/user/dashboard/home")
-        } else {
-          router.push("/admin/dashboard/movies")
-        }
+        localStorage.setItem("isLogin", "true");
+        router.push("user/dashboard/home")
       })
     }
   }

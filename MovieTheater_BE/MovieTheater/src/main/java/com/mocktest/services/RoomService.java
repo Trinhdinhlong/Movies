@@ -36,7 +36,7 @@ public class RoomService {
             RoomResponse response = new RoomResponse();
             response.setId(room.getId());
             response.setNameRoom(room.getRoomName());
-            response.setSeatQuantity(response.getSeatQuantity());
+            response.setSeatQuantity(room.getSeatQuantity());
             return response;
     }
     public RoomResponse create(RoomRequest request){
