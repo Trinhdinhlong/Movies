@@ -14,6 +14,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
                                                                         String movieNameEnglish);
     List<Movie> findAllByStartedDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate);
     @Query("FROM Movie m " +
-            "WHERE m.endDate > :now")
+            "WHERE m.endDate >= :now")
     List<Movie> findAll(LocalDate now);
 }

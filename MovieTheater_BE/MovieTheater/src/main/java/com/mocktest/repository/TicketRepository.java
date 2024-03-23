@@ -51,4 +51,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN Seat s2 ON s2.id = t.seat.id \n" +
             "WHERE t.id = :id")
     CofirmTicketResponse getTicketById(Long id);
+    @Query("FROM Ticket t " +
+            "WHERE t.showTime.id = :id AND t.endTime > :now")
+    Ticket getTicketActive(Long id, LocalTime now);
 }

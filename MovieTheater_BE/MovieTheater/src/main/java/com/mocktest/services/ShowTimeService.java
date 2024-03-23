@@ -8,6 +8,7 @@ import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import com.mocktest.repository.RoomRepository;
 import com.mocktest.repository.ShowTimeRepository;
+import net.bytebuddy.implementation.bytecode.ShiftLeft;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,8 +53,19 @@ public class ShowTimeService {
         ShowTime requests = showTimeOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
         return  requests;
     }
-
-    public Integer getDuration(Long showTimeId) {
+    public void DeleteById(Long id){
+        if (showTimeRepository.existsById(id)) {
+            ShowTime showTime = showTimeRepository.getById(id);
+            showTime.setActive("false");
+            showTimeRepository.save(showTime);
+        }else {
+            throw new NotFoundException("data not found in entity User: " + id);
+        }
+    }
+    public List<ShowTime> getAllShowTimeById(Long id){
+        return showTimeRepository.getAllShowTimeById(id);
+    }
+    public Long getDuration(Long showTimeId) {
         return showTimeRepository.getDurationMovieInShowTime(showTimeId);
     }
 }

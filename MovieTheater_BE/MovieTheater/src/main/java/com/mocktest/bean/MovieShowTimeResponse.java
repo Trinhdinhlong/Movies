@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Bean;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,6 +25,7 @@ public class MovieShowTimeResponse {
     private String movieNameVN;
     private String imageURL;
     private List<ShowTime> showTimes;
+    private LocalDateTime createdDate;
     private LocalDate startDate;
     private LocalDate endDate;
     private Long roomId;

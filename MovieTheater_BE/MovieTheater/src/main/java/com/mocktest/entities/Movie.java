@@ -52,7 +52,6 @@ public class Movie {
     @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Movie production company must contain only letters and spaces")
     private String movieProductionCompany;
     @Column(name = "started_date")
-    @FutureOrPresent(message = "Start time must be in the present or future")
     private LocalDate startedDate;
     @Column(name = "end_date")
     @Future(message = "End date must be in the future")
@@ -76,10 +75,8 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ShowTime> showTimes;
-    @AssertTrue(message = "End date must be after start date")
-    private boolean isValidEndDate() {
-        return endDate.isAfter(startedDate);
-    }
+    @Column(name = "isActive")
+    private String Active = "true";
     @Override
     public String toString() {
         return "Movie{" +

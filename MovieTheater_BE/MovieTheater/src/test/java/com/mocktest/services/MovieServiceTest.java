@@ -16,9 +16,9 @@ class MovieServiceTest {
     void getAll() {
     }
 
-    @Test
-    void testGetAll() {
-        String date = "13-03-2024 00:00";
-        movieService.getAll(date);
-    }
+//    @Test
+//    void testGetAll() {
+//        String date = "13-03-2024 00:00";
+//        movieService.getAll(date);
+//    }
 }

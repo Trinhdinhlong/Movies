@@ -31,7 +31,8 @@ public class TicketService {
             ticket.setSeat(seat);
             ticket.setShowTime(showTime);
             ticket.setUser(user);
-            int durationMovie = showTimeService.getDuration(bookingTicketRequest.getShowTimeId()).intValue();
+            Long durationMovie = showTimeService.getDuration(bookingTicketRequest.getShowTimeId());
+            System.out.println(durationMovie);
             LocalTime endTime = ticket.getStartTime().plusMinutes(durationMovie);
             ticket.setEndTime(endTime);
             Ticket ticketSaved = ticketRepository.save(ticket);
@@ -46,11 +47,13 @@ public class TicketService {
         }
         return bookingTicketResponseList;
     }
+    public Ticket getTicketHasActiveTrue(Long id){
+        return ticketRepository.getTicketActive(id, LocalTime.now());
+    }
     public void UpdateStatusTicket(Long id){
         ticketRepository.UpdateStatusTicket(id, TicketStatus.Got_the_ticket);
     }
     public CofirmTicketResponse getCofirmAdminByTicketId(Long id){
-        System.out.println(ticketRepository.getTicketById(id));
         return ticketRepository.getTicketById(id);
     }
     public List<BookedAndCancelTicketResponse> getAllBookedList(Long userId){

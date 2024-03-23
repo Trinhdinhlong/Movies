@@ -76,6 +76,8 @@ public class User implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ticket> tickets;
+    @Column(name = "isActive")
+    private String Active = "true";
     @Override
     public String toString() {
         return "User{" +

@@ -24,14 +24,8 @@ public class MovieController {
         return new ResponseEntity<>(movieService.getAllByCategories(), HttpStatus.OK);
     }
     @GetMapping("/movies/showtime")
-    public ResponseEntity<?> getAllMovie(@RequestParam(required = false) String date){
-        List<MovieShowTimeResponse> response;
-        if (date == null) {
-             response = movieService.getAll();
-        } else {
-            response = movieService.getAll(date);
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<?> getAllMovie(){
+        return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
     }
 
 
@@ -65,7 +59,7 @@ public class MovieController {
     }
 
     @PutMapping("/movie")
-    public ResponseEntity<Movie> updateMovie(@RequestBody MovieDetailRequest request){
+    public ResponseEntity<Movie> updateMovie(@RequestBody MovieRequest request){
         return new ResponseEntity<>(movieService.UpdateMovie(request), HttpStatus.OK);
     }
 
