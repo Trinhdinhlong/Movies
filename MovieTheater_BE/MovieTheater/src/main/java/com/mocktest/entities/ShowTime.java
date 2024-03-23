@@ -48,7 +48,6 @@ public class ShowTime {
     private List<Ticket> tickets;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "room_id", referencedColumnName = "room_id")
     private Room room;
 

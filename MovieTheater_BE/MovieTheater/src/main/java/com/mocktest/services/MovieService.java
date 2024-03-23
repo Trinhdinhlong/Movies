@@ -40,7 +40,12 @@ public class MovieService {
     }
 
     public List<MovieShowTimeResponse> getAll(String date) {
-        LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        LocalDateTime dateTime;
+        if (date == null || date.isEmpty()) {
+            dateTime = LocalDateTime.now();
+        } else {
+            dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        }
         LocalTime time = ParseTime.convertToTime(dateTime);
         LocalDate dateNow = dateTime.toLocalDate();
 
@@ -78,6 +83,10 @@ public class MovieService {
     }
     public List<MovieResponse> getAllMovieByAdmin(){
         List<Movie> movieList = movieRepository.findAll();
+        if (CollectionUtils.isEmpty(movieList)) {
+            throw new NotFoundException("No data of movie!");
+        }
+
         List<MovieResponse> movieResponses = new ArrayList<>();
         for(Movie movie : movieList){
             MovieResponse movieResponse = new MovieResponse();

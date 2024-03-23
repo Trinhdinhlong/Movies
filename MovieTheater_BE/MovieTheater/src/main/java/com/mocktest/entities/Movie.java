@@ -54,7 +54,6 @@ public class Movie {
     @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Movie production company must contain only letters and spaces")
     private String movieProductionCompany;
     @Column(name = "started_date")
-    @FutureOrPresent(message = "Start time must be in the present or future")
     private LocalDate startedDate;
     @Column(name = "end_date")
     @Future(message = "End date must be in the future")
