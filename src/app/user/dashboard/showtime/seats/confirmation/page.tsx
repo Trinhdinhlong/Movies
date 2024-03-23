@@ -50,7 +50,7 @@ export default function Home({
     arrayData.push({
       seatId: el.id,
       showTimeId: showTimeId,
-      userId: 1,
+      userId: 9
     })
   );
   const [roomName, setRoomName] = useState<Room>();

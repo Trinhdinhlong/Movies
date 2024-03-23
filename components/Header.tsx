@@ -34,6 +34,10 @@ export default function Header({ handleOpen }: any) {
     router.push("/user/dashboard/showtime")
   }
 
+  function handleHome() {
+    router.push("/user/dashboard/home")
+  }
+
   const [authenticated, setAuthenticated] = useState(false)
   const [userId, setUserID] = useState("")
 
@@ -46,7 +50,8 @@ export default function Header({ handleOpen }: any) {
 
   return (
     <div className="z-[0] w-full h-full flex flex-row px-5 gap-5 justify-between font-[500]">
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center cursor-pointer"
+      onClick={handleHome}>
         <Image src={logo} alt="MovieTheaterLogo" />
       </div>
       <div className="h-full flex flex-row items-center justify-between gap-14">

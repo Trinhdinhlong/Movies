@@ -62,7 +62,7 @@ export default function Home() {
                     </span>
                     <div className="flex flex-row gap-16">
                       {movie.movies.map((el) => (
-                        <MovieBlock imageURL={el.imageURL} movie />
+                        <MovieBlock imageURL={el.imageURL} movieName={el.movieNameEnglish} />
                       ))}
                     </div>
                   </div>

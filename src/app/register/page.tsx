@@ -54,7 +54,7 @@ export default function Register() {
           "email": email,
           "address": address,
           "phone": phoneNumber,
-          "identituCard": identityCard
+          "identityCard": identityCard
       }).then(response => {
         router.push("/login")
       })

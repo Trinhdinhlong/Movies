@@ -29,7 +29,7 @@ export default function Home({
   const ticket = searchParams.ticket;
   useEffect(() => {
     axios
-      .get("https://9817-14-232-224-226.ngrok-free.app/api/ticket/booked/1", {
+      .get("https://9817-14-232-224-226.ngrok-free.app/api/ticket/booked/9", {
         headers: {
           "ngrok-skip-browser-warning": "skip-browser-warning",
         },

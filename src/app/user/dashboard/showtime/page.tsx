@@ -20,7 +20,7 @@ interface MovieShowtime {
   showTimes: Showtime[];
   startDate: string;
   endDate: string;
-  roomId: number
+  roomId: number;
 }
 
 export default function Home() {
@@ -40,7 +40,7 @@ export default function Home() {
     let formattedDate = formatDate(currentDate);
     axios
       .get(
-        `https://9817-14-232-224-226.ngrok-free.app/api/movies/showtime?date=20-03-2024 09:30`,
+        `https://9817-14-232-224-226.ngrok-free.app/api/movies/showtime?date=${formattedDate}`,
         {
           headers: {
             "ngrok-skip-browser-warning": "skip-browser-warning",
@@ -67,10 +67,8 @@ export default function Home() {
               room={movie.roomId}
             />
           ))}
-          {/* http://localhost:8080/api/movie/1/room/1/showtime/1/seats */}
         </div>
       </div>
     </div>
   );
 }
-

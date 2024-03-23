@@ -493,6 +493,7 @@ export default function Home({
           <option value="1">Cinema room 1</option>
           <option value="2">Cinema room 2</option>
           <option value="3">Cinema room 3</option>
+          <option value="4">Cinema room 4</option>
         </select>
         <label
           htmlFor="version"

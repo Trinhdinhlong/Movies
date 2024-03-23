@@ -5,7 +5,7 @@ import Image from "next/image";
 import continueImage from "@/public/Continue.png";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface SeatDetail {

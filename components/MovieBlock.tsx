@@ -21,7 +21,7 @@ export default function MovieBlock(props: any) {
       </div>
       <div className="bg-[#F46E6E] p-2 cursor-pointer hover:bg-red-500"
       onClick={handleShowtime}>
-        <span className="text-center block font-[500]">View Schedule</span>
+        <span className="text-center block font-[500]">{props.movieName}</span>
       </div>
     </div>
   );
