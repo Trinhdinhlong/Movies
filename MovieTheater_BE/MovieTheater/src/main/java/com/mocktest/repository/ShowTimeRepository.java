@@ -4,6 +4,8 @@ import com.mocktest.entities.ShowTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -16,10 +18,12 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
     Long getDurationMovieInShowTime(Long id);
     @Query("FROM ShowTime s " +
             "INNER JOIN Movie m ON m.id = s.movie.id " +
-            "WHERE m.id = :id AND s.Active = '1'")
+            "WHERE m.id = :id AND s.Active = 'true'")
     List<ShowTime> getAllShowTimeById(Long id);
-    @Query("SELECT s FROM ShowTime s WHERE s.startTime > :now AND s.Active = '1'")
-    List<ShowTime> findAllAfterCurrentTime(@Param("now") LocalTime now);
-
-
+    @Query("SELECT s FROM ShowTime s WHERE s.startTime > :now AND s.Active = 'true'")
+    List<ShowTime> findAllAfterCurrentTime(LocalTime now);
+    @Query("SELECT s FROM ShowTime s " +
+            "INNER JOIN Movie m ON m.id = s.movie.id " +
+            "WHERE s.startTime > :now AND s.Active = 'true' AND s.movie.id = :id")
+    List<ShowTime> findAllAfterCurrentTimeByMovieId( LocalTime now, Long id);
 }

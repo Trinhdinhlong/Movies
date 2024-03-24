@@ -1,11 +1,13 @@
 package com.mocktest.services;
 import com.mocktest.bean.*;
 import com.mocktest.entities.*;
+import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -18,6 +20,9 @@ public class TicketService {
     private ShowTimeService showTimeService;
     @Autowired
     private SeatService seatService;
+    public Ticket save(Ticket ticket){
+        return ticketRepository.save(ticket);
+    }
     public List<BookingTicketResponse> saveTicket(List<BookingTicketRequest> bookingTicketRequests){
         List<BookingTicketResponse> bookingTicketResponseList = new ArrayList<>();
         for (BookingTicketRequest bookingTicketRequest : bookingTicketRequests) {
@@ -59,7 +64,15 @@ public class TicketService {
     public List<BookedAndCancelTicketResponse> getAllBookedList(Long userId){
         List<BookedAndCancelTicketResponse> responses = new ArrayList<>();
         List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket(userId);
-        System.out.println(bookedTicketResponseList);
+        if (bookedTicketResponseList != null && !responses.isEmpty()) {
+            bookedTicketResponseList.sort(Comparator.comparing(response -> {
+                if (response.getStartDate() != null) {
+                    return response.getStartDate();
+                } else {
+                    throw new NotFoundException("No Data Found");
+                }
+            }, Comparator.nullsLast(Comparator.reverseOrder())));
+        }
         for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
             TicketStatus ticketType = bookedTicketResponse.getTicketType();
             if(ticketType == TicketStatus.Got_the_ticket || ticketType == TicketStatus.Waiting_for_ticket){
@@ -68,13 +81,21 @@ public class TicketService {
         }
         return responses;
     }
-    public List<BookedAndCancelTicketResponse> getAllCancelList(Long userId){
+    public List<BookedAndCancelTicketResponse> getAllCancelList(Long userId) {
         List<BookedAndCancelTicketResponse> responses = new ArrayList<>();
         List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket(userId);
-        System.out.println(bookedTicketResponseList);
-        for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
+        if (bookedTicketResponseList != null && !responses.isEmpty()) {
+            bookedTicketResponseList.sort(Comparator.comparing(response -> {
+                if (response.getStartDate() != null) {
+                    return response.getStartDate();
+                } else {
+                    throw new NotFoundException("No Data Found");
+                }
+            }, Comparator.nullsLast(Comparator.reverseOrder())));
+        }
+        for (BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList) {
             TicketStatus ticketType = bookedTicketResponse.getTicketType();
-            if(ticketType == TicketStatus.Abort){
+            if (ticketType == TicketStatus.Abort) {
                 responses.add(bookedTicketResponse);
             }
         }
@@ -83,6 +104,15 @@ public class TicketService {
     public List<HistoryTicketResponse> getAllHistoryList(Long userId){
         List<HistoryTicketResponse> responses = new ArrayList<>();
         List<BookedAndCancelTicketResponse> bookedTicketResponseList = ticketRepository.getTotalPriceByTicket(userId);
+        if (bookedTicketResponseList != null && !responses.isEmpty()) {
+            bookedTicketResponseList.sort(Comparator.comparing(response -> {
+                if (response.getStartDate() != null) {
+                    return response.getStartDate();
+                } else {
+                    throw new NotFoundException("No Data Found");
+                }
+            }, Comparator.nullsLast(Comparator.reverseOrder())));
+        }
         for(BookedAndCancelTicketResponse bookedTicketResponse : bookedTicketResponseList){
             HistoryTicketResponse historyTicketResponse = new HistoryTicketResponse();
             historyTicketResponse.setCreateDate(bookedTicketResponse.getStartDate());
@@ -93,6 +123,29 @@ public class TicketService {
     }
     public List<BookingListResponse> getAllBookingUser(){
         List<BookingListResponse> responses = ticketRepository.getAllBookingUser();
+        if (responses != null && !responses.isEmpty()) {
+            responses.sort(Comparator.comparing(response -> {
+                if (response.getCreatedDate() != null) {
+                    return response.getCreatedDate();
+                } else {
+                    throw new NotFoundException("No Data Found");
+                }
+            }, Comparator.nullsLast(Comparator.reverseOrder())));
+        }
+        return responses;
+    }
+    public List<BookingListResponse> searchAllBookingUserByUserName(String data){
+        List<BookingListResponse> responses = ticketRepository.SearchAllBookingUser(data);
+        System.out.println(responses);
+        if (responses != null && !responses.isEmpty()) {
+            responses.sort(Comparator.comparing(response -> {
+                if (response.getCreatedDate() != null) {
+                    return response.getCreatedDate();
+                } else {
+                    throw new NotFoundException("No Data Found");
+                }
+            }, Comparator.nullsLast(Comparator.reverseOrder())));
+        }
         return responses;
     }
 }

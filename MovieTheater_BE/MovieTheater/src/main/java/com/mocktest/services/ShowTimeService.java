@@ -39,6 +39,7 @@ public class ShowTimeService {
                             .movie(movieFromDb)
                             .startTime(startTime)
                             .endTime(startTime.plusMinutes(request.getDuration()))
+                            .Active("true")
                             .build()
             );
         }).collect(Collectors.toList());

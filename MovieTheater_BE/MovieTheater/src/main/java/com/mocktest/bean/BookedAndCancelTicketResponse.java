@@ -19,7 +19,6 @@ import org.springframework.http.HttpHeaders;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookedAndCancelTicketResponse {
-
     private String movieNameVN;
     private double totalAmount;
     private LocalDateTime startDate;

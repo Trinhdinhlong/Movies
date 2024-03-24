@@ -33,11 +33,6 @@ public class MovieRequest {
     private List<Long> typeMovieId;
     private List<LocalTime> startTime;
     private Long roomId;
-    public MovieRequest(Movie entity) {
-        if (entity != null) {
-            BeanUtils.copyProperties(entity, this);
-        }
-    }
     @Override
     public String toString() {
         return "MovieDto{" +

@@ -34,6 +34,10 @@ public class TicketController {
             (@PathVariable("userId") Long userId){
         return new ResponseEntity<> (ticketService.getAllBookedList(userId), HttpStatus.OK);
     }
+    @GetMapping("ticket/search/{data}")
+    public ResponseEntity<List<BookingListResponse>> getAllBookingListByUserId(@PathVariable("data") String data){
+        return new ResponseEntity<>(ticketService.searchAllBookingUserByUserName(data), HttpStatus.OK);
+    }
     @GetMapping("/ticket/cancel/{userId}")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasAbort
             (@PathVariable("userId") Long userId){

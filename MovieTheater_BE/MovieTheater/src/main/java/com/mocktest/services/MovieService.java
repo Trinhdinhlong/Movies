@@ -1,10 +1,7 @@
 package com.mocktest.services;
 
 import com.mocktest.bean.*;
-import com.mocktest.entities.Movie;
-import com.mocktest.entities.ShowTime;
-import com.mocktest.entities.Ticket;
-import com.mocktest.entities.TypeMovie;
+import com.mocktest.entities.*;
 import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.*;
@@ -31,7 +28,7 @@ public class MovieService {
     private ShowTimeService showTimeService;
     @Autowired
     private TicketService ticketService;
-    public Movie UpdateMovie(MovieRequest request) {
+    public MovieResponse UpdateMovie(MovieRequest request) {
         Movie movie = movieRepository.getById(request.getId());
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
@@ -41,17 +38,7 @@ public class MovieService {
                 typeMovies.add(type);
             }
         }
-        movie.setMovieNameVN(request.getMovieNameVN());
-        movie.setMovieNameEnglish(request.getMovieNameEnglish());
-        movie.setContent(request.getContent());
-        movie.setActor(request.getActor());
-        movie.setDirector(request.getDirector());
-        movie.setDuration(request.getDuration());
-        movie.setMovieProductionCompany(request.getMovieProductionCompany());
-        movie.setStartedDate(request.getStartedDate());
-        movie.setEndDate(request.getEndDate());
-        movie.setVersion(request.getVersion());
-        movie.setImageURL(request.getImageURL());
+        BeanUtils.copyProperties(request, movie);
         movie.setTypeMovies(typeMovies);
         if (request.getRoomId() != null) {
             Set<LocalTime> requestedTimes = new HashSet<>(request.getStartTime());
@@ -59,7 +46,8 @@ public class MovieService {
             for(ShowTime showTime : listShowTime){
                 Ticket ticket = ticketService.getTicketHasActiveTrue(showTime.getId());
                 if(ticket != null){
-                    throw new BadRequestException("BAD_REQUEST " + showTime.getStartTime());
+                    ticket.setTicketType(TicketStatus.Abort);
+                    ticketService.save(ticket);
                 }
             }
             listShowTime.forEach(showTime -> {
@@ -85,14 +73,90 @@ public class MovieService {
                 }
             }
         }
-        return movieRepository.save(movie);
+        MovieResponse movieResponse = new MovieResponse();
+        BeanUtils.copyProperties(movieRepository.save(movie), movieResponse);
+        List<ShowTime> saved = new ArrayList<>();
+        for(ShowTime showTime : movie.getShowTimes()){
+            if (showTime.getActive().equals("true")){
+                saved.add(showTime);
+            }
+        }
+        movieResponse.setShowTimes(saved);
+        if(movieResponse == null){
+            throw new BadRequestException("BAD_REQUEST");
+        }
+        return movieResponse;
+    }
+    public List<MovieShowTimeResponse> getAll(String movieName) {
+        Movie movie = movieRepository.SearchMoive(movieName);
+        List<ShowTime> showTimeListMovie = showTimeRepository.findAllAfterCurrentTimeByMovieId(LocalTime.now(),  movie.getId());
+        List<Movie> list = movieRepository.findAll(LocalDate.now());
+        List<Movie> movies = new ArrayList<>();
+        for (Movie moviesaved :list){
+            if(movie.getActive().equals("true")){
+                movies.add(moviesaved);
+            }
+        }
+        List<ShowTime> showTimes = showTimeRepository.findAllAfterCurrentTime(LocalTime.now());
+        List<MovieShowTimeResponse> responses = new ArrayList<>();
+        for(Movie movieSaved : movies){
+            MovieShowTimeResponse response = new MovieShowTimeResponse();
+            response.setId(movieSaved.getId());
+            response.setMovieNameEnglish(movieSaved.getMovieNameEnglish());
+            response.setMovieNameVN(movieSaved.getMovieNameVN());
+            response.setImageURL(movieSaved.getImageURL());
+            response.setStartDate(movieSaved.getStartedDate());
+            response.setEndDate(movieSaved.getEndDate());
+            response.setCreatedDate(movieSaved.getCreatedDate());
+            List<ShowTime> saved = new ArrayList<>();
+            Long roomId = 0L;
+            for(ShowTime showTime : showTimes){
+                if (response.getId() == showTime.getMovie().getId()){
+                    saved.add(showTime);
+                    roomId = showTime.getRoom().getId();
+                }
+            }
+            saved.sort(Comparator.comparing(ShowTime::getStartTime));
+            response.setRoomId(roomId);
+            if(response.getRoomId() != 0) {
+                response.setShowTimes(saved);
+                responses.add(response);
+            }
+        }
+        responses.sort(Comparator.comparing(MovieShowTimeResponse::getCreatedDate).reversed());
+        List<MovieShowTimeResponse> showTimeResponses = new ArrayList<>();
+        MovieShowTimeResponse showTimeResponse = new MovieShowTimeResponse();
+        showTimeResponse.setId(movie.getId());
+        showTimeResponse.setMovieNameEnglish(movie.getMovieNameEnglish());
+        showTimeResponse.setMovieNameVN(movie.getMovieNameVN());
+        showTimeResponse.setImageURL(movie.getImageURL());
+        showTimeResponse.setStartDate(movie.getStartedDate());
+        showTimeResponse.setEndDate(movie.getEndDate());
+        showTimeResponse.setCreatedDate(movie.getCreatedDate());
+        showTimeResponse.setShowTimes(showTimeListMovie);
+        for(ShowTime showTime : showTimeResponse.getShowTimes()){
+            showTimeResponse.setRoomId(showTime.getRoom().getId());
+            break;
+        }
+        showTimeResponses.add(showTimeResponse);
+        List<MovieShowTimeResponse> filteredResponses = new ArrayList<>();
+        for (MovieShowTimeResponse response : responses) {
+            if (response.getId() != showTimeResponse.getId()) {
+                filteredResponses.add(response);
+            }
+        }
+        showTimeResponses.addAll(filteredResponses);
+        if(showTimeResponses.isEmpty()){
+            throw new NotFoundException("No Data Found");
+        }
+        return showTimeResponses;
     }
 
     public List<MovieShowTimeResponse> getAll() {
         List<Movie> list = movieRepository.findAll(LocalDate.now());
         List<Movie> movies = new ArrayList<>();
         for (Movie movie :list){
-            if(movie.getActive().equals("1")){
+            if(movie.getActive().equals("true")){
                 movies.add(movie);
             }
         }
@@ -132,7 +196,7 @@ public class MovieService {
         List<Movie> list = movieRepository.findAll(LocalDate.now());
         List<Movie> movieList = new ArrayList<>();
         for (Movie movie :list){
-            if(movie.getActive().equals("1")){
+            if(movie.getActive().equals("true")){
                 movieList.add(movie);
             }
         }
@@ -152,8 +216,10 @@ public class MovieService {
             movieResponse.setTypeMovies(movie.getTypeMovies());
             movieResponse.setShowTimes(movie.getShowTimes());
             movieResponse.setImageURL(movie.getImageURL());
+            movieResponse.setCreatDate(movie.getCreatedDate());
             movieResponses.add(movieResponse);
         }
+        movieResponses.sort(Comparator.comparing(MovieResponse::getCreatDate).reversed());
         return movieResponses;
     }
     public void deleteById(Long request){
@@ -210,8 +276,7 @@ public class MovieService {
         List<Movie> list = movieRepository.findAll(LocalDate.now());
         List<Movie> movieList = new ArrayList<>();
         for (Movie movie :list){
-            System.out.println(movie.getActive());
-            if(movie.getActive().equals("1")){
+            if(movie.getActive().equals("true")){
                 movieList.add(movie);
             }
         }
@@ -249,5 +314,21 @@ public class MovieService {
                                 .categoryName(entry.getKey())
                                 .movies(entry.getValue())
                                 .build()).collect(Collectors.toList());
+    }
+    public MovieResponse searchMovieByMovieName(String data){
+        return new MovieResponse(movieRepository.SearchMoive(data));
+    }
+    public List<MovieTypeNameResponse> getAllMovieByTypeName(String typeName){
+        List<Movie> movieList = movieRepository.getALlMovieByType(typeName);
+        List<MovieTypeNameResponse> responses = new ArrayList<>();
+        for(Movie movie : movieList){
+            MovieTypeNameResponse response = new MovieTypeNameResponse();
+            BeanUtils.copyProperties(movie, response);
+            responses.add(response);
+        }
+        if(responses.isEmpty()){
+            throw new NotFoundException("Not data found");
+        }
+        return responses;
     }
 }

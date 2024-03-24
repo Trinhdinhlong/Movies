@@ -33,13 +33,21 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "GROUP BY m.movieNameVN, t.createdDate, t.ticketType")
     List<BookedAndCancelTicketResponse> getTotalPriceByTicket(Long userId);
 
-    @Query("SELECT new com.mocktest.bean.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.ticketType) " +
+    @Query("SELECT new com.mocktest.bean.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.createdDate,t.ticketType) " +
             "FROM Ticket t " +
             "INNER JOIN t.user u " +
             "INNER JOIN t.showTime s " +
             "INNER JOIN s.movie m " +
             "INNER JOIN t.seat s2")
     List<BookingListResponse> getAllBookingUser();
+    @Query("SELECT new com.mocktest.bean.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.createdDate,t.ticketType) " +
+            "FROM Ticket t " +
+            "INNER JOIN t.user u " +
+            "INNER JOIN t.showTime s " +
+            "INNER JOIN s.movie m " +
+            "INNER JOIN t.seat s2 " +
+            "WHERE u.username = :data OR u.phone = :data OR u.identityCard = :data OR u.fullName = :data")
+    List<BookingListResponse> SearchAllBookingUser(String data);
     @Query("SELECT new com.mocktest.bean.CofirmTicketResponse" +
             "( t.id, r.roomName,m.movieNameVN, m.movieNameEnglish,t.createdDate, t.startTime, s2.seatColumn," +
             " s2.seatRow, s2.price, u.username, u.fullName, u.identityCard, u.phone) \n" +

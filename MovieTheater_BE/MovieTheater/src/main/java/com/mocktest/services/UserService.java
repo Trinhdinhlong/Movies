@@ -1,6 +1,7 @@
 package com.mocktest.services;
 
 import com.mocktest.dto.UserDto;
+import com.mocktest.entities.ShowTime;
 import com.mocktest.entities.User;
 import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.NotFoundException;
@@ -56,7 +57,9 @@ public class UserService{
     }
     public void deleteById(Long request) {
         if (userRepository.existsById(request)) {
-            userRepository.deleteById(request);
+            User user = userRepository.getById(request);
+            user.setActive("false");
+            userRepository.save(user);
         }else {
             throw new NotFoundException("data not found in entity User: " + request);
         }

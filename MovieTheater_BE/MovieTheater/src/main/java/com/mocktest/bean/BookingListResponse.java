@@ -26,6 +26,7 @@ public class BookingListResponse {
        private LocalTime startTime;
        private String seatColumn;
        private int seatRow;
+       LocalDateTime createdDate;
        @Enumerated(EnumType.STRING)
        private TicketStatus ticketType;
 }

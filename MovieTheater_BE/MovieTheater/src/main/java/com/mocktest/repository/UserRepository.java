@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User getUserByUsername(String username);
 
     @Override
-    @Query ("FROM User u WHERE u.role.roleName = 'Employee'")
+    @Query ("FROM User u WHERE u.role.roleName = 'Employee' AND u.Active = '1'")
     List<User> findAll();
 
 }

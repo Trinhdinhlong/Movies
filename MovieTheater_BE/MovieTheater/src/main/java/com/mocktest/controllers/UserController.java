@@ -32,6 +32,10 @@ public class UserController {
     public ResponseEntity<UserDto> findUser(@PathVariable("username") String username){
         return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
     }
+    @GetMapping("/employee/search/{username}")
+    public ResponseEntity<UserDto> SearchEmployee(@PathVariable("username") String username){
+            return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
+    }
     @PostMapping("/employee")
     public ResponseEntity<UserDto> saveEmployee(@RequestBody UserDto request){
         Role role= roleService.getById(3L);

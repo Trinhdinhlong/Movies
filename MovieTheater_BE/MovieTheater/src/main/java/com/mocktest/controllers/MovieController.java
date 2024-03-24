@@ -27,26 +27,34 @@ public class MovieController {
     public ResponseEntity<?> getAllMovie(){
         return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
     }
-
-
+    @GetMapping("movies/showtime/{movieName}")
+    public ResponseEntity<?> getAllMovieById(@PathVariable("movieName") String movieName){
+        return new ResponseEntity<>(movieService.getAll(movieName), HttpStatus.OK);
+    }
     @GetMapping("/type")
     public ResponseEntity<?> getMovieType() {
         List<TypeMovie> res = movieService.getMovieTypes();
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
-
-
     @GetMapping("/movies/admin")
     public ResponseEntity<List<MovieResponse>> getAllMovieByAdmin(){
         List<MovieResponse> movieResponses = movieService.getAllMovieByAdmin();
         return new ResponseEntity<>(movieResponses, HttpStatus.OK);
     }
-    @GetMapping("/movies/admin/{movieId}")
-    public ResponseEntity<Movie> getAllMovieByAdminAndMovieId(@PathVariable("movieId") Long movieId){
-        Movie responses = movieService.getById(movieId);
+//    @GetMapping("/movies/admin/{movieId}")
+//    public ResponseEntity<Movie> getAllMovieByAdminAndMovieId(@PathVariable("movieId") Long movieId){
+//        Movie responses = movieService.getById(movieId);
+//        return new ResponseEntity<>(responses, HttpStatus.OK);
+//    }
+    @GetMapping("movie/{typeName}")
+    public ResponseEntity<List<MovieTypeNameResponse>> getAllMovieByTypeName(@PathVariable("typeName") String typeName){
+        return new ResponseEntity<>(movieService.getAllMovieByTypeName(typeName), HttpStatus.OK);
+    }
+    @GetMapping("/movies/admin/{data}")
+    public ResponseEntity<MovieResponse> SearchMovieByMovieName(@PathVariable("data") String data){
+        MovieResponse responses = movieService.searchMovieByMovieName(data);
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
-
     @DeleteMapping("/movies/{id}")
     public ResponseEntity<String> deleteMovie(@PathVariable("id") Long request) {
         movieService.deleteById(request);
@@ -59,7 +67,7 @@ public class MovieController {
     }
 
     @PutMapping("/movie")
-    public ResponseEntity<Movie> updateMovie(@RequestBody MovieRequest request){
+    public ResponseEntity<MovieResponse> updateMovie(@RequestBody MovieRequest request){
         return new ResponseEntity<>(movieService.UpdateMovie(request), HttpStatus.OK);
     }
 

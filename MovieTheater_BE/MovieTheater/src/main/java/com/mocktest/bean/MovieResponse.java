@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ public class MovieResponse {
     private String director;
     private int duration;
     private String movieProductionCompany;
+    private LocalDateTime creatDate;
     private LocalDate startedDate;
     private LocalDate endDate;
     private String version;
