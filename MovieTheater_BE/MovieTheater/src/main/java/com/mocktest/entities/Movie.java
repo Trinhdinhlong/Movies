@@ -27,34 +27,22 @@ public class Movie {
     @Column(name = "movie_id")
     private Long id;
     @Column(name = "content")
-    @NotNull(message = "The content is not blank!")
-    @Size(min = 1, max = 1000, message = "Content must be between 1 and 255 characters")
     private String content;
     @Column(name = "movie_name_english")
-    @NotNull(message = "The movie name english is not blank!")
     private String movieNameEnglish;
     @Column(name = "movie_name_vn")
-    @NotNull(message = "The movie name vn is not blank!")
     private String movieNameVN;
     @Column(name = "actor")
-    @NotNull(message = "The actor is not blank!")
-    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Actor must contain only letters and spaces")
     private String actor;
     @Column(name = "director")
-    @NotNull(message = "The director is not blank!")
-    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Director must contain only letters and spaces")
     private String director;
-    @Min(value = 1, message = "Duration must be at least 1 minute")
-    @Max(value = 300, message = "Duration cannot exceed 300 minutes")
     @Column(name = "duration")
     private int duration;
     @Column(name = "movie_production_company")
-    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Movie production company must contain only letters and spaces")
     private String movieProductionCompany;
     @Column(name = "started_date")
     private LocalDate startedDate;
     @Column(name = "end_date")
-    @Future(message = "End date must be in the future")
     private LocalDate endDate;
     @Column(name = "image_url")
     private String imageURL;

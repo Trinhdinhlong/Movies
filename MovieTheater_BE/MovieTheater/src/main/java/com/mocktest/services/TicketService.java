@@ -1,6 +1,9 @@
 package com.mocktest.services;
-import com.mocktest.bean.*;
+import com.mocktest.bean.request.BookingTicketRequest;
+import com.mocktest.bean.response.*;
 import com.mocktest.entities.*;
+import com.mocktest.exceptions.ErrorCode;
+import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +56,7 @@ public class TicketService {
     public void UpdateStatusTicket(Long id){
         ticketRepository.UpdateStatusTicket(id, TicketStatus.Got_the_ticket);
     }
-    public CofirmTicketResponse getCofirmAdminByTicketId(Long id){
+    public ConfirmTicketResponse getConfirmAdminByTicketId(Long id){
         return ticketRepository.getTicketById(id);
     }
     public List<BookedAndCancelTicketResponse> getAllBookedList(Long userId){
@@ -78,6 +81,9 @@ public class TicketService {
                 responses.add(bookedTicketResponse);
             }
         }
+        if (responses.isEmpty()) {
+            throw new NotFoundException(ErrorCode.ERROR_DB_NOT_FOUND);
+        }
         return responses;
     }
     public List<HistoryTicketResponse> getAllHistoryList(Long userId){
@@ -89,10 +95,16 @@ public class TicketService {
             historyTicketResponse.setMovieNameVN(bookedTicketResponse.getMovieNameVN());
             responses.add(historyTicketResponse);
         }
+        if (responses.isEmpty()) {
+            throw new NotFoundException(ErrorCode.ERROR_DB_NOT_FOUND);
+        }
         return responses;
     }
     public List<BookingListResponse> getAllBookingUser(){
         List<BookingListResponse> responses = ticketRepository.getAllBookingUser();
+        if (responses.isEmpty()) {
+            throw new NotFoundException(ErrorCode.ERROR_DB_NOT_FOUND);
+        }
         return responses;
     }
 }

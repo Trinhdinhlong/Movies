@@ -1,4 +1,4 @@
-package com.mocktest.bean;
+package com.mocktest.bean.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CofirmTicketResponse {
+public class ConfirmTicketResponse {
     private Long ticketId;
     private String room_name;
     private String movieNameVN;

@@ -1,4 +1,4 @@
-package com.mocktest.bean;
+package com.mocktest.bean.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mocktest.entities.SeatType;
@@ -18,6 +18,5 @@ public class SeatTypeResponse {
     private Long id;
     private String seatColumn;
     private int seatRow;
-    @Enumerated(EnumType.STRING)
     private SeatType seatType;
 }

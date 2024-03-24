@@ -1,4 +1,4 @@
-package com.mocktest.bean;
+package com.mocktest.bean.request;
 
 import com.fasterxml.jackson.annotation.*;
 import com.mocktest.entities.Movie;

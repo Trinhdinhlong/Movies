@@ -1,4 +1,4 @@
-package com.mocktest.bean;
+package com.mocktest.bean.response;
 
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.Room;

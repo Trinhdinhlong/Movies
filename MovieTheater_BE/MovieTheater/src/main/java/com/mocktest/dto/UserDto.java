@@ -25,7 +25,6 @@ public class UserDto implements Serializable {
     private String password;
     private String fullName;
     private LocalDate dateOfBirth;
-    @Enumerated(EnumType.STRING)
     private Gender gender;
     private String email;
     private String address;

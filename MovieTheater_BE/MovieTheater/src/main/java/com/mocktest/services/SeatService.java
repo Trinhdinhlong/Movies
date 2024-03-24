@@ -1,21 +1,21 @@
 package com.mocktest.services;
 
-import com.mocktest.bean.SeatDetailResponse;
-import com.mocktest.bean.SeatRequest;
-import com.mocktest.bean.SeatTypeResponse;
+import com.mocktest.bean.response.SeatDetailResponse;
+import com.mocktest.bean.request.SeatRequest;
+import com.mocktest.bean.response.SeatTypeResponse;
 import com.mocktest.entities.*;
 import com.mocktest.exceptions.BadRequestException;
+import com.mocktest.exceptions.ErrorCode;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.SeatRepository;
 import com.mocktest.repository.ShowTimeRepository;
 import com.mocktest.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SeatService {
@@ -27,7 +27,7 @@ public class SeatService {
     private TicketRepository ticketRepository;
     public List<SeatDetailResponse> getAllSeatByMovieAndRoom( Long roomId, Long movieId, Long showTimeId) {
         if (!showTimeRepository.existsByIdAndMovieIdAndRoomId(showTimeId,movieId, roomId)) {
-            throw new BadRequestException("Room Id and Movie Id not correct");
+            throw new BadRequestException(ErrorCode.ERROR_MOVIE_ROOM_NOT_MATCH);
         }
         List<Seat> seats = seatRepository.getAllSeatsByRoom(roomId);
         System.out.println(LocalTime.now());
@@ -55,8 +55,7 @@ public class SeatService {
     }
 
     public Seat getById(Long id) {
-        Optional<Seat> seatOptional = seatRepository.findById(id);
-        Seat requests = seatOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
+        Seat requests = seatRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_SEAT_NOT_FOUND));
         return  requests;
     }
     public List<SeatTypeResponse> updateTypeSeatById(List<SeatRequest> requests){
@@ -76,11 +75,14 @@ public class SeatService {
     }
     public List<SeatTypeResponse> getAllSeatByRoom(Long id){
         List<Seat> seats = seatRepository.getAllSeatsByRoom(id);
+        if (seats.isEmpty()) {
+            throw new NotFoundException(ErrorCode.ERROR_SEAT_NOT_FOUND);
+        }
         List<SeatTypeResponse> responses = new ArrayList<>();
         for (Seat seat : seats){
             SeatTypeResponse seatTypeResponse = new SeatTypeResponse();
             seatTypeResponse.setId(seat.getId());
-            seat.setSeatRow(seat.getSeatRow());
+            seatTypeResponse.setSeatRow(seat.getSeatRow());
             seatTypeResponse.setSeatColumn(seat.getSeatColumn());
             seatTypeResponse.setSeatType(seat.getSeatType());
             responses.add(seatTypeResponse);

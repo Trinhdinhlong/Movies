@@ -16,23 +16,26 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateException(BadRequestException exception) {
-           ErrorResponse errorResponse = ErrorResponse.builder()
-               .message(exception.getMessage())
-               .status("404")
-               .build();
-           return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException exception) {
+       ErrorCode errorCode = exception.getErrorCode();
+       ErrorResponse errorResponse = ErrorResponse.builder()
+           .errorCode(errorCode.getErrCode())
+           .message(exception.getMessage())
+           .build();
+       return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(NotFoundException.class)
-    protected  ResponseEntity<ErrorResponse> handledException(NotFoundException exception){
+    protected  ResponseEntity<ErrorResponse> handledNotFoundException(NotFoundException exception){
+        ErrorCode errorCode = exception.getErrorCode();
         ErrorResponse errorResponse = ErrorResponse.builder()
+                .errorCode(errorCode.getErrCode())
                 .message(exception.getMessage())
-                .status("404")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
@@ -46,4 +49,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
 }

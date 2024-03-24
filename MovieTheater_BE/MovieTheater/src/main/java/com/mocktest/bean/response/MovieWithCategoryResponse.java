@@ -1,4 +1,4 @@
-package com.mocktest.bean;
+package com.mocktest.bean.response;
 
 import lombok.Builder;
 import lombok.Data;

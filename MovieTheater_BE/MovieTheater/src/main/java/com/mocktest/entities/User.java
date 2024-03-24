@@ -31,31 +31,21 @@ public class User implements Serializable {
     @Column(name = "user_id")
     private Long userId;
     @Column(name = "username", unique = true)
-    @NotNull(message = "The username should not be blanked!")
     private String username;
     @Column(name = "password")
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
-            message = "Password must contain at least 8 characters, one uppercase letter" +
-                    ", one digit and one special character")
     private String password;
     @Column(name = "full_name")
     private String fullName;
     @Column(name = "date_of_birth")
-    @PastOrPresent(message = "Date of birth must be in the past or present")
     private LocalDate dateOfBirth;
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Gender must not be null")
     private Gender gender;
     @Column(name = "email", unique = true)
-    @NotNull(message = "The email should not be blanked!")
-    @Email(message = "Invalid email address")
     private String email;
     @Column(name = "address")
     private String address;
     @Column(name = "phone", unique = true)
-    @NotNull(message = "The phone should not be blanked!")
-    @Pattern(regexp = "\\d{10}", message = "Invalid phone number. Phone number must contain exactly 10 digits.")
     private String phone;
     @CreationTimestamp
     @Column(name = "created_date")
@@ -64,8 +54,6 @@ public class User implements Serializable {
     @Column(name = "updated_time")
     private LocalDateTime updatedTime;
     @Column(name = "Identity_card" ,unique = true)
-    @NotNull(message = "The identity card should not be blanked!")
-    @Pattern(regexp="[0-9]{9,12}", message="Invalid identity card number")
     private String identityCard;
     @Column(name = "image_url")
     private String imageURL;

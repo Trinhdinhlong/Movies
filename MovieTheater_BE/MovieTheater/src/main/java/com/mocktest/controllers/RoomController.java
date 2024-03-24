@@ -1,8 +1,7 @@
 package com.mocktest.controllers;
 
-import com.mocktest.bean.RoomRequest;
-import com.mocktest.bean.RoomResponse;
-import com.mocktest.entities.Room;
+import com.mocktest.bean.request.RoomRequest;
+import com.mocktest.bean.response.RoomResponse;
 import com.mocktest.services.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

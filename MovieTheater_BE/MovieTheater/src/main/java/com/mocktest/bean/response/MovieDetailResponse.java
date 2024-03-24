@@ -1,4 +1,4 @@
-package com.mocktest.bean;
+package com.mocktest.bean.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mocktest.entities.TypeMovie;
 import lombok.AllArgsConstructor;
