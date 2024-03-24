@@ -1,6 +1,7 @@
 package com.mocktest.services;
 
 import com.mocktest.entities.Role;
+import com.mocktest.exceptions.ErrorCode;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.RoleRepository;
 import org.springframework.beans.BeanUtils;
@@ -19,16 +20,14 @@ public class RoleService {
     }
 
     public  Role getById(Long id) {
-            Optional<Role> roleOptional = roleRepository.findById(id);
-            Role role = roleOptional.orElseThrow(() -> new NotFoundException("Role not found with id: " + id));
+            Role role = roleRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_ROLE_NOT_FOUND));
             return role;
     }
     public Role create(Role request) {
             return roleRepository.save(request);
     }
     public Role updateById(Role request, Long id) {
-            Optional<Role> roleOptional = roleRepository.findById(id);
-            Role role = roleOptional.orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+            Role role = roleRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_ROLE_NOT_FOUND));
             BeanUtils.copyProperties(request, role);
             return roleRepository.save(role);
     }
@@ -36,7 +35,7 @@ public class RoleService {
             if (roleRepository.existsById(request)) {
                 roleRepository.deleteById(request);
             } else {
-                throw new NotFoundException("User not found with id: " + request);
+                throw new NotFoundException(ErrorCode.ERROR_ROLE_NOT_FOUND);
             }
     }
 }

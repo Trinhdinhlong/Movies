@@ -45,7 +45,7 @@ export default function Register() {
     if (checkAllFieldsFilled()) {
       const dobArray = extractDob();
       axios
-        .post("http://localhost:8080/api/register", {
+        .post("https://9817-14-232-224-226.ngrok-free.app/api/register", {
           "username": account,
           "password": password,
           "fullName": fullName,

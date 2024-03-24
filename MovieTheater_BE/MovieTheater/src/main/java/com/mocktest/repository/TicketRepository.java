@@ -1,7 +1,7 @@
 package com.mocktest.repository;
-import com.mocktest.bean.BookedAndCancelTicketResponse;
-import com.mocktest.bean.BookingListResponse;
-import com.mocktest.bean.CofirmTicketResponse;
+import com.mocktest.bean.response.BookedAndCancelTicketResponse;
+import com.mocktest.bean.response.BookingListResponse;
+import com.mocktest.bean.response.ConfirmTicketResponse;
 import com.mocktest.entities.Ticket;
 import com.mocktest.entities.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +24,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "SET t.ticketType = :ticketType " +
             "WHERE t.id = :id")
     void UpdateStatusTicket(@Param("id") Long id, @Param("ticketType") TicketStatus ticketType);
-    @Query("SELECT new com.mocktest.bean.BookedAndCancelTicketResponse(m.movieNameVN, SUM(s2.price), t.createdDate ,t.ticketType) " +
+    @Query("SELECT new com.mocktest.bean.response.BookedAndCancelTicketResponse(m.movieNameVN, SUM(s2.price), t.createdDate ,t.ticketType) " +
             "FROM Ticket t " +
             "INNER JOIN t.showTime s " +
             "INNER JOIN s.movie m " +
@@ -33,7 +33,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "GROUP BY m.movieNameVN, t.createdDate, t.ticketType")
     List<BookedAndCancelTicketResponse> getTotalPriceByTicket(Long userId);
 
-    @Query("SELECT new com.mocktest.bean.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.createdDate,t.ticketType) " +
+    @Query("SELECT new com.mocktest.bean.response.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.ticketType) " +
             "FROM Ticket t " +
             "INNER JOIN t.user u " +
             "INNER JOIN t.showTime s " +
@@ -48,7 +48,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN t.seat s2 " +
             "WHERE u.username = :data OR u.phone = :data OR u.identityCard = :data OR u.fullName = :data")
     List<BookingListResponse> SearchAllBookingUser(String data);
-    @Query("SELECT new com.mocktest.bean.CofirmTicketResponse" +
+    @Query("SELECT new com.mocktest.bean.response.ConfirmTicketResponse" +
             "( t.id, r.roomName,m.movieNameVN, m.movieNameEnglish,t.createdDate, t.startTime, s2.seatColumn," +
             " s2.seatRow, s2.price, u.username, u.fullName, u.identityCard, u.phone) \n" +
             "FROM Ticket t \n" +
@@ -58,7 +58,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN User u ON u.userId = t.user.userId \n" +
             "INNER JOIN Seat s2 ON s2.id = t.seat.id \n" +
             "WHERE t.id = :id")
-    CofirmTicketResponse getTicketById(Long id);
+    ConfirmTicketResponse getTicketById(Long id);
     @Query("FROM Ticket t " +
             "WHERE t.showTime.id = :id AND t.endTime > :now")
     Ticket getTicketActive(Long id, LocalTime now);

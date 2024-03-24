@@ -1,8 +1,8 @@
 package com.mocktest.controllers;
-import com.mocktest.bean.*;
+import com.mocktest.bean.request.BookingTicketRequest;
+import com.mocktest.bean.response.*;
 import com.mocktest.services.TicketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +24,10 @@ public class TicketController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/ticket/admin/{id}")
-    public ResponseEntity<CofirmTicketResponse> getCofirmByAdmin(@PathVariable("id") Long id){
+    public ResponseEntity<ConfirmTicketResponse> getConfirmByAdmin(@PathVariable("id") Long id){
         System.out.println(id);
-        System.out.println(ticketService.getCofirmAdminByTicketId(id));
-        return new ResponseEntity<>(ticketService.getCofirmAdminByTicketId(id), HttpStatus.OK);
+        System.out.println(ticketService.getConfirmAdminByTicketId(id));
+        return new ResponseEntity<>(ticketService.getConfirmAdminByTicketId(id), HttpStatus.OK);
     }
     @GetMapping("ticket/booked/{userId}")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten

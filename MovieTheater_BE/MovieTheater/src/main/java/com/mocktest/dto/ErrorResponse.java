@@ -10,10 +10,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ErrorResponse {
-    public LocalDateTime timestamp;
-    public String error;
-    public String status;
-    public String message;
-    public String path;
+public class ErrorResponse<T> {
+    private int errorCode;
+    private String message;
+    private T data;
 }

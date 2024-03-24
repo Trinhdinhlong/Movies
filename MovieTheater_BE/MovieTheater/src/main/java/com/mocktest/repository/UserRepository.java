@@ -14,7 +14,12 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User getUserByUsername(String username);
+    User findByUsername(String username);
+
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
+    boolean existsByIdentityCard(String identityCard);
+    boolean existsByPhone(String phone);
 
     @Override
     @Query ("FROM User u WHERE u.role.roleName = 'Employee' AND u.Active = '1'")

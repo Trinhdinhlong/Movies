@@ -1,6 +1,8 @@
 package com.mocktest.controllers;
 
-import com.mocktest.bean.*;
+import com.mocktest.bean.request.MovieRequest;
+import com.mocktest.bean.response.MovieResponse;
+import com.mocktest.bean.response.MovieWithCategoryResponse;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.TypeMovie;
 import com.mocktest.services.MovieService;
@@ -10,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin("*")
 @RestController

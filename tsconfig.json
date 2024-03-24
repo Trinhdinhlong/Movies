@@ -7,6 +7,9 @@
       ],
       "@/public/*": [
         "/public/*"
+      ],
+      "@/axios": [
+        "./axiosInstance.js"
       ]
       // Add other path aliases as needed
     },

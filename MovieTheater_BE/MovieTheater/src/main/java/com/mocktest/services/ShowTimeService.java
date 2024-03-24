@@ -1,20 +1,19 @@
 package com.mocktest.services;
 
-import com.mocktest.bean.MovieRequest;
+import com.mocktest.bean.request.MovieRequest;
 import com.mocktest.entities.Movie;
 import com.mocktest.entities.Room;
 import com.mocktest.entities.ShowTime;
+import com.mocktest.exceptions.ErrorCode;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.MovieRepository;
 import com.mocktest.repository.RoomRepository;
 import com.mocktest.repository.ShowTimeRepository;
-import net.bytebuddy.implementation.bytecode.ShiftLeft;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,9 +27,9 @@ public class ShowTimeService {
 
     public List<ShowTime> createShowTime(MovieRequest request, Movie movie) {
         Room room = roomRepository.findById(request.getRoomId())
-                .orElseThrow(() -> new NotFoundException("Not found room with id " + request.getRoomId() + "!"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_ROOM_NOT_FOUND));
         Movie movieFromDb = movieRepository.findById(movie.getId())
-                .orElseThrow(() -> new NotFoundException("Not found movie with id " + request.getRoomId() + "!"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_MOVIE_NOT_FOUND));
         List<LocalTime> startTimes = request.getStartTime();
         return startTimes.stream().map(startTime -> {
              return showTimeRepository.save(
@@ -50,9 +49,8 @@ public class ShowTimeService {
     }
 
     public ShowTime getById(Long showTimeId) {
-        Optional<ShowTime> showTimeOptional = showTimeRepository.findById(showTimeId);
-        ShowTime requests = showTimeOptional.orElseThrow(() -> new NotFoundException("User not found with id"));
-        return  requests;
+        ShowTime request = showTimeRepository.findById(showTimeId).orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_SHOWTIME_NOT_FOUND));
+        return  request;
     }
     public void DeleteById(Long id){
         if (showTimeRepository.existsById(id)) {
@@ -60,7 +58,7 @@ public class ShowTimeService {
             showTime.setActive("false");
             showTimeRepository.save(showTime);
         }else {
-            throw new NotFoundException("data not found in entity User: " + id);
+            throw new NotFoundException(ErrorCode.ERROR_SHOWTIME_NOT_FOUND);
         }
     }
     public List<ShowTime> getAllShowTimeById(Long id){

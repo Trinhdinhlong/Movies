@@ -1,10 +1,42 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+interface TypeMovie {
+  id: number;
+  typeName: string;
+  createdDate: string | null; // `null` is explicitly allowed as per the JSON structure
+  updatedTime: string | null;
+}
+
+interface ShowTime {
+  id: number;
+  startTime: string;
+  endTime: string;
+}
+
+interface MovieDetails {
+  id: number;
+  content: string;
+  movieNameEnglish: string;
+  movieNameVN: string;
+  actor: string;
+  director: string;
+  duration: number;
+  movieProductionCompany: string;
+  startedDate: string;
+  endDate: string;
+  imageURL: string;
+  createdDate: string;
+  updatedTime: string;
+  version: string;
+  typeMovies: TypeMovie[];
+  showTimes: ShowTime[];
+}
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
   const [movNameEn, setMovNameEn] = useState("");
   const [movNameVie, setMovNameVie] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -13,16 +45,85 @@ export default function Home() {
   const [movProductionComp, setMovProductionComp] = useState("");
   const [director, setDirector] = useState("");
   const [duration, setDuration] = useState("");
+  const [version, setVersion] = useState("");
   const [movType, setMovType] = useState<String[]>([]);
-  const [room, setRoom] = useState("");
+  const [room, setRoom] = useState("1");
   const [schedule, setSchedule] = useState<String[]>([]);
   const [content, setContent] = useState("");
   const [fileName, setFileName] = useState<File>();
+  const generateTimeSlots = (duration: number) => {
+    const slots = [];
+    let startTime = new Date().setHours(8, 0, 0, 0);
+    const endTime = new Date().setHours(24, 0, 0, 0);
+
+    while (startTime < endTime) {
+      const date = new Date(startTime);
+      slots.push(date.toISOString().substring(11, 16));
+      startTime += (duration + 30) * 60000;
+    }
+
+    return slots;
+  };
+
+  useEffect(() => {
+    setSchedule([]);
+  }, [duration]);
+
+  const handleCheckBoxSchedule = (e: any) => {
+    const { value, checked } = e.target;
+    setSchedule((prev) => {
+      if (checked) {
+        return [...prev, value];
+      } else {
+        return prev.filter((time) => time !== value);
+      }
+    });
+  };
+
+  const slots = generateTimeSlots(Number(duration));
+
+  function handleCreate(e: any) {
+    e.preventDefault();
+    axios.post(
+      "https://9817-14-232-224-226.ngrok-free.app/api/movie",
+      {
+        content: content,
+        movieNameEnglish: movNameEn,
+        movieNameVN: movNameVie,
+        actor: actor,
+        director: director,
+        duration: duration,
+        movieProductionCompany: movProductionComp,
+        startedDate: fromDate,
+        endDate: toDate,
+        version: version,
+        imageURL: fileName?.name,
+        typeMovieId: movType,
+        startTime: schedule,
+        roomId: room,
+      },
+      {
+        headers: {
+          "ngrok-skip-browser-warning": "skip-browser-warning",
+        },
+      }
+    ).then(response => {
+      router.push("/admin/dashboard/movies")
+    });
+  }
 
   function checkFormFilled() {
-    const allStringsFilled = movNameEn && movNameVie && fromDate && toDate && actor && 
-                             movProductionComp && director && duration && 
-                             room && content;
+    const allStringsFilled =
+      movNameEn &&
+      movNameVie &&
+      fromDate &&
+      toDate &&
+      actor &&
+      movProductionComp &&
+      director &&
+      duration &&
+      room &&
+      content;
     const allArraysFilled = movType.length > 0 && schedule.length > 0;
     const fileSelected = fileName !== undefined;
     return allStringsFilled && allArraysFilled && fileSelected;
@@ -30,6 +131,15 @@ export default function Home() {
 
   const handleFileChange = (e: any) => {
     setFileName(e.target.files[0]);
+    if (e.target.files[0]) {
+      const form = new FormData();
+      form.append("imageFile", e.target.files[0]);
+      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
+        headers: {
+          "ngrok-skip-browser-warning": "skip-browser-warning",
+        },
+      });
+    }
   };
 
   function handleCheckBoxType(e: any) {
@@ -41,40 +151,15 @@ export default function Home() {
     }
   }
 
-  function handleCheckBoxSchedule(e: any) {
-    const value = e.target.value;
-    if (e.target.checked) {
-      setSchedule((prev) => [...prev, value]);
-    } else {
-      setMovType((prev) => prev.filter((type) => type !== value));
-    }
-  }
-
-  function handleAddMovie(e: any) {
-    e.preventDefault()
-    if(checkFormFilled()) {
-      console.log("true")
-      axios.post("http://localhost:8080/api/movie-management/movie", {
-        "content": content,
-        "movieNameEnglish": movNameEn,
-        "movieNameVN": movNameVie,
-        "actor": actor,
-        "director": director,
-        "duration": Number(duration),
-        "movieProductionCompany": movProductionComp,
-        "startedDate": fromDate,
-        "endDate": toDate,
-        "imageURL": fileName?.name
-      }).then(response => {
-        console.log(response.data)
-        router.push("/admin/dashboard/movies")
-      }).catch(error => console.log(error))
-    }
-  }
-
   return (
     <div className="bg-[#EFF0F3] w-full h-full overflow-auto flex flex-col items-center text-black overflow-auto">
-      <form className="w-[95%] bg-white m-10 p-10 flex flex-col gap-3" onSubmit={(e) => handleAddMovie(e)}>
+      <form
+        className="w-[95%] bg-white m-10 p-10 flex flex-col gap-3"
+        onSubmit={(e) => handleCreate(e)}
+      >
+        <span className="block self-center font-bold text-[1.5rem]">
+          ADD MOVIE
+        </span>
         <label
           htmlFor="movie_name"
           className="block text-sm font-medium text-gray-700"
@@ -180,6 +265,19 @@ export default function Home() {
           onChange={(e) => setDuration(e.target.value)}
         />
         <label
+          htmlFor="duration"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Version:
+          <span className="text-red-500">*</span>
+        </label>
+        <input
+          id="duration"
+          type="text"
+          className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
+          onChange={(e) => setVersion(e.target.value)}
+        />
+        <label
           htmlFor="version"
           className="block text-sm font-medium text-gray-700 mt-2"
         >
@@ -191,7 +289,7 @@ export default function Home() {
             <input
               id="hd"
               type="checkbox"
-              value="Hành động"
+              value="1"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="hd">Hành động</label>
@@ -200,7 +298,7 @@ export default function Home() {
             <input
               id="hh"
               type="checkbox"
-              value="Hài hước"
+              value="5"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="hh">Hài hước</label>
@@ -209,7 +307,7 @@ export default function Home() {
             <input
               id="lm"
               type="checkbox"
-              value="Lãng mạn"
+              value="9"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="lm">Lãng mạn</label>
@@ -218,7 +316,7 @@ export default function Home() {
             <input
               id="tc"
               type="checkbox"
-              value="Tình cảm"
+              value="2"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="tc">Tình cảm</label>
@@ -227,7 +325,7 @@ export default function Home() {
             <input
               id="ct"
               type="checkbox"
-              value="Chiến tranh"
+              value="6"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="ct">Chiến tranh</label>
@@ -236,7 +334,7 @@ export default function Home() {
             <input
               id="kh"
               type="checkbox"
-              value="Kiếm hiệp"
+              value="10"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="kh">Kiếm hiệp</label>
@@ -245,7 +343,7 @@ export default function Home() {
             <input
               id="an"
               type="checkbox"
-              value="Âm nhạc"
+              value="3"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="an">Âm nhạc</label>
@@ -254,25 +352,16 @@ export default function Home() {
             <input
               id="kd"
               type="checkbox"
-              value="Kinh dị"
+              value="7"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="kd">Kinh dị</label>
           </div>
           <div className="w-[calc(30%)] flex flex-row items-center gap-2">
             <input
-              id="pl"
-              type="checkbox"
-              value="Phiêu lưu"
-              onChange={(e) => handleCheckBoxType(e)}
-            />
-            <label htmlFor="pl">Phiêu lưu</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
               id="tl"
               type="checkbox"
-              value="Tâm lý 18+"
+              value="4"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="tl">Tâm lý 18+</label>
@@ -281,7 +370,7 @@ export default function Home() {
             <input
               id="hh2"
               type="checkbox"
-              value="Hoạt hình"
+              value="8"
               onChange={(e) => handleCheckBoxType(e)}
             />
             <label htmlFor="hh2">Hoạt hình</label>
@@ -296,11 +385,13 @@ export default function Home() {
         </label>
         <select
           id="sched"
+          value={room}
           className="text-black h-10 rounded-[5px] border-[1px] border-black border-solid p-2"
           onChange={(e) => setRoom(e.target.value)}
         >
-          <option value="r1">Cinema room 1</option>
-          <option value="r2">Cinema room 2</option>
+          <option value="1">Cinema room 1</option>
+          <option value="2">Cinema room 2</option>
+          <option value="3">Cinema room 3</option>
         </select>
         <label
           htmlFor="version"
@@ -310,114 +401,20 @@ export default function Home() {
           <span className="text-red-500">*</span>
         </label>
         <div className="text-black w-[60%] gap-7 flex flex-row flex-wrap mt-5">
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="hd"
-              type="checkbox"
-              value="8:00"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="hd">8:00</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="hh"
-              type="checkbox"
-              value="9:00"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="hh">9:00</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="lm"
-              type="checkbox"
-              value="10:00"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="lm">10:00</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="tc"
-              type="checkbox"
-              value="11:00"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="tc">11:00</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="ct"
-              type="checkbox"
-              value="13:30"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="ct">13:30</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="kh"
-              type="checkbox"
-              value="14:30"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="kh">14:30</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="an"
-              type="checkbox"
-              value="15:30"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="an">15:30</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="kd"
-              type="checkbox"
-              value="17:30"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="kd">17:30</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="pl"
-              type="checkbox"
-              value="18:30"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="pl">18:30</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="tl"
-              type="checkbox"
-              value="19:00"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="tl">19:00</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="hh2"
-              type="checkbox"
-              value="20:00"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="hh2">20:00</label>
-          </div>
-          <div className="w-[calc(30%)] flex flex-row items-center gap-2">
-            <input
-              id="hh3"
-              type="checkbox"
-              value="21:00"
-              onChange={(e) => handleCheckBoxSchedule(e)}
-            />
-            <label htmlFor="hh3">21:00</label>
-          </div>
+          {slots?.map((time, index) => (
+            <div
+              key={index}
+              className="w-[calc(30%)] flex flex-row items-center gap-2"
+            >
+              <input
+                id={`time_${index}`}
+                type="checkbox"
+                value={time}
+                onChange={handleCheckBoxSchedule}
+              />
+              <label htmlFor={`time_${index}`}>{time}</label>
+            </div>
+          ))}
         </div>
         <label
           htmlFor="content"
@@ -460,8 +457,18 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-row items-center gap-4 mt-5">
-          <button type="submit" className="p-2 bg-[#337AB7] w-[5rem] rounded-[5px] text-white">Save</button>
-          <button type="reset" className="p-2 bg-[#337AB7] w-[5rem] rounded-[5px] text-white">Close</button>
+          <button
+            type="submit"
+            className="p-2 bg-[#337AB7] w-[5rem] rounded-[5px] text-white"
+          >
+            Save
+          </button>
+          <button
+            type="reset"
+            className="p-2 bg-[#337AB7] w-[5rem] rounded-[5px] text-white"
+          >
+            Close
+          </button>
         </div>
       </form>
     </div>

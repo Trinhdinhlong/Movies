@@ -4,14 +4,6 @@ import axios from "axios";
 import MovieShowTime from "components/MovieShowTime";
 import { useEffect, useState } from "react";
 
-interface Room {
-  id: number;
-  roomName: string;
-  seatQuantity: number;
-  createdDate: string;
-  updatedTime: string;
-}
-
 interface Showtime {
   id: number;
   startTime: string;
@@ -28,7 +20,7 @@ interface MovieShowtime {
   showTimes: Showtime[];
   startDate: string;
   endDate: string;
-  room: Room;
+  roomId: number;
 }
 
 export default function Home() {
@@ -46,15 +38,17 @@ export default function Home() {
 
     let currentDate = new Date();
     let formattedDate = formatDate(currentDate);
-    console.log(formattedDate)
     axios
       .get(
-        `http://localhost:8080/api/movies/showtime?date=10-03-2024 08:00`
+        `https://9817-14-232-224-226.ngrok-free.app/api/movies/showtime?date=${formattedDate}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        }
       )
       .then((response) => setListMovies(response.data));
   }, []);
-
-  console.log(listMovies)
 
   return (
     <div className="w-full bg-[#EFF0F3] text-black flex flex-col items-center h-full overflow-auto">
@@ -70,13 +64,11 @@ export default function Home() {
               movieVie={movie.movieNameVN}
               showtime={movie.showTimes}
               movieId={movie.id}
-              room={movie.room}
+              room={movie.roomId}
             />
           ))}
-          {/* http://localhost:8080/api/movie/1/room/1/showtime/1/seats */}
         </div>
       </div>
     </div>
   );
 }
-

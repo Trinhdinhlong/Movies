@@ -1,8 +1,16 @@
 package com.mocktest.services;
 
-import com.mocktest.bean.*;
-import com.mocktest.entities.*;
+import com.mocktest.bean.request.MovieRequest;
+import com.mocktest.bean.response.MovieDetailResponse;
+import com.mocktest.bean.response.MovieResponse;
+import com.mocktest.bean.response.MovieShowTimeResponse;
+import com.mocktest.bean.response.MovieWithCategoryResponse;
+import com.mocktest.entities.Movie;
+import com.mocktest.entities.ShowTime;
+import com.mocktest.entities.Ticket;
+import com.mocktest.entities.TypeMovie;
 import com.mocktest.exceptions.BadRequestException;
+import com.mocktest.exceptions.ErrorCode;
 import com.mocktest.exceptions.NotFoundException;
 import com.mocktest.repository.*;
 import org.springframework.beans.BeanUtils;
@@ -15,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
+    private final String REGEX = "^[a-zA-Z\\s]*$"; //Actor must contain only letters and spaces
 
     @Autowired
     private MovieRepository movieRepository;
@@ -33,7 +42,7 @@ public class MovieService {
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
             TypeMovie type = typeRepository.findById(typeId)
-                    .orElseThrow(() -> new NotFoundException("Not found id type!"));
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_TYPE_NOT_FOUND));
             if (type != null) {
                 typeMovies.add(type);
             }
@@ -188,7 +197,7 @@ public class MovieService {
         }
         responses.sort(Comparator.comparing(MovieShowTimeResponse::getCreatedDate).reversed());
         if(responses.isEmpty()){
-            throw new NotFoundException("No Data Found");
+            throw new NotFoundException(ErrorCode.ERROR_DB_NOT_FOUND);
         }
         return responses;
     }
@@ -228,14 +237,37 @@ public class MovieService {
             movie.setActive("false");
             movieRepository.save(movie);
         }else {
-            throw new NotFoundException("data not found in entity User: " + request);
+            throw new NotFoundException(ErrorCode.ERROR_USER_NOT_FOUND);
         }
     }
     public MovieResponse create(MovieRequest request){
+        if (request.getContent() == null
+                && request.getMovieNameEnglish() == null
+                && request.getMovieNameVN() == null
+                && request.getActor() == null
+                && request.getDirector() == null
+        ) throw new BadRequestException(ErrorCode.ERROR_DATA_NOT_MATCH);
+
+        if (!request.getActor().matches(REGEX)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_ACTOR);
+        }
+        if (!request.getDirector().matches(REGEX)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_DIRECTOR);
+        }
+        if (!request.getMovieProductionCompany().matches(REGEX)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_MOVIE_PRODUCTION_COMPANY);
+        }
+        if (request.getDuration() < 1 || request.getDuration() > 300) {
+            throw new BadRequestException(ErrorCode.ERROR_DURATION_NOT_MATCH);
+        }
+        if (request.getEndDate().isBefore(LocalDate.now())) {
+            throw new BadRequestException(ErrorCode.ERROR_DATE_NOT_MATCH);
+        }
+
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
             TypeMovie type = typeRepository.findById(typeId)
-                    .orElseThrow(() -> new NotFoundException("Not found id type!"));
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_TYPE_NOT_FOUND));
             if (type != null) {
                 typeMovies.add(type);
             }
@@ -269,7 +301,7 @@ public class MovieService {
     }
     public Movie getById(Long id) {
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("No movie data!"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_MOVIE_NOT_FOUND));
         return movie;
     }
     public List<MovieWithCategoryResponse> getAllByCategories() {

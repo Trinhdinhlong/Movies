@@ -2,26 +2,92 @@
 
 import Image from "next/image";
 import avaBlank from "@/public/avaBlank.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+interface Role {
+  id: number;
+  roleName: string;
+  createdDate: string;
+  updatedTime: string;
+}
+
+interface User {
+  userId: number;
+  username: string;
+  password: string;
+  fullName: string;
+  dateOfBirth: string;
+  gender: string;
+  email: string;
+  address: string;
+  phone: string;
+  identityCard: string;
+  imageURL: string;
+  role: Role;
+}
+
 export default function Home() {
+  const [user, setUser] = useState<User>();
   const router = useRouter();
+  const [userId, setUserId] = useState(0);
   const [fileName, setFileName] = useState<File>();
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [gender, setGender] = useState("male");
+  const [gender, setGender] = useState("MALE");
   const [identityCard, setIdentityCard] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [notReload, setNotReload] = useState(true);
+
+  useEffect(() => {
+    async function getData() {
+      await axios
+        .get("https://9817-14-232-224-226.ngrok-free.app/api/user/user1", {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        })
+        .then((response) => {
+          setUser(response.data);
+        });
+    }
+    if (notReload) {
+      getData();
+      setNotReload(false);
+    }
+  }, [notReload]);
+
+  useEffect(() => {
+    setUserId(user?.userId || 0);
+    setAccount(user?.username || "");
+    setPassword(user?.password || "");
+    setConfirmPassword("");
+    setFullName(user?.fullName || "");
+    setDateOfBirth(user?.dateOfBirth || "");
+    setGender(user?.gender || "");
+    setIdentityCard(user?.identityCard || "");
+    setEmail(user?.email || "");
+    setAddress(user?.address || "");
+    setPhoneNumber(user?.phone || "");
+  }, [user]);
 
   const handleFileChange = (e: any) => {
     setFileName(e.target.files[0]);
+    if (e.target.files[0]) {
+      const form = new FormData();
+      form.append("imageFile", e.target.files[0]);
+      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
+        headers: {
+          "ngrok-skip-browser-warning": "skip-browser-warning",
+        },
+      });
+    }
   };
 
   function checkFormFilled() {
@@ -41,13 +107,33 @@ export default function Home() {
     return allStringsFilled && fileSelected;
   }
 
-  function handleEditProfile() {
-    if (checkFormFilled()) {
-      axios.post("", {}).then((response) => {
-        console.log(response.data);
-        router.push("/admin/dashboard/movies");
-      });
-    }
+  function redirectHome() {
+    router.push("/user/dashboard/home");
+  }
+
+  function handleUpdate(e: any) {
+    e.preventDefault()
+    axios.put(
+      "https://9817-14-232-224-226.ngrok-free.app/api/profile",
+      {
+        userId: userId,
+        username: account,
+        password: password,
+        fullName: fullName,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
+        email: email,
+        address: address,
+        phone: phoneNumber,
+        identityCard: identityCard,
+        imageURL: fileName?.name,
+      },
+      {
+        headers: {
+          "ngrok-skip-browser-warning": "skip-browser-warning",
+        },
+      }
+    );
   }
 
   return (
@@ -61,7 +147,7 @@ export default function Home() {
         </div>
         <form
           className="w-[95%] bg-white px-[10px] flex flex-col gap-3"
-          onSubmit={() => handleEditProfile()}
+          onSubmit={(e) => handleUpdate(e)}
         >
           <label
             htmlFor="account"
@@ -87,21 +173,9 @@ export default function Home() {
           <input
             id="password"
             type="text"
+            value={password}
             className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
             onChange={(e) => setPassword(e.target.value)}
-          />
-          <label
-            htmlFor="confirm_pass"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Confirm password:
-            <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="confirm_pass"
-            type="text"
-            className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
-            onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <label
             htmlFor="full_name"
@@ -113,6 +187,7 @@ export default function Home() {
           <input
             id="full_name"
             type="text"
+            value={fullName}
             className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
             onChange={(e) => setFullName(e.target.value)}
           />
@@ -127,6 +202,7 @@ export default function Home() {
             id="dob"
             type="date"
             className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
+            value={dateOfBirth}
             onChange={(e) => setDateOfBirth(e.target.value)}
           />
           <label
@@ -140,11 +216,11 @@ export default function Home() {
             <div className="flex flex-row gap-1 items-center justify-between">
               <input
                 type="radio"
-                value="male"
+                value="MALE"
                 id="male"
                 name="gender"
                 className="mt-[3px]"
-                checked={gender === "male"}
+                checked={gender === "MALE"}
                 onChange={(e) => setGender(e.target.value)}
               />
               <label htmlFor="male">Nam</label>
@@ -152,11 +228,11 @@ export default function Home() {
             <div className="flex flex-row gap-1 items-center justify-between">
               <input
                 type="radio"
-                value="female"
+                value="FEMALE"
                 id="female"
                 name="gender"
                 className="mt-[3px]"
-                checked={gender === "female"}
+                checked={gender === "FEMALE"}
                 onChange={(e) => setGender(e.target.value)}
               />
               <label htmlFor="female">Nữ</label>
@@ -186,6 +262,7 @@ export default function Home() {
           <input
             id="email"
             type="email"
+            value={email}
             className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] h-10 p-2"
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -199,6 +276,7 @@ export default function Home() {
           <input
             id="address"
             type="text"
+            value={address}
             className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
             onChange={(e) => setAddress(e.target.value)}
           />
@@ -212,6 +290,7 @@ export default function Home() {
           <input
             id="phone"
             type="text"
+            value={phoneNumber}
             className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
@@ -252,6 +331,7 @@ export default function Home() {
             <button
               type="reset"
               className="p-2 bg-[#337AB7] w-[5rem] rounded-[5px] text-white"
+              onClick={redirectHome}
             >
               Close
             </button>

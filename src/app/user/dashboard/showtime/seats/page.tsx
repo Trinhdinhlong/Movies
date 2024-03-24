@@ -5,7 +5,7 @@ import Image from "next/image";
 import continueImage from "@/public/Continue.png";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface SeatDetail {
@@ -17,18 +17,46 @@ interface SeatDetail {
   available: boolean;
 }
 
-export default function Home(props: any) {
-  const searchParams = useSearchParams();
-  const movieId = searchParams.get("movieId");
-  const showTimeId = searchParams.get("showTimeId");
-  const roomId = searchParams.get("movieId");
+interface Params {
+  slug: string;
+}
+
+interface SearchParams {
+  [key: string]: string;
+}
+
+interface SeatChosen {
+  id: number;
+  seatColumn: string;
+  seatRow: number;
+  price: number;
+}
+
+export default function Home({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
+  const router = useRouter()
+  const movieId = searchParams.movieId;
+  const movieName = searchParams.movieName;
+  const showTimeId = searchParams.showTimeId;
+  const showTime = searchParams.showTime;
+  const date = searchParams.date;
+  const roomId = searchParams.movieId;
   const [listSeat, setListSeat] = useState<SeatDetail[]>([]);
-  const [selectedSeat, setSelectedSeat] = useState<number[]>([]);
+  const [selectedSeat, setSelectedSeat] = useState<SeatChosen[]>([]);
 
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8080/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`
+        `https://9817-14-232-224-226.ngrok-free.app/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`, {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        }
       )
       .then((response) => {
         setListSeat(response.data);
@@ -48,12 +76,23 @@ export default function Home(props: any) {
       seat.seatColumn !== "C"
   );
 
-  function handleAddSeat(id: any) {
-    if (selectedSeat.includes(id)) {
-      setSelectedSeat((seat) => seat.filter((el) => el !== id));
+  function doesInclude(target: SeatChosen) {
+    return selectedSeat.filter(el => el.id === target.id).length > 0
+  }
+
+  function handleAddSeat(target: SeatChosen) {
+    if (doesInclude(target)) {
+      setSelectedSeat((seat) => seat.filter((el) => el.id !== target.id));
     } else {
-      setSelectedSeat((seat) => [...seat, id]);
+      setSelectedSeat((seat) => [...seat, target]);
     }
+  }
+
+  function redirectConfirmation() {
+    const resultJson = JSON.stringify(selectedSeat)
+    const result = encodeURIComponent(resultJson)
+    const url = `http://localhost:3000/user/dashboard/showtime/seats/confirmation?seats=${result}&roomId=${roomId}&showTime=${showTime}&date=${date}&movieName=${movieName}&showTimeId=${showTimeId}`;
+    router.push(url)
   }
 
   console.log(selectedSeat);
@@ -63,7 +102,7 @@ export default function Home(props: any) {
       <div className="flex flex-col items-center w-[70%] gap-2 mb-10">
         <div className="bg-white rounded-[5px] w-full flex flex-col gap-20 py-10 mt-20 justify-center">
           <div className="flex flex-row justify-center gap-20">
-            <div className="w-[25%] shrink-0 flex flex-row flex-wrap gap-5 items-start">
+            <div className="w-[15%] shrink-0 flex flex-row flex-wrap gap-5 items-start">
               {listSeatLeft.map((seat) => (
                 <Seat
                   key={seat.id}
@@ -77,7 +116,7 @@ export default function Home(props: any) {
                 />
               ))}
             </div>
-            <div className="w-[25%] shrink-0 flex flex-row flex-wrap gap-5">
+            <div className="w-[15%] shrink-0 flex flex-row flex-wrap gap-5">
               {listSeatRight.map((seat) => (
                 <Seat
                   key={seat.id}
@@ -115,13 +154,13 @@ export default function Home(props: any) {
             </div>
           </div>
         </div>
-        <Link
-          href={`/user/dashboard/showtime/seat/confirmation?seats=${selectedSeat}&`}
-          className="self-end flex flex-row gap-3 items-center justify-center bg-[#337AB7] text-white rounded-[5px] py-[5px] px-[10px]"
+        <span
+          onClick={redirectConfirmation}
+          className="self-end flex flex-row gap-3 items-center justify-center bg-[#337AB7] text-white rounded-[5px] py-[5px] px-[10px] cursor-pointer"
         >
           <Image src={continueImage} alt="" />
           <span className="font-[500]">Continue</span>
-        </Link>
+        </span>
       </div>
     </div>
   );

@@ -2,25 +2,72 @@
 import Image from "next/image";
 import { useState } from "react";
 import minimize from "@/public/minimize.svg";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Home() {
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullName, setFullName] = useState("male");
+  const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("MALE");
   const [identityCard, setIdentityCard] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<File>();
+
+  const handleFileChange = (e: any) => {
+    setImage(e.target.files[0]);
+    if (e.target.files[0]) {
+      const form = new FormData();
+      form.append("imageFile", e.target.files[0]);
+      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
+        headers: {
+          "ngrok-skip-browser-warning": "skip-browser-warning",
+        },
+      });
+    }
+  };
+
+  function handleUpdate(e: any) {
+    e.preventDefault();
+    axios.post(
+      "https://9817-14-232-224-226.ngrok-free.app/api/employee",
+      {
+        username: account,
+        password: password,
+        fullName: fullName,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
+        email: email,
+        address: address,
+        phone: phoneNumber,
+        identityCard: identityCard,
+        imageURL: image?.name,
+      },
+      {
+        headers: {
+          "ngrok-skip-browser-warning": "skip-browser-warning",
+        },
+      }
+    ).then(response => {
+      router.push("/admin/dashboard/employees")
+    });
+  }
+
+  function handleBack() {
+    router.push("/admin/dashboard/employees")
+  }
+
   return (
     <div className="bg-[#EFF0F3] h-full overflow-auto">
       <div className="flex flex-row text-black w-full">
         <div className="flex flex-col items-center justify-center p-5 w-full overflow-auto">
-          <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full">
+          <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full"
+          onSubmit={handleUpdate}>
             <div className="mb-4">
               <h1 className="text-lg leading-tight font-bold mb-2">
                 Add Employee
@@ -120,7 +167,8 @@ export default function Home() {
                   type="radio"
                   name="gender"
                   className="mr-2"
-                  value="male"
+                  value="MALE"
+                  checked={gender === "MALE"}
                   onChange={(e) => setGender(e.target.value)}
                 />
                 <label htmlFor="gender-male" className="mr-4">
@@ -131,7 +179,8 @@ export default function Home() {
                   type="radio"
                   name="gender"
                   className="mr-2"
-                  value="female"
+                  checked={gender === "FEMALE"}
+                  value="FEMALE"
                   onChange={(e) => setGender(e.target.value)}
                 />
                 <label htmlFor="gender-female">Female</label>
@@ -221,32 +270,27 @@ export default function Home() {
                 <input
                   type="file"
                   className="hidden"
-                  onChange={(e) => setImage(e.target.value)}
+                  onChange={(e) => handleFileChange(e)}
                 />
               </label>
             </div>
             {image && (
               <div className="flex justify-center items-center w-full">
-                <p className="text-gray-600">{image}</p>
+                <p className="text-gray-600">{image.name}</p>
               </div>
             )}
-            <div className="flex justify-center items-center w-full">
-              <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline">
-                Upload
-              </button>
-            </div>
             {/* Repeat for other fields like 'Confirm password', 'Full name', etc. */}
 
             <div className="flex items-center justify-between">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="button"
               >
                 Save
               </button>
               <button
                 className="bg-transparent hover:bg-gray-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
                 type="button"
+                onClick={handleBack}
               >
                 Back
               </button>
