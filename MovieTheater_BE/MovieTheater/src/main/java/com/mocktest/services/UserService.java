@@ -47,33 +47,33 @@ public class UserService{
                 && request.getGender() == null
                 && request.getPhone() == null
                 && request.getIdentityCard() == null
-        ) {
-            throw new BadRequestException(ErrorCode.ERROR_DATA_NOT_MATCH);
-        }
+        ) throw new BadRequestException(ErrorCode.ERROR_DATA_NOT_MATCH);
+
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BadRequestException(ErrorCode.ERROR_ACCOUNT_EXIST);
         }
-        if (!request.getEmail().matches(REGEX_EMAIL)) {
-            throw new BadRequestException(ErrorCode.ERROR_FORMAT_EMAIL);
-        }
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException(ErrorCode.ERROR_EMAIL_EXISTED);
-        }
+
+        if (request.getEmail().matches(REGEX_EMAIL)) {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new BadRequestException(ErrorCode.ERROR_EMAIL_EXISTED);
+            }
+        } else throw new BadRequestException(ErrorCode.ERROR_FORMAT_EMAIL);
+
         if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
             throw new BadRequestException(ErrorCode.ERROR_FORMAT_PASSWORD);
         }
-        if (!request.getPhone().matches(REGEX_PHONE)) {
-            throw new BadRequestException(ErrorCode.ERROR_FORMAT_PHONE);
-        }
-        if (userRepository.existsByPhone(request.getPhone())) {
-            throw new BadRequestException(ErrorCode.ERROR_PHONE_EXISTED);
-        }
-        if (userRepository.existsByIdentityCard(request.getIdentityCard())) {
-            throw new BadRequestException(ErrorCode.ERROR_IDENTITY_CARD_EXISTED);
-        }
-        if (!request.getIdentityCard().matches(REGEX_IDENTITY_CARD)) {
-            throw new BadRequestException(ErrorCode.ERROR_FORMAT_IDENTITY_CARD);
-        }
+        if (request.getPhone().matches(REGEX_PHONE)) {
+            if (userRepository.existsByPhone(request.getPhone())) {
+                throw new BadRequestException(ErrorCode.ERROR_PHONE_EXISTED);
+            }
+        } else throw new BadRequestException(ErrorCode.ERROR_FORMAT_PHONE);
+
+        if (request.getIdentityCard().matches(REGEX_IDENTITY_CARD)) {
+            if (userRepository.existsByIdentityCard(request.getIdentityCard())) {
+                throw new BadRequestException(ErrorCode.ERROR_IDENTITY_CARD_EXISTED);
+            }
+        } else throw new BadRequestException(ErrorCode.ERROR_FORMAT_IDENTITY_CARD);
+
         if (request.getDateOfBirth().isAfter(LocalDate.now())) {
             throw new BadRequestException(ErrorCode.ERROR_DATE_NOT_MATCH);
         }

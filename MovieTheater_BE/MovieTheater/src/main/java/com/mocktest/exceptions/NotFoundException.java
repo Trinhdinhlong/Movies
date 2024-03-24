@@ -1,5 +1,10 @@
 package com.mocktest.exceptions;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class NotFoundException extends RuntimeException{
     public NotFoundException(ErrorCode errorCode) {
         super(errorCode.getMessage());
@@ -7,12 +12,4 @@ public class NotFoundException extends RuntimeException{
     }
 
     private ErrorCode errorCode;
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-    }
 }

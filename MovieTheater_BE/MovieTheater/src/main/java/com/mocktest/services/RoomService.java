@@ -19,7 +19,6 @@ public class RoomService {
             List<Room> rooms = roomRepository.findAll();
             if(rooms.isEmpty()) {
                 throw new NotFoundException(ErrorCode.ERROR_DB_NOT_FOUND);
-
             }
             List<RoomResponse> responses = new ArrayList<>();
             for(Room room : rooms){
