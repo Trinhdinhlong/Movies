@@ -1,12 +1,53 @@
 "use client";
-import Image from "next/image";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import minimize from "@/public/minimize.svg";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import avaBlank from "@/public/defaultAva.jpg";
+import Image from "next/image";
 
-export default function Home() {
+interface Params {
+  slug: string;
+}
+
+interface SearchParams {
+  [key: string]: string;
+}
+
+interface Role {
+  id: number;
+  roleName: string;
+  createdDate: string;
+  updatedTime: string;
+}
+
+interface Employee {
+  userId: number;
+  username: string;
+  password: string;
+  fullName: string;
+  dateOfBirth: string;
+  gender: "MALE" | "FEMALE"; // Assuming these are the only two options
+  email: string;
+  address: string;
+  phone: string;
+  identityCard: string;
+  imageURL: string;
+  role: Role;
+}
+
+export default function Home({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const router = useRouter();
+  const username = searchParams.username;
+  const [user, setUser] = useState<Employee>();
+  const [id, setId] = useState(0);
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,6 +59,43 @@ export default function Home() {
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [image, setImage] = useState<File>();
+  const [notReload, setNotReload] = useState(false);
+
+  useEffect(() => {
+    async function getData() {
+      await axios
+        .get(
+          `https://9817-14-232-224-226.ngrok-free.app/api/user/${username}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": "skip-browser-warning",
+            },
+          }
+        )
+        .then((response) => {
+          setUser(response.data);
+        });
+    }
+    if (notReload) {
+      getData();
+      setNotReload(false);
+    }
+    getData();
+  }, [notReload]);
+
+  useEffect(() => {
+    setId(user?.userId || 0);
+    setAccount(user?.username || "");
+    setPassword(user?.password || "");
+    setConfirmPassword("");
+    setFullName(user?.fullName || "");
+    setDateOfBirth(user?.dateOfBirth || "");
+    setGender(user?.gender || "");
+    setIdentityCard(user?.identityCard || "");
+    setEmail(user?.email || "");
+    setAddress(user?.address || "");
+    setPhoneNumber(user?.phone || "");
+  }, [user]);
 
   const handleFileChange = (e: any) => {
     setImage(e.target.files[0]);
@@ -34,44 +112,57 @@ export default function Home() {
 
   function handleUpdate(e: any) {
     e.preventDefault();
-    axios.post(
-      "https://9817-14-232-224-226.ngrok-free.app/api/employee",
-      {
-        username: account,
-        password: password,
-        fullName: fullName,
-        dateOfBirth: dateOfBirth,
-        gender: gender,
-        email: email,
-        address: address,
-        phone: phoneNumber,
-        identityCard: identityCard,
-        imageURL: image?.name,
-      },
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
+    axios
+      .put(
+        "https://9817-14-232-224-226.ngrok-free.app/api/profile",
+        {
+          userId: id,
+          username: account,
+          password: password,
+          fullName: fullName,
+          dateOfBirth: dateOfBirth,
+          gender: gender,
+          email: email,
+          address: address,
+          phone: phoneNumber,
+          identityCard: identityCard,
+          imageURL: image?.name,
         },
-      }
-    ).then(response => {
-      router.push("/admin/dashboard/employees")
-    });
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        }
+      )
+      .then((response) => {
+        router.push("/admin/dashboard/employees");
+      });
   }
 
   function handleBack() {
-    router.push("/admin/dashboard/employees")
+    router.push("/admin/dashboard/employees");
   }
 
   return (
     <div className="bg-[#EFF0F3] h-full overflow-auto">
       <div className="flex flex-row text-black w-full">
         <div className="flex flex-col items-center justify-center p-5 w-full overflow-auto">
-          <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full"
-          onSubmit={handleUpdate}>
+          <form
+            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full"
+            onSubmit={handleUpdate}
+          >
             <div className="mb-4">
               <h1 className="text-lg leading-tight font-bold mb-2">
-                Add Employee
+                Update employee
               </h1>
+            </div>
+
+            <div className="w-[12rem] h-[12rem] overflow-hidden rounded-[10px] mb-5">
+              <Image
+                src={avaBlank}
+                alt=""
+                className="object-center object-scale-down"
+              />
             </div>
 
             <div className="mb-4">
@@ -85,6 +176,8 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="account"
                 type="text"
+                value={account}
+                disabled
                 placeholder="Account"
                 onChange={(e) => setAccount(e.target.value)}
               />
@@ -100,25 +193,9 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
                 type="password"
+                value={password}
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            {/* Confirm Password Field */}
-            <div className="mb-4">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="confirm-password"
-              >
-                Confirm Password *
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="confirm-password"
-                type="password"
-                placeholder="Confirm password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
 
@@ -134,6 +211,7 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="full-name"
                 type="text"
+                value={fullName}
                 placeholder="Full name"
                 onChange={(e) => setFullName(e.target.value)}
               />
@@ -151,6 +229,7 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="date-of-birth"
                 type="date"
+                value={dateOfBirth}
                 placeholder="Date of birth"
                 onChange={(e) => setDateOfBirth(e.target.value)}
               />
@@ -199,6 +278,8 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="identity-card"
                 type="text"
+                disabled
+                value={identityCard}
                 placeholder="Identity card number"
                 onChange={(e) => setIdentityCard(e.target.value)}
               />
@@ -216,6 +297,7 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
                 type="email"
+                value={email}
                 placeholder="Email"
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -233,6 +315,7 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="address"
                 type="text"
+                value={email}
                 placeholder="Address"
                 onChange={(e) => setAddress(e.target.value)}
               />
@@ -250,6 +333,7 @@ export default function Home() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="phone-number"
                 type="tel"
+                value={phoneNumber}
                 placeholder="Phone number"
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
@@ -282,9 +366,7 @@ export default function Home() {
             {/* Repeat for other fields like 'Confirm password', 'Full name', etc. */}
 
             <div className="flex items-center justify-between">
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                 Save
               </button>
               <button

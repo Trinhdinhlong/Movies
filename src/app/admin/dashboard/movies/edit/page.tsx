@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 interface TypeMovie {
   id: number;
   typeName: string;
-  createdDate: string | null; // `null` is explicitly allowed as per the JSON structure
+  createdDate: string | null;
   updatedTime: string | null;
 }
 
@@ -35,8 +35,25 @@ interface MovieDetails {
   showTimes: ShowTime[];
 }
 
-export default function Home() {
+interface Params {
+  slug: string;
+}
+
+interface SearchParams {
+  [key: string]: string;
+}
+
+export default function Home({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const router = useRouter();
+  const id = searchParams.id;
+  const [movieId, setMovieId] = useState(0);
+  const [movieDetails, setMovieDetails] = useState<MovieDetails>();
   const [movNameEn, setMovNameEn] = useState("");
   const [movNameVie, setMovNameVie] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -46,11 +63,14 @@ export default function Home() {
   const [director, setDirector] = useState("");
   const [duration, setDuration] = useState("");
   const [version, setVersion] = useState("");
-  const [movType, setMovType] = useState<String[]>([]);
+  const [movType, setMovType] = useState<TypeMovie[]>([]);
   const [room, setRoom] = useState("1");
-  const [schedule, setSchedule] = useState<String[]>([]);
+  const [schedule, setSchedule] = useState<ShowTime[]>([]);
   const [content, setContent] = useState("");
   const [fileName, setFileName] = useState<File>();
+  const typeMovId: number[] = [];
+  const showtimeRange: string[] = [];
+  const [notReload, setNotReload] = useState(false);
   const generateTimeSlots = (duration: number) => {
     const slots = [];
     let startTime = new Date().setHours(8, 0, 0, 0);
@@ -65,9 +85,68 @@ export default function Home() {
     return slots;
   };
 
+  movieDetails?.typeMovies.map((el) => typeMovId.push(el.id));
+  movieDetails?.showTimes.map((el) =>
+    showtimeRange.push(el.startTime.substring(0, 5))
+  );
+
+  useEffect(() => {
+    axios
+      .get(
+        `https://9817-14-232-224-226.ngrok-free.app/api/movies/admin/${id}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        }
+      )
+      .then((response) => {
+        setMovieDetails(response.data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
   useEffect(() => {
     setSchedule([]);
   }, [duration]);
+
+  useEffect(() => {
+    async function getData() {
+      await axios
+        .get(
+          `https://9817-14-232-224-226.ngrok-free.app/api/movies/admin/${id}`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": "skip-browser-warning",
+            },
+          }
+        )
+        .then((response) => {
+          setMovieDetails(response.data);
+        });
+    }
+    if (notReload) {
+      getData();
+      setNotReload(false);
+    }
+  }, [notReload]);
+
+  useEffect(() => {
+    setMovieId(movieDetails?.id || 0);
+    setMovNameEn(movieDetails?.movieNameEnglish || "");
+    setMovNameVie(movieDetails?.movieNameVN || "");
+    setFromDate(movieDetails?.startedDate || "");
+    setToDate(movieDetails?.endDate || "");
+    setActor(movieDetails?.actor || "");
+    setMovProductionComp(movieDetails?.movieProductionCompany || "");
+    setDirector(movieDetails?.director || "");
+    setDuration(movieDetails?.duration.toString() || "");
+    setVersion(movieDetails?.version || "");
+    setMovType(movieDetails?.typeMovies || []);
+    setRoom(movieDetails?.showTimes[0].id.toString() || "");
+    setSchedule(movieDetails?.showTimes || []);
+    setContent(movieDetails?.content || "");
+  }, [movieDetails]);
 
   const handleCheckBoxSchedule = (e: any) => {
     const { value, checked } = e.target;
@@ -82,34 +161,35 @@ export default function Home() {
 
   const slots = generateTimeSlots(Number(duration));
 
-  function handleCreate(e: any) {
+  function handleUpdate(e: any) {
     e.preventDefault();
-    axios.post(
-      "https://9817-14-232-224-226.ngrok-free.app/api/movie",
-      {
-        content: content,
-        movieNameEnglish: movNameEn,
-        movieNameVN: movNameVie,
-        actor: actor,
-        director: director,
-        duration: duration,
-        movieProductionCompany: movProductionComp,
-        startedDate: fromDate,
-        endDate: toDate,
-        version: version,
-        imageURL: fileName?.name,
-        typeMovieId: movType,
-        startTime: schedule,
-        roomId: room,
-      },
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
+    axios
+      .put(
+        "https://9817-14-232-224-226.ngrok-free.app/api/movie",
+        {
+          id: movieId,
+          content: content,
+          movieNameEnglish: movNameEn,
+          movieNameVN: movNameVie,
+          actor: actor,
+          director: director,
+          movieProductionCompany: movProductionComp,
+          startedDate: fromDate,
+          endDate: toDate,
+          duration: duration,
+          imageURL: fileName?.name,
+          version: version,
+          typeMovieId: movType.map(el => Number(el.id)),
         },
-      }
-    ).then(response => {
-      router.push("/admin/dashboard/movies")
-    });
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        }
+      )
+      .then((response) => {
+        router.push("/admin/dashboard/movies");
+      });
   }
 
   function checkFormFilled() {
@@ -142,23 +222,24 @@ export default function Home() {
     }
   };
 
-  function handleCheckBoxType(e: any) {
-    const value = e.target.value;
-    if (e.target.checked) {
-      setMovType((prev) => [...prev, value]);
+  const handleCheckBoxType = (e: any, typeId: number) => {
+    const checked = e.target.checked;
+    if (checked) {
+      const newType = { id: typeId, typeName: '', createdDate: null, updatedTime: null };
+      setMovType(prev => [...prev, newType]);
     } else {
-      setMovType((prev) => prev.filter((type) => type !== value));
+      setMovType(prev => prev.filter(type => type.id !== typeId));
     }
-  }
+  };
 
   return (
     <div className="bg-[#EFF0F3] w-full h-full overflow-auto flex flex-col items-center text-black overflow-auto">
       <form
         className="w-[95%] bg-white m-10 p-10 flex flex-col gap-3"
-        onSubmit={(e) => handleCreate(e)}
+        onSubmit={(e) => handleUpdate(e)}
       >
         <span className="block self-center font-bold text-[1.5rem]">
-          ADD MOVIE
+          UPDATE MOVIE
         </span>
         <label
           htmlFor="movie_name"
@@ -170,6 +251,7 @@ export default function Home() {
         <input
           id="movie_name"
           type="text"
+          value={movNameEn}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setMovNameEn(e.target.value)}
         />
@@ -183,6 +265,7 @@ export default function Home() {
         <input
           id="movie_name_VN"
           type="text"
+          value={movNameVie}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setMovNameVie(e.target.value)}
         />
@@ -196,6 +279,7 @@ export default function Home() {
         <input
           id="from_date"
           type="date"
+          value={fromDate}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setFromDate(e.target.value)}
         />
@@ -209,6 +293,7 @@ export default function Home() {
         <input
           id="to_date"
           type="date"
+          value={toDate}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setToDate(e.target.value)}
         />
@@ -222,6 +307,7 @@ export default function Home() {
         <input
           id="actor"
           type="text"
+          value={actor}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setActor(e.target.value)}
         />
@@ -235,6 +321,7 @@ export default function Home() {
         <input
           id="movie_production_company"
           type="text"
+          value={movProductionComp}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setMovProductionComp(e.target.value)}
         />
@@ -248,6 +335,7 @@ export default function Home() {
         <input
           id="director"
           type="text"
+          value={director}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setDirector(e.target.value)}
         />
@@ -261,6 +349,8 @@ export default function Home() {
         <input
           id="duration"
           type="text"
+          disabled
+          value={duration}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setDuration(e.target.value)}
         />
@@ -274,6 +364,7 @@ export default function Home() {
         <input
           id="duration"
           type="text"
+          value={version}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setVersion(e.target.value)}
         />
@@ -289,8 +380,9 @@ export default function Home() {
             <input
               id="hd"
               type="checkbox"
+              checked={movType.some(type => type.id === 1)}
               value="1"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 1)}
             />
             <label htmlFor="hd">Hành động</label>
           </div>
@@ -298,8 +390,9 @@ export default function Home() {
             <input
               id="hh"
               type="checkbox"
+              checked={movType.some(type => type.id === 5)}
               value="5"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 5)}
             />
             <label htmlFor="hh">Hài hước</label>
           </div>
@@ -307,8 +400,9 @@ export default function Home() {
             <input
               id="lm"
               type="checkbox"
+              checked={movType.some(type => type.id === 9)}
               value="9"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 9)}
             />
             <label htmlFor="lm">Lãng mạn</label>
           </div>
@@ -316,8 +410,9 @@ export default function Home() {
             <input
               id="tc"
               type="checkbox"
+              checked={movType.some(type => type.id === 2)}
               value="2"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 2)}
             />
             <label htmlFor="tc">Tình cảm</label>
           </div>
@@ -325,8 +420,9 @@ export default function Home() {
             <input
               id="ct"
               type="checkbox"
+              checked={movType.some(type => type.id === 6)}
               value="6"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 6)}
             />
             <label htmlFor="ct">Chiến tranh</label>
           </div>
@@ -334,8 +430,9 @@ export default function Home() {
             <input
               id="kh"
               type="checkbox"
+              checked={movType.some(type => type.id === 10)}
               value="10"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 10)}
             />
             <label htmlFor="kh">Kiếm hiệp</label>
           </div>
@@ -343,8 +440,9 @@ export default function Home() {
             <input
               id="an"
               type="checkbox"
+              checked={movType.some(type => type.id === 3)}
               value="3"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 3)}
             />
             <label htmlFor="an">Âm nhạc</label>
           </div>
@@ -352,8 +450,9 @@ export default function Home() {
             <input
               id="kd"
               type="checkbox"
+              checked={movType.some(type => type.id === 7)}
               value="7"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 7)}
             />
             <label htmlFor="kd">Kinh dị</label>
           </div>
@@ -361,8 +460,9 @@ export default function Home() {
             <input
               id="tl"
               type="checkbox"
+              checked={movType.some(type => type.id === 4)}
               value="4"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 4)}
             />
             <label htmlFor="tl">Tâm lý 18+</label>
           </div>
@@ -370,8 +470,9 @@ export default function Home() {
             <input
               id="hh2"
               type="checkbox"
+              checked={movType.some(type => type.id === 8)}
               value="8"
-              onChange={(e) => handleCheckBoxType(e)}
+              onChange={(e) => handleCheckBoxType(e, 8)}
             />
             <label htmlFor="hh2">Hoạt hình</label>
           </div>
@@ -392,6 +493,7 @@ export default function Home() {
           <option value="1">Cinema room 1</option>
           <option value="2">Cinema room 2</option>
           <option value="3">Cinema room 3</option>
+          <option value="4">Cinema room 4</option>
         </select>
         <label
           htmlFor="version"
@@ -409,6 +511,7 @@ export default function Home() {
               <input
                 id={`time_${index}`}
                 type="checkbox"
+                checked={showtimeRange.includes(time)}
                 value={time}
                 onChange={handleCheckBoxSchedule}
               />
@@ -426,6 +529,7 @@ export default function Home() {
         <input
           id="content"
           type="textarea"
+          value={content}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] h-10 p-2"
           onChange={(e) => setContent(e.target.value)}
         />

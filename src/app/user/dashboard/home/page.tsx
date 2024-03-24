@@ -25,27 +25,47 @@ interface Movie {
 
 export default function Home() {
   const [listMovie, setListMovie] = useState<Movie[]>([]);
-  const [listMovieType, setMovieType] = useState<TypeMovie[]>([])
+  const [authenticated, setAuthenticated] = useState(false)
+  const [listMovieType, setMovieType] = useState<TypeMovie[]>([]);
+
+  useEffect(() => {
+    if(localStorage.getItem("isLogin") || localStorage.getItem("isLogin") === "true") {
+      setAuthenticated(true)
+    }
+  }, [authenticated])
+
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/movies")
+      .get("https://9817-14-232-224-226.ngrok-free.app/api/movies", {
+        headers: {
+          "ngrok-skip-browser-warning": "skip-browser-warning",
+        },
+      })
       .then((response) => {
         setMovieType(response.data);
-      });
+      })
+      .catch((error) => console.error(error));
   }, []);
-  console.log(listMovieType)
+
   return (
     <div className="flex flex-col w-full relative h-full overflow-auto">
-      <div className="h-screen bg-[#B8ADC1]">
-        <div className="w-full flex flex-col">
+      <div className="bg-[#B8ADC1]">
+        <div className="w-full flex flex-col mb-20">
           <Image src={list} alt="" className="w-full" />
           <div>
             <div className="mt-5 ml-5">
-              <span className="font-[700] block mb-2">Hoạt Hình</span>
-              <div className="flex flex-row gap-5 flex-wrap">
+              <div className="flex flex-col gap-16">
                 {listMovieType.map((movie) => (
-                  <div><span>{movie.categoryName}</span>
-                    {movie.movies.map(el => <MovieBlock imageURL={el.imageURL} movie />)}</div>
+                  <div className="flex flex-col">
+                    <span className="font-[700] block mb-2 text-white">
+                      {movie.categoryName}
+                    </span>
+                    <div className="flex flex-row gap-16">
+                      {movie.movies.map((el) => (
+                        <MovieBlock imageURL={el.imageURL} movieName={el.movieNameEnglish} />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
