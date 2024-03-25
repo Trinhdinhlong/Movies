@@ -4,9 +4,8 @@ import Seat from "components/Seat";
 import Image from "next/image";
 import continueImage from "@/public/Continue.png";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import axiosInstance from "@/axios";
 
 interface SeatDetail {
   id: number;
@@ -39,29 +38,41 @@ export default function Home({
   params: Params;
   searchParams: SearchParams;
 }) {
-  const router = useRouter()
+  const router = useRouter();
   const movieId = searchParams.movieId;
   const movieName = searchParams.movieName;
   const showTimeId = searchParams.showTimeId;
   const showTime = searchParams.showTime;
   const date = searchParams.date;
-  const roomId = searchParams.movieId;
+  const roomId = searchParams.roomId;
   const [listSeat, setListSeat] = useState<SeatDetail[]>([]);
   const [selectedSeat, setSelectedSeat] = useState<SeatChosen[]>([]);
+  useEffect(() => {
+    if(localStorage.getItem("isLogin") === null) {
+      router.push("/login")
+    }
+  })
 
   useEffect(() => {
-    axios
-      .get(
-        `https://9817-14-232-224-226.ngrok-free.app/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`, {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
-      )
+    if (
+      movieId === undefined ||
+      movieName === undefined ||
+      showTime === undefined ||
+      showTimeId === undefined ||
+      date === undefined ||
+      roomId === undefined
+    ) {
+      router.push("/error");
+    }
+  }, []);
+
+  useEffect(() => {
+    axiosInstance
+      .get(`/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`)
       .then((response) => {
         setListSeat(response.data);
       });
-  }, [movieId, roomId, showTimeId]);
+  }, [movieId, roomId, showTimeId, showTime, date, roomId]);
 
   const listSeatLeft = listSeat.filter(
     (seat) =>
@@ -77,7 +88,7 @@ export default function Home({
   );
 
   function doesInclude(target: SeatChosen) {
-    return selectedSeat.filter(el => el.id === target.id).length > 0
+    return selectedSeat.filter((el) => el.id === target.id).length > 0;
   }
 
   function handleAddSeat(target: SeatChosen) {
@@ -89,13 +100,11 @@ export default function Home({
   }
 
   function redirectConfirmation() {
-    const resultJson = JSON.stringify(selectedSeat)
-    const result = encodeURIComponent(resultJson)
-    const url = `http://localhost:3000/user/dashboard/showtime/seats/confirmation?seats=${result}&roomId=${roomId}&showTime=${showTime}&date=${date}&movieName=${movieName}&showTimeId=${showTimeId}`;
-    router.push(url)
+    const resultJson = JSON.stringify(selectedSeat);
+    const result = encodeURIComponent(resultJson);
+    const url = `/user/dashboard/showtime/seats/confirmation?seats=${result}&roomId=${roomId}&showTime=${showTime}&date=${date}&movieName=${movieName}&showTimeId=${showTimeId}`;
+    router.push(url);
   }
-
-  console.log(selectedSeat);
 
   return (
     <div className="w-full bg-[#EFF0F3] text-black flex flex-col items-center overflow-auto">

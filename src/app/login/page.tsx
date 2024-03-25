@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axiosInstace from "@/axios"
 import loginIcon from "../../../public/loginIcon.svg";
 import Loading from "components/LoadingScreen";
@@ -35,11 +35,18 @@ export default function Register() {
           password: password,
         })
         .then((response) => {
+          console.log(response.data)
           setSuccess(true);
           setTimeout(() => {
             localStorage.setItem("isLogin", "true");
-            localStorage.setItem("account", response.data);
-            router.push("user/dashboard/home");
+            localStorage.setItem("account", response.data[0]);
+            localStorage.setItem("role", response.data[1])
+            console.log(response.data[1])
+            if(response.data[1] === 'Admin') {
+              router.push("/admin/dashboard/employees")
+            } else {
+              router.push("/user/dashboard/home")
+            }
           }, 1500);
         })
         .catch((error) => {

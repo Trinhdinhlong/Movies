@@ -1,5 +1,6 @@
 "use client"
 
+import axiosInstance from "@/axios";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,14 +20,11 @@ interface TicketDetails {
 
 export default function Home() {
   const [bookings, setBookings] = useState<TicketDetails[]>([]);
+  const [search, setSearch] = useState("")
   const router = useRouter()
   useEffect(() => {
-    axios
-      .get(`https://9817-14-232-224-226.ngrok-free.app/api/ticket/booking`, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
+    axiosInstance
+      .get(`/api/ticket/booking`)
       .then((response) => {
         setBookings(response.data);
       });
@@ -36,6 +34,8 @@ export default function Home() {
     router.push(`/admin/dashboard/booking_list/confirmation?type=${type}&ticketId=${ticketId}`)
   }
 
+  const listFilteredBooking = bookings.filter(el => el.fullName.toLowerCase().includes(search.toLowerCase()))
+
   return (
     <div className="bg-[#EFF0F3] w-full h-full flex flex-col items-center overflow-auto">
       <div className="w-[96%] bg-white mt-8 mb-10">
@@ -44,6 +44,8 @@ export default function Home() {
           <div className="flex space-x-2">
             <input
               className="px-4 py-2 border rounded-md"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search"
             />
             <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none">
@@ -88,7 +90,7 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {bookings.map((el, index) => (
+              {listFilteredBooking.map((el, index) => (
                 <tr className="bg-white border-b">
                   <td className="py-4 px-6">{index+1}</td>
                   <td className="py-4 px-6">{el.ticketId}</td>
@@ -101,6 +103,7 @@ export default function Home() {
                   <td className="py-4 px-6">{el.seatColumn + el.seatRow}</td>
                   <td className="py-4 px-6">
                     <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
+                    disabled={el.ticketType === "Abort"}
                     onClick={() => handleConfirmTicket(el.ticketType, el.ticketId)}>
                       {el.ticketType}
                     </button>

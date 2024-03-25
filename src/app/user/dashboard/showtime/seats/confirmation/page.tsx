@@ -5,8 +5,9 @@ import defaultAva from "@/public/defaultAva.jpg";
 import { useEffect, useState } from "react";
 import MovieConfirmation from "components/TableMovieConfirm";
 import UserConfirmation from "components/UserConfirmation";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import axiosInstance from "@/axios";
+import Loading from "components/LoadingScreen";
 
 interface Params {
   slug: string;
@@ -29,6 +30,31 @@ interface SeatObj {
   seatRow: number;
 }
 
+interface User {
+  address: string;
+  dateOfBirth: string;
+  email: string;
+  fullName: string;
+  gender: "MALE" | "FEMALE";
+  identityCard: string;
+  password: string;
+  phone: string;
+  role: Role;
+  createdDate: string;
+  id: number;
+  roleName: string;
+  updatedTime: string;
+  userId: number;
+  username: string;
+}
+
+interface Role {
+  createdDate: string;
+  id: number;
+  roleName: string;
+  updatedTime: string;
+}
+
 export default function Home({
   params,
   searchParams,
@@ -44,41 +70,68 @@ export default function Home({
   const date = searchParams.date;
   const movieName = searchParams.movieName;
   const showTimeId = searchParams.showTimeId;
-  const arrayData: { seatId: number; showTimeId: string; userId: number }[] =
-    [];
+  const [success, setSuccess] = useState(false);
+  const [userInfo, setUserInfo] = useState<User>();
+  const [loading, setLoading] = useState(false);
+  const arrayData: {
+    seatId: number;
+    showTimeId: string;
+    userId: number | undefined;
+  }[] = [];
   seatObjArray.map((el) =>
     arrayData.push({
       seatId: el.id,
       showTimeId: showTimeId,
-      userId: 9
+      userId: userInfo?.userId,
     })
   );
   const [roomName, setRoomName] = useState<Room>();
+  useEffect(() => {
+    if(localStorage.getItem("isLogin") === null) {
+      router.push("/login")
+    }
+  })
   //movieName, date, time, seat, price
 
   useEffect(() => {
-    axios
-      .get(`https://9817-14-232-224-226.ngrok-free.app/api/room/${roomId}`, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
-      .then((response) => {
-        setRoomName(response.data);
-      });
+    axiosInstance.get(`/api/room/${roomId}`).then((response) => {
+      setRoomName(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem("account"))
+      axiosInstance
+        .get(`/api/user/${localStorage.getItem("account")}`)
+        .then((response) => {
+          setUserInfo(response.data);
+        });
   }, []);
 
   async function handleConfirmBooking() {
-    await axios.post(
-      "https://9817-14-232-224-226.ngrok-free.app/api/ticket/booking",
-      arrayData,
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      }
-    ).then(response => console.log(response.data));
-    router.push("/user/dashboard/home")
+    await axiosInstance
+      .post(
+        "https://9817-14-232-224-226.ngrok-free.app/api/ticket/booking",
+        arrayData,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "skip-browser-warning",
+          },
+        }
+      )
+      .then((response) => {
+        setSuccess(true);
+      });
+  }
+
+  if (loading) {
+    return <Loading />;
+  }
+  function handleBack() {
+    setTimeout(() => {
+      setLoading(true);
+    }, 1000);
+    router.push("/user/dashboard/home");
   }
 
   return (
@@ -104,13 +157,31 @@ export default function Home({
               <span className="text-[1.3rem] text-[#337AB7] font-[400] block">
                 Check your booking ticket confirmation
               </span>
-              <UserConfirmation />
+              <UserConfirmation
+                fullName={userInfo?.fullName}
+                email={userInfo?.email}
+                identityCard={userInfo?.identityCard}
+                phoneNumber={userInfo?.phone}
+              />
             </div>
           </div>
+          {success && (
+            <span className="text-green-500 block text-center font-bold mt-5">
+              You have successfully confirmed the ticket!
+            </span>
+          )}
+          {success && (
+            <span className="text-red-500 block text-center font-bold">
+              Please pick up the ticket 30 minutes before the show. After that
+              time ticket will automatically cancel!
+            </span>
+          )}
         </div>
-        <button className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px] self-end mt-2"
-        onClick={handleConfirmBooking}>
-          Confirm booking ticket
+        <button
+          className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px] self-end mt-2"
+          onClick={!success ? handleConfirmBooking : handleBack}
+        >
+          {!success ? "Confirm booking ticket" : "Back"}
         </button>
       </div>
     </div>

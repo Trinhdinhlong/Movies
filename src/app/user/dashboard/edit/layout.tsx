@@ -2,18 +2,21 @@
 
 import Header from "components/Header";
 import SidebarProfile from "components/SidebarProfile";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function EditLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    if(localStorage.getItem("isLogin") === null) {
+      router.push("/login")
+    }
+  })
 
-  function handleOpenPopup() {
-    setOpen(!open);
-  }
   return (
     <div className="flex flex-1 flex-row w-full">
       <SidebarProfile />

@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import defaultAva from "@/public/defaultAva.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MovieConfirmation from "components/TableMovieConfirm";
 import UserConfirmation from "components/UserConfirmation";
 import AdminConfirmation from "components/AdminConfirmation";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import axiosInstance from "@/axios";
 
 interface Params {
   slug: string;
@@ -43,7 +44,7 @@ interface UserDetails {
   password: string;
   fullName: string;
   dateOfBirth: string;
-  gender: 'MALE' | 'FEMALE'; // Assuming only these two genders for simplicity; adjust as necessary.
+  gender: "MALE" | "FEMALE"; // Assuming only these two genders for simplicity; adjust as necessary.
   email: string;
   address: string;
   phone: string;
@@ -51,21 +52,19 @@ interface UserDetails {
   role: UserRole;
 }
 
-
 export default function Home({
   params,
   searchParams,
-}: {
+}: Readonly<{
   params: Params;
   searchParams: SearchParams;
-}) {
+}>) {
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [userDetail, setUserDetail] = useState<UserDetails>()
+  const [userDetail, setUserDetail] = useState<UserDetails>();
   const [userId, setUserId] = useState("");
   const router = useRouter();
   const seatsObj = JSON.parse(searchParams.seats);
   const seatObjArray: SeatObj[] = seatsObj as SeatObj[];
-  const roomId = searchParams.roomId;
   const showTime = searchParams.showTime;
   const date = searchParams.date;
   const movieName = searchParams.movieName;
@@ -80,33 +79,29 @@ export default function Home({
     })
   );
   const [roomName, setRoomName] = useState<Room>();
+  const [success, setSuccess] = useState(false);
   //movieName, date, time, seat, price
 
+  useEffect(() => {
+    if(localStorage.getItem("isLogin") === null) {
+      router.push("/login")
+    }
+  })
+
   function handleConfirmOpen() {
-    axios.get(
-      `https://9817-14-232-224-226.ngrok-free.app/api/employee/booking/${userId}`,
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      }
-    ).then(response => {
-      setUserDetail(response.data)
+    axiosInstance.get(`/api/employee/booking/${userId}`).then((response) => {
+      setUserDetail(response.data);
     });
     setConfirmOpen(!confirmOpen);
   }
 
   async function handleConfirmBooking() {
-    await axios.post(
-      "https://9817-14-232-224-226.ngrok-free.app/api/ticket/booking",
-      arrayData,
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      }
-    ).then(response => console.log(response.data));
-    router.push("/admin/dashboard/booking_list")
+    await axiosInstance.post("/api/ticket/booking", arrayData).then((response) => {
+      setSuccess(true);
+    });
+    setTimeout(() => {
+      router.push("/admin/dashboard/booking_list");
+    }, 2000);
   }
 
   return (
@@ -151,14 +146,28 @@ export default function Home({
                 </div>
               </div>
               <div className="w-full">
-                {confirmOpen && <AdminConfirmation memberID={userDetail?.userId} fullName={userDetail?.fullName} identityCard={userDetail?.identityCard} phone={userDetail?.phone}/>}
+                {confirmOpen && (
+                  <AdminConfirmation
+                    memberID={userDetail?.userId}
+                    fullName={userDetail?.fullName}
+                    identityCard={userDetail?.identityCard}
+                    phone={userDetail?.phone}
+                  />
+                )}
               </div>
             </div>
           </div>
+          {success && confirmOpen && (
+            <span className="text-green-500 block self-center font-medium">
+              You have successfully confirmed the ticket. Redirecting ...
+            </span>
+          )}
         </div>
         <div className=" self-end mt-5 flex flex-row gap-5">
-          <button className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px] cursor-pointer"
-          onClick={handleConfirmBooking}>
+          <button
+            className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px] cursor-pointer"
+            onClick={handleConfirmBooking}
+          >
             Confirm booking ticket
           </button>
           <button className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px]">

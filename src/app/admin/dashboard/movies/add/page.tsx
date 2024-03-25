@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+import axiosInstance from "@/axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -14,6 +14,12 @@ interface ShowTime {
   id: number;
   startTime: string;
   endTime: string;
+}
+
+interface RoomDetails {
+  id: number;
+  nameRoom: string;
+  seatQuantity: number;
 }
 
 interface MovieDetails {
@@ -46,22 +52,32 @@ export default function Home() {
   const [director, setDirector] = useState("");
   const [duration, setDuration] = useState("");
   const [version, setVersion] = useState("");
-  const [movType, setMovType] = useState<String[]>([]);
+  const [movType, setMovType] = useState<string[]>([]);
   const [room, setRoom] = useState("1");
-  const [schedule, setSchedule] = useState<String[]>([]);
+  const [schedule, setSchedule] = useState<string[]>([]);
   const [content, setContent] = useState("");
+  const [rooms, setRooms] = useState<RoomDetails[]>([]);
   const [fileName, setFileName] = useState<File>();
-  const generateTimeSlots = (duration: number) => {
+  const generateTimeSlots = (
+    duration: any,
+    interval: any,
+    startHour: any,
+    endHour: any
+  ) => {
     const slots = [];
-    let startTime = new Date().setHours(8, 0, 0, 0);
-    const endTime = new Date().setHours(24, 0, 0, 0);
-
-    while (startTime < endTime) {
-      const date = new Date(startTime);
-      slots.push(date.toISOString().substring(11, 16));
-      startTime += (duration + 30) * 60000;
+    let currentTime = new Date().setHours(startHour, 0, 0, 0);
+    const endTime = new Date().setHours(endHour, 0, 0, 0);
+    while (currentTime + Number(duration) * 60000 < endTime) {
+      const slotTime = new Date(currentTime);
+      slots.push(
+        slotTime.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+      );
+      currentTime += (Number(duration) + Number(interval)) * 60000;
     }
-
     return slots;
   };
 
@@ -80,13 +96,18 @@ export default function Home() {
     });
   };
 
-  const slots = generateTimeSlots(Number(duration));
+  useEffect(() => {
+    axiosInstance.get(`/api/room`).then((response) => {
+      setRooms(response.data);
+    });
+  }, []);
+
+  const slots = generateTimeSlots(Number(duration), 30, 8, 24);
 
   function handleCreate(e: any) {
     e.preventDefault();
-    axios.post(
-      "https://9817-14-232-224-226.ngrok-free.app/api/movie",
-      {
+    axiosInstance
+      .post("/api/movie", {
         content: content,
         movieNameEnglish: movNameEn,
         movieNameVN: movNameVie,
@@ -101,15 +122,10 @@ export default function Home() {
         typeMovieId: movType,
         startTime: schedule,
         roomId: room,
-      },
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      }
-    ).then(response => {
-      router.push("/admin/dashboard/movies")
-    });
+      })
+      .then((response) => {
+        router.push("/admin/dashboard/movies");
+      });
   }
 
   function checkFormFilled() {
@@ -134,11 +150,7 @@ export default function Home() {
     if (e.target.files[0]) {
       const form = new FormData();
       form.append("imageFile", e.target.files[0]);
-      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      });
+      axiosInstance.post("/images", form);
     }
   };
 
@@ -389,9 +401,9 @@ export default function Home() {
           className="text-black h-10 rounded-[5px] border-[1px] border-black border-solid p-2"
           onChange={(e) => setRoom(e.target.value)}
         >
-          <option value="1">Cinema room 1</option>
-          <option value="2">Cinema room 2</option>
-          <option value="3">Cinema room 3</option>
+          {rooms.map((el) => (
+            <option value={el.id}>{el.nameRoom}</option>
+          ))}
         </select>
         <label
           htmlFor="version"
@@ -449,7 +461,7 @@ export default function Home() {
               id="file-upload"
               type="file"
               className="hidden"
-              onChange={handleFileChange}
+              onChange={(e) => handleFileChange(e)}
             />
             {fileName && (
               <span className="text-sm text-black">{fileName.name}</span>

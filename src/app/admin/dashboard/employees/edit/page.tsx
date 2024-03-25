@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import minimize from "@/public/minimize.svg";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import avaBlank from "@/public/defaultAva.jpg";
 import Image from "next/image";
+import axiosInstance from "@/axios";
 
 interface Params {
   slug: string;
@@ -63,18 +62,9 @@ export default function Home({
 
   useEffect(() => {
     async function getData() {
-      await axios
-        .get(
-          `https://9817-14-232-224-226.ngrok-free.app/api/user/${username}`,
-          {
-            headers: {
-              "ngrok-skip-browser-warning": "skip-browser-warning",
-            },
-          }
-        )
-        .then((response) => {
-          setUser(response.data);
-        });
+      await axiosInstance.get(`/api/user/${username}`).then((response) => {
+        setUser(response.data);
+      });
     }
     if (notReload) {
       getData();
@@ -102,38 +92,26 @@ export default function Home({
     if (e.target.files[0]) {
       const form = new FormData();
       form.append("imageFile", e.target.files[0]);
-      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      });
+      axiosInstance.post("/images", form);
     }
   };
 
   function handleUpdate(e: any) {
     e.preventDefault();
-    axios
-      .put(
-        "https://9817-14-232-224-226.ngrok-free.app/api/profile",
-        {
-          userId: id,
-          username: account,
-          password: password,
-          fullName: fullName,
-          dateOfBirth: dateOfBirth,
-          gender: gender,
-          email: email,
-          address: address,
-          phone: phoneNumber,
-          identityCard: identityCard,
-          imageURL: image?.name,
-        },
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
-      )
+    axiosInstance
+      .put("/api/profile", {
+        userId: id,
+        username: account,
+        password: password,
+        fullName: fullName,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
+        email: email,
+        address: address,
+        phone: phoneNumber,
+        identityCard: identityCard,
+        imageURL: image?.name,
+      })
       .then((response) => {
         router.push("/admin/dashboard/employees");
       });
@@ -148,20 +126,24 @@ export default function Home({
       <div className="flex flex-row text-black w-full">
         <div className="flex flex-col items-center justify-center p-5 w-full overflow-auto">
           <form
-            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full"
+            className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full flex flex-col"
             onSubmit={handleUpdate}
           >
             <div className="mb-4">
-              <h1 className="text-lg leading-tight font-bold mb-2">
-                Update employee
+              <h1 className="text-lg leading-tight font-bold mb-2 text-center mb-5">
+                UPDATE EMPLOYEE
               </h1>
             </div>
 
-            <div className="w-[12rem] h-[12rem] overflow-hidden rounded-[10px] mb-5">
-              <Image
-                src={avaBlank}
+            <div className="w-[20rem] h-[20rem] overflow-hidden rounded-[10px] mb-5 self-center">
+              <img
+                src={
+                  process.env.NEXT_PUBLIC_API_BASE_URL +
+                  "/images/" +
+                  user?.imageURL
+                }
                 alt=""
-                className="object-center object-scale-down"
+                className="w-full h-full object-cover rounded-full border-[1px] border-black"
               />
             </div>
 
@@ -315,7 +297,7 @@ export default function Home({
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="address"
                 type="text"
-                value={email}
+                value={address}
                 placeholder="Address"
                 onChange={(e) => setAddress(e.target.value)}
               />

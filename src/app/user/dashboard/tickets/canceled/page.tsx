@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axiosInstance from "@/axios";
 import { useEffect, useState } from "react";
 
 interface Ticket {
@@ -21,53 +21,34 @@ interface SearchParams {
 export default function Home({
   params,
   searchParams,
-}: {
+}: Readonly<{
   params: Params;
   searchParams: SearchParams;
-}) {
+}>) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const ticket = searchParams.ticket;
+  const [searchString, setSearchString] = useState("");
   useEffect(() => {
-    if (ticket === "booked") {
-      axios
-        .get("https://9817-14-232-224-226.ngrok-free.app/api/ticket/booked/1", {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        })
+    const userName = localStorage.getItem("account");
+    if (userName) {
+      axiosInstance
+        .get(`/api/ticket/cancel/${userName}`)
         .then((response) => setTickets(response.data));
     }
   }, []);
+
+  const listFilteredTickets = tickets.filter((el) => el.movieNameVN.toLowerCase().includes(searchString.toLowerCase()));
 
   return (
     <div className="bg-[#EFF0F3] w-full h-full px-10 py-20">
       <div className="w-full bg-white mx-auto p-4">
         <div className="flex justify-between mb-4">
-          <div>
-            <label
-              htmlFor="entries"
-              className="text-sm font-medium text-gray-700 mr-2"
-            >
-              Show
-            </label>
-            <select
-              id="entries"
-              name="entries"
-              className="border border-gray-300 rounded-md p-1 pl-6 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-[5rem]"
-            >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              {/* Add more options as needed */}
-            </select>
-            <span className="text-sm font-medium text-gray-700 ml-2">
-              entries
-            </span>
-          </div>
-          <div>
+          <div className="ml-3">
             <input
               type="text"
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
               placeholder="Search:"
-              className="border border-gray-300 rounded-md p-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="border border-gray-300 rounded-md p-1 pl-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
         </div>
@@ -100,13 +81,25 @@ export default function Home({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {tickets.map((el, index) => <tr>
-                  <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">{index}</td>
-                  <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">{el.movieNameVN}</td>
-                  <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">{el.startDate}</td>
-                  <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">{el.totalAmount}</td>
-                  <td className="px-6 py-3 text-left text-xs text-red-500 uppercase tracking-wider">Canceled</td>
-                </tr>)}
+                {listFilteredTickets.map((el, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">
+                      {index+1}
+                    </td>
+                    <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">
+                      {el.movieNameVN}
+                    </td>
+                    <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">
+                      {el.startDate}
+                    </td>
+                    <td className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider">
+                      {el.totalAmount}
+                    </td>
+                    <td className="px-6 py-3 text-left text-xs text-red-500 uppercase tracking-wider">
+                      Canceled
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

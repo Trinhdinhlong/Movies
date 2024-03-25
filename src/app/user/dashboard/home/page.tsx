@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import list from "@/public/list.png";
 import MovieBlock from "components/MovieBlock";
-import axios from "axios";
+import axiosInstance from "@/axios";
+import Carousel from "components/Carousel";
+import { useRouter } from "next/navigation";
 
 interface TypeMovie {
   categoryName: string;
@@ -23,46 +23,95 @@ interface Movie {
   imageURL: string;
 }
 
-export default function Home() {
-  const [listMovie, setListMovie] = useState<Movie[]>([]);
-  const [authenticated, setAuthenticated] = useState(false)
-  const [listMovieType, setMovieType] = useState<TypeMovie[]>([]);
+interface Params {
+  slug: string;
+}
+
+interface SearchParams {
+  [key: string]: string | undefined;
+}
+
+export default function Home({
+  params,
+  searchParams,
+}: Readonly<{
+  params: Params;
+  searchParams: SearchParams;
+}>) {
+  const type = searchParams.type;
+  const router = useRouter()
+  const [authenticated, setAuthenticated] = useState(false);
+  const [noData, setNoData] = useState(false);
+  const [movieType, setMovieType] = useState<TypeMovie[]>([]);
+  const slides = [
+    "/piano.jpg",
+    "/greenbook.jpeg",
+    "/Crazy-Rich-Asians-top.jpg",
+    "/dune.jpg",
+  ];
 
   useEffect(() => {
-    if(localStorage.getItem("isLogin") || localStorage.getItem("isLogin") === "true") {
-      setAuthenticated(true)
+    if (localStorage.getItem("isLogin") !== null) {
+      setAuthenticated(true);
     }
-  }, [authenticated])
+  }, [authenticated]);
+
+  // useEffect(() => {
+  //   if( localStorage.getItem("role") === "Admin") {
+  //     router.push("/admin/dashboard/showtime")
+  //   }
+  // }, [])
 
   useEffect(() => {
-    axios
-      .get("https://9817-14-232-224-226.ngrok-free.app/api/movies", {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
-      .then((response) => {
+    if (type === undefined) {
+      axiosInstance
+        .get("/api/movies")
+        .then((response) => {
+          setMovieType(response.data);
+        })
+        .catch((error) => console.error(error));
+    } else {
+      axiosInstance.get(`/api/movie/${type}`).then((response) => {
+        console.log(response.data);
         setMovieType(response.data);
-      })
-      .catch((error) => console.error(error));
+      });
+    }
   }, []);
 
   return (
-    <div className="flex flex-col w-full relative h-full overflow-auto">
-      <div className="bg-[#B8ADC1]">
+    <div className="flex flex-col w-full relative">
+      <div className="bg-[#B8ADC1] h-full overflow-auto">
         <div className="w-full flex flex-col mb-20">
-          <Image src={list} alt="" className="w-full" />
+          <div className="flex h-[30rem] justify-center bg-no-repeat bg-center bg-cover flex-row-full bg-[url(/backgroundcarousel.jpg)] backdrop-brightness-50 object-cover">
+            <div className="h-[72%] w-[50%] flex flex-row gap-3 overflow-hidden absolute left-[26%] rounded-[5%] border-[1px] border-red-500 top-[5px]">
+              <Carousel
+                autoSlide={true}
+                autoSlideInterval={2500}
+                slides={slides}
+              >
+                {slides.map((el) => (
+                  <div className="w-full flex shrink-0" key={el}>
+                    <img src={el} alt="" className="w-full h-auto " />
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+          </div>
           <div>
             <div className="mt-5 ml-5">
               <div className="flex flex-col gap-16">
-                {listMovieType.map((movie) => (
+                {movieType.map((movie) => (
                   <div className="flex flex-col">
-                    <span className="font-[700] block mb-2 text-white">
+                    <span className="font-[700] block mb-2 text-white text-[1.5rem] mb-5">
                       {movie.categoryName}
                     </span>
                     <div className="flex flex-row gap-16">
                       {movie.movies.map((el) => (
-                        <MovieBlock imageURL={el.imageURL} movieName={el.movieNameEnglish} />
+                        <MovieBlock
+                          key={el.id}
+                          imageURL={el.imageURL}
+                          movieName={el.movieNameEnglish}
+                        />
                       ))}
                     </div>
                   </div>

@@ -1,26 +1,33 @@
-import Image from "next/image";
-import defaultAva from "@/public/defaultAva.jpg";
 import { useRouter } from "next/navigation";
 
 export default function MovieBlock(props: any) {
   const router = useRouter();
 
-  function handleShowtime() {
-    router.push("/user/dashboard/showtime");
+  function handleClickMovie(e: any) {
+    router.push(
+      `/${
+        localStorage.getItem("role") !== null
+          ? localStorage.getItem("role")?.toLowerCase()
+          : "user"
+      }/dashboard/showtime?search=${e}`
+    );
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="bg-[#F46E6E]">
-        <Image
-          src={defaultAva || props.imageURL}
+    <div
+      className="flex flex-col text-white cursor-pointer bg-black hover:bg-white hover:text-black"
+      onClick={() => handleClickMovie(props.movieName)}
+    >
+      <div className="w-[14rem] h-[17rem]">
+        <img
+          src={
+            process.env.NEXT_PUBLIC_API_BASE_URL + "/images/" + props.imageURL
+          }
           alt=""
-          width={200}
-          height={120}
+          className="w-full h-full"
         />
       </div>
-      <div className="bg-[#F46E6E] p-2 cursor-pointer hover:bg-red-500"
-      onClick={handleShowtime}>
+      <div className="p-2 cursor-pointer">
         <span className="text-center block font-[500]">{props.movieName}</span>
       </div>
     </div>

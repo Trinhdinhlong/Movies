@@ -1,53 +1,76 @@
 "use client";
 
-import axios from "axios";
+import axiosInstance from "@/axios";
 import MovieShowTime from "components/MovieShowTime";
+import { useRouter } from "next/navigation";
+
 import { useEffect, useState } from "react";
 
-interface Showtime {
+interface ShowTime {
   id: number;
   startTime: string;
   endTime: string;
-  createdDate: string;
-  updatedTime: string;
+  active: boolean;
 }
 
-interface MovieShowtime {
+interface MovieShowTime {
   id: number;
   movieNameEnglish: string;
   movieNameVN: string;
   imageURL: string;
-  showTimes: Showtime[];
+  showTimes: ShowTime[];
   startDate: string;
   endDate: string;
   roomId: number;
 }
 
-export default function Home() {
-  const [listMovies, setListMovies] = useState<MovieShowtime[]>([]);
+interface Params {
+  slug: string;
+}
+
+interface SearchParams {
+  [key: string]: string | undefined;
+}
+
+export default function Home({
+  params,
+  searchParams,
+}: Readonly<{
+  params: Params;
+  searchParams: SearchParams;
+}>) {
+  const [listMovieShowTimes, setListMovieShowTimes] = useState<MovieShowTime[]>(
+    []
+  );
+  const router = useRouter();
+  const search = searchParams.search;
+  const [noData, setNoData] = useState(false);
+
   useEffect(() => {
-    function formatDate(date: Date) {
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-
-      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    if (localStorage.getItem("isLogin") === null) {
+      router.push("/login");
     }
+  });
 
-    let currentDate = new Date();
-    let formattedDate = formatDate(currentDate);
-    axios
-      .get(
-        `https://9817-14-232-224-226.ngrok-free.app/api/movies/showtime?date=${formattedDate}`,
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
+  useEffect(() => {
+    if (search === undefined) {
+      axiosInstance
+        .get(`/api/movies/showtime`)
+        .then((response) => setListMovieShowTimes(response.data))
+        .catch((err) => {
+          if (err.errorCode === 6) {
+            setNoData(true);
+          }
+        });
+    } else if (search !== undefined) {
+      axiosInstance.get(`/api/movies/showtime/${search}`).then((response) => {
+        setListMovieShowTimes(response.data);
+      }).catch(err => {
+        if(err.errorCode === 6) {
+          setNoData(true)
         }
-      )
-      .then((response) => setListMovies(response.data));
+      });
+    }
   }, []);
 
   return (
@@ -57,7 +80,7 @@ export default function Home() {
           SHOWTIMES
         </span>
         <div className="flex flex-col bg-white gap-2 w-full py-10 px-10">
-          {listMovies.map((movie) => (
+          {listMovieShowTimes.map((movie) => (
             <MovieShowTime
               key={movie.id}
               movieEn={movie.movieNameEnglish}
@@ -65,9 +88,15 @@ export default function Home() {
               showtime={movie.showTimes}
               movieId={movie.id}
               room={movie.roomId}
+              imageURL={movie.imageURL}
             />
           ))}
         </div>
+        {noData && (
+          <span className="text-red-500 block self-center font-medium">
+            No showtimes found!
+          </span>
+        )}
       </div>
     </div>
   );

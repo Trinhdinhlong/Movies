@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import axiosInstance from "@/axios";
 
 interface SeatDetail {
   id: number;
@@ -35,36 +36,34 @@ interface SearchParams {
 export default function Home({
   params,
   searchParams,
-}: {
+}: Readonly<{
   params: Params;
   searchParams: SearchParams;
-}) {
+}>) {
   const router = useRouter();
   const movieId = searchParams.movieId;
   const movieName = searchParams.movieName;
   const showTimeId = searchParams.showTimeId;
   const showTime = searchParams.showTime;
   const date = searchParams.date;
-  const roomId = searchParams.movieId;
+  const roomId = searchParams.roomId;
   const [listSeat, setListSeat] = useState<SeatDetail[]>([]);
-  const [selectedSeat, setSelectedSeat] = useState<SeatChosen[]>([
-    { id: 1, price: 500, seatColumn: "A", seatRow: 10 },
-  ]);
+  const [selectedSeat, setSelectedSeat] = useState<SeatChosen[]>([]);
 
   useEffect(() => {
-    axios
+    if(localStorage.getItem("isLogin") === null) {
+      router.push("/login")
+    }
+  })
+
+  useEffect(() => {
+    axiosInstance
       .get(
-        `https://9817-14-232-224-226.ngrok-free.app/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`,
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
-      )
+        `/api/movie/${movieId}/room/${roomId}/showtime/${showTimeId}/seats`)
       .then((response) => {
         setListSeat(response.data);
       });
-  }, [movieId, showTimeId]);
+  }, [movieId, roomId, showTimeId, showTime, date, roomId]);
 
   const listSeatLeft = listSeat.filter(
     (seat) =>
@@ -90,7 +89,7 @@ export default function Home({
   function redirectConfirmation() {
     const resultJson = JSON.stringify(selectedSeat);
     const result = encodeURIComponent(resultJson);
-    const url = `http://localhost:3000/admin/dashboard/showtime/seats/confirmation?seats=${result}&roomId=${roomId}&showTime=${showTime}&date=${date}&movieName=${movieName}&showTimeId=${showTimeId}`;
+    const url = `/admin/dashboard/showtime/seats/confirmation?seats=${result}&roomId=${roomId}&showTime=${showTime}&date=${date}&movieName=${movieName}&showTimeId=${showTimeId}`;
     router.push(url);
   }
 

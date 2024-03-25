@@ -1,9 +1,8 @@
 "use client";
-import Image from "next/image";
-import minimize from "@/public/minimize.svg";
+
+import axiosInstance from "@/axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 interface Role {
   id: number;
@@ -30,16 +29,18 @@ interface Employee {
 export default function Home(props: any) {
   const router = useRouter();
   const [employees, setEmployees] = useState<Employee[]>();
+  const [noRecord, setNoRecord] = useState(false);
+  const [search, setSearch] = useState("")
   useEffect(() => {
-    axios
-      .get("https://9817-14-232-224-226.ngrok-free.app/api/employee", {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
+    axiosInstance
+      .get("/api/employee")
       .then((response) => {
-        console.log(response.data);
         setEmployees(response.data);
+      })
+      .catch((error) => {
+        if (error.errorCode === 6) {
+          setNoRecord(true);
+        }
       });
   }, []);
 
@@ -48,23 +49,19 @@ export default function Home(props: any) {
   }
 
   function handleDelete(username: any) {
-    axios
-      .delete(`https://9817-14-232-224-226.ngrok-free.app/api/employee/${username}`, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
-      .then((response) => {
-        location.reload()
-      });
+    axiosInstance.delete(`/api/employee/${username}`).then((response) => {
+      location.reload();
+    });
   }
 
   function handleEdit(username: any) {
-    router.push(`/admin/dashboard/employees/edit?username=${username}`)
+    router.push(`/admin/dashboard/employees/edit?username=${username}`);
   }
 
+  const listFilteredEmployees = employees?.filter(el => el.fullName.toLowerCase().includes(search))
+
   return (
-    <div className="w-full">
+    <div className="w-full h-full overflow-auto">
       <div className="flex flex-row text-black w-full">
         <div className="min-h-screen bg-gray-100 p-8 w-full">
           <div className="bg-white shadow rounded-md p-6">
@@ -78,6 +75,8 @@ export default function Home(props: any) {
                 </label>
                 <input
                   id="searchBar"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   type="text"
                   className="border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -105,9 +104,6 @@ export default function Home(props: any) {
                       Full name
                     </th>
                     <th className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                      Date of birth
-                    </th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">
                       Gender
                     </th>
                     <th className="text-left py-3 px-4 uppercase font-semibold text-sm">
@@ -120,9 +116,6 @@ export default function Home(props: any) {
                       Phone number
                     </th>
                     <th className="text-left py-3 px-4 uppercase font-semibold text-sm">
-                      Address
-                    </th>
-                    <th className="text-left py-3 px-4 uppercase font-semibold text-sm">
                       Edit
                     </th>
                     <th className="text-left py-3 px-4 uppercase font-semibold text-sm">
@@ -131,21 +124,27 @@ export default function Home(props: any) {
                   </tr>
                 </thead>
                 <tbody className="text-gray-700">
-                  {employees?.map((e, index) => (
+                  {listFilteredEmployees?.map((e, index) => (
                     <tr>
-                      <td className="text-left py-3 px-4">{index+1}</td>
+                      <td className="text-left py-3 px-4">{index + 1}</td>
                       <td className="text-left py-3 px-4">{e.username}</td>
                       <td className="text-left py-3 px-4">{e.fullName}</td>
-                      <td className="text-left py-3 px-4">{e.dateOfBirth}</td>
                       <td className="text-left py-3 px-4">{e.gender}</td>
                       <td className="text-left py-3 px-4">{e.email}</td>
                       <td className="text-left py-3 px-4">{e.identityCard}</td>
                       <td className="text-left py-3 px-4">{e.phone}</td>
-                      <td className="text-left py-3 px-4">{e.address}</td>
-                      <td className="text-left py-3 px-4 text-green-500 cursor-pointer font-bold"
-                      onClick={() => handleEdit(e.username)}>EDIT</td>
-                      <td className="text-left py-3 px-4 text-red-500 cursor-pointer font-bold"
-                      onClick={() => handleDelete(e.userId)}>DELETE</td>
+                      <td
+                        className="text-left py-3 px-4 text-green-500 cursor-pointer font-bold"
+                        onClick={() => handleEdit(e.username)}
+                      >
+                        EDIT
+                      </td>
+                      <td
+                        className="text-left py-3 px-4 text-red-500 cursor-pointer font-bold"
+                        onClick={() => handleDelete(e.userId)}
+                      >
+                        DELETE
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -161,6 +160,11 @@ export default function Home(props: any) {
                 </button>
               </div>
             </div>
+            {noRecord && (
+              <span className="text-gray-200 block self-center font-medium">
+                There is no employees. Please create new
+              </span>
+            )}
           </div>
         </div>
       </div>

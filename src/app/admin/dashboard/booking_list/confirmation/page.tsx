@@ -8,6 +8,8 @@ import UserConfirmation from "components/UserConfirmation";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import MovieConfirmationSingleTicket from "components/MovieConfirmationSingleTicket";
+import axiosInstance from "@/axios";
+import AdminConfirmation from "components/AdminConfirmation";
 
 interface Params {
   slug: string;
@@ -33,6 +35,7 @@ interface TicketInfo {
   seatColumn: string;
   seatRow: number;
   price: number;
+  email: string;
   username: string;
   fullName: string;
   identityCard: string;
@@ -46,42 +49,30 @@ export default function Home({
   params: Params;
   searchParams: SearchParams;
 }) {
-    const [ticketInfo, setTicketInfo] = useState<TicketInfo>();
-    const type = searchParams.type;
-    const ticketId = searchParams.ticketId;
-    const [claimed, setClaimed] = useState(false)
+  const [ticketInfo, setTicketInfo] = useState<TicketInfo>();
+  const type = searchParams.type;
+  const ticketId = searchParams.ticketId;
+  const [claimed, setClaimed] = useState(false);
   const router = useRouter();
 
-
   useEffect(() => {
-    axios
-      .get(`https://9817-14-232-224-226.ngrok-free.app/api/ticket/admin/${ticketId}`, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
-      .then((response) => {
-        setTicketInfo(response.data);
-      });
+    axiosInstance.get(`/api/ticket/admin/${ticketId}`).then((response) => {
+      setTicketInfo(response.data);
+    });
   }, []);
 
-    async function handleConfirmBooking() {
-      await axios.put(
-        `https://9817-14-232-224-226.ngrok-free.app/api/ticket/${ticketId}`,
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
-      ).then(response => setClaimed(true));
-    }
+  async function handleConfirmBooking() {
+    await axiosInstance
+      .put(`/api/ticket/${ticketId}`)
+      .then((response) => setClaimed(true));
+  }
 
-    function handleBack() {
-      router.push("/admin/dashboard/booking_list")
-    }
+  function handleBack() {
+    router.push("/admin/dashboard/booking_list");
+  }
 
   return (
-    <div className="bg-[#EFF0F3] w-full overflow-auto flex flex-col items-center gap-10 py-10 pb-20">
+    <div className="bg-[#EFF0F3] h-full w-full overflow-auto flex flex-col items-center gap-10 py-10 pb-20">
       <span className="font-bold text-[1.5rem]">CONFIRM BOOKING TICKET</span>
       <div className="w-[80%] flex flex-col items-center">
         <div className="bg-white w-full px-[3rem] py-[2rem]">
@@ -104,15 +95,24 @@ export default function Home({
               <span className="text-[1.3rem] text-[#337AB7] font-[400] block">
                 Check your booking ticket confirmation
               </span>
-              <UserConfirmation />
+              <AdminConfirmation
+                memberID={ticketInfo?.username}
+                fullName={ticketInfo?.fullName}
+                identityCard={ticketInfo?.identityCard}
+                phone={ticketInfo?.phone}
+              />
             </div>
           </div>
         </div>
         <button
           className="text-white p-[10px] bg-[#337AB7] font-[600] rounded-[5px] self-end mt-2"
-          onClick={type.includes('Waiting') && !claimed ? handleConfirmBooking : handleBack}
+          onClick={
+            type.includes("Waiting") && !claimed
+              ? handleConfirmBooking
+              : handleBack
+          }
         >
-          {type.includes('Waiting') && !claimed ? "Confirm the ticket" : "Back"}
+          {type.includes("Waiting") && !claimed ? "Confirm the ticket" : "Back"}
         </button>
       </div>
     </div>

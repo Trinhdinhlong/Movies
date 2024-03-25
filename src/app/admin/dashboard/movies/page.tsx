@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axiosInstance from "@/axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -33,51 +33,51 @@ interface Movie {
 
 export default function ListMovie() {
   const [listMovieType, setMovieType] = useState<Movie[]>([]);
-  const router = useRouter()
+  const [search, setSearch] = useState("");
+  const router = useRouter();
   useEffect(() => {
-    axios
-      .get("https://9817-14-232-224-226.ngrok-free.app/api/movies/admin", {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
+    axiosInstance
+      .get("/api/movies/admin")
       .then((response) => {
+        console.log(response.data);
         setMovieType(response.data);
       })
       .catch((error) => console.error(error));
   }, []);
 
   function handleDelete(id: any) {
-    axios
-      .delete(`https://9817-14-232-224-226.ngrok-free.app/api/movies/${id}`, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      })
-      .then((response) => {
-        location.reload()
-      })
+    axiosInstance.delete(`/api/movies/${id}`).then((response) => {
+      location.reload();
+    });
   }
 
   function handleCreate() {
-    router.push("/admin/dashboard/movies/add")
+    router.push("/admin/dashboard/movies/add");
   }
 
   function handleUpdate(id: any) {
-    router.push(`/admin/dashboard/movies/edit?id=${id}`)
+    router.push(`/admin/dashboard/movies/edit?id=${id}`);
   }
+
+  const listFilteredMovies = listMovieType.filter((el) =>
+    el.movieNameEnglish.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="bg-[#EFF0F3] w-full h-full flex flex-col items-center overflow-auto">
       <div className="w-[96%] bg-white mt-8 mb-8">
         <div className="flex justify-between items-center p-4 bg-white">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-          onClick={handleCreate}>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
+            onClick={handleCreate}
+          >
             Add new
           </button>
           <div className="flex space-x-2">
             <input
               className="px-4 py-2 border rounded-md"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search"
             />
             <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none">
@@ -119,9 +119,9 @@ export default function ListMovie() {
               </tr>
             </thead>
             <tbody>
-              {listMovieType.map((el, index) => (
+              {listFilteredMovies.map((el, index) => (
                 <tr className="bg-white border-b">
-                  <td className="py-4 px-6">{index+1}</td>
+                  <td className="py-4 px-6">{index + 1}</td>
                   <td className="py-4 px-6">{el.movieNameEnglish}</td>
                   <td className="py-4 px-6">{el.movieNameVN}</td>
                   <td className="py-4 px-6">{el.startedDate}</td>
@@ -129,14 +129,18 @@ export default function ListMovie() {
                   <td className="py-4 px-6">{el.duration}</td>
                   <td className="py-4 px-6">{el.version}</td>
                   <td className="py-4 px-6">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-                    onClick={() => handleUpdate(el.id)}>
+                    <button
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
+                      onClick={() => handleUpdate(el.id)}
+                    >
                       Detail
                     </button>
                   </td>
                   <td className="py-4 px-6">
-                    <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none"
-                    onClick={() => handleDelete(el.id)}>
+                    <button
+                      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none"
+                      onClick={() => handleDelete(el.id)}
+                    >
                       Delete
                     </button>
                   </td>

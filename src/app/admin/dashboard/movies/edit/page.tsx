@@ -1,5 +1,6 @@
 "use client";
-import axios from "axios";
+
+import axiosInstance from "@/axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,6 +17,12 @@ interface ShowTime {
   endTime: string;
 }
 
+interface RoomDetails {
+  id: number;
+  nameRoom: string;
+  seatQuantity: number;
+}
+
 interface MovieDetails {
   id: number;
   content: string;
@@ -28,9 +35,8 @@ interface MovieDetails {
   startedDate: string;
   endDate: string;
   imageURL: string;
-  createdDate: string;
-  updatedTime: string;
   version: string;
+  room: Room;
   typeMovies: TypeMovie[];
   showTimes: ShowTime[];
 }
@@ -43,13 +49,21 @@ interface SearchParams {
   [key: string]: string;
 }
 
+interface Room {
+  createdDate: string;
+  id: number;
+  roomName: string;
+  seatQuantity: number;
+  updatedTime: string;
+}
+
 export default function Home({
   params,
   searchParams,
-}: {
+}: Readonly<{
   params: Params;
   searchParams: SearchParams;
-}) {
+}>) {
   const router = useRouter();
   const id = searchParams.id;
   const [movieId, setMovieId] = useState(0);
@@ -63,47 +77,42 @@ export default function Home({
   const [director, setDirector] = useState("");
   const [duration, setDuration] = useState("");
   const [version, setVersion] = useState("");
+  const [rooms, setRooms] = useState<RoomDetails[]>([]);
   const [movType, setMovType] = useState<TypeMovie[]>([]);
-  const [room, setRoom] = useState("1");
+  const [room, setRoom] = useState(1);
   const [schedule, setSchedule] = useState<ShowTime[]>([]);
   const [content, setContent] = useState("");
+  const [imageName, setImageName] = useState("");
   const [fileName, setFileName] = useState<File>();
-  const typeMovId: number[] = [];
-  const showtimeRange: string[] = [];
-  const [notReload, setNotReload] = useState(false);
-  const generateTimeSlots = (duration: number) => {
+  const [notReload, setNotReload] = useState(true);
+
+  const generateTimeSlots = (
+    duration: any,
+    interval: any,
+    startHour: any,
+    endHour: any
+  ) => {
     const slots = [];
-    let startTime = new Date().setHours(8, 0, 0, 0);
-    const endTime = new Date().setHours(24, 0, 0, 0);
-
-    while (startTime < endTime) {
-      const date = new Date(startTime);
-      slots.push(date.toISOString().substring(11, 16));
-      startTime += (duration + 30) * 60000;
+    let currentTime = new Date().setHours(startHour, 0, 0, 0);
+    const endTime = new Date().setHours(endHour, 0, 0, 0);
+    while (currentTime + Number(duration) * 60000 < endTime) {
+      const slotTime = new Date(currentTime);
+      slots.push(
+        slotTime.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+      );
+      currentTime += (Number(duration) + Number(interval)) * 60000;
     }
-
     return slots;
   };
 
-  movieDetails?.typeMovies.map((el) => typeMovId.push(el.id));
-  movieDetails?.showTimes.map((el) =>
-    showtimeRange.push(el.startTime.substring(0, 5))
-  );
-
   useEffect(() => {
-    axios
-      .get(
-        `https://9817-14-232-224-226.ngrok-free.app/api/movies/admin/${id}`,
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
-      )
-      .then((response) => {
-        setMovieDetails(response.data);
-      })
-      .catch((error) => console.error(error));
+    axiosInstance.get(`/api/room`).then((response) => {
+      setRooms(response.data);
+    });
   }, []);
 
   useEffect(() => {
@@ -112,18 +121,10 @@ export default function Home({
 
   useEffect(() => {
     async function getData() {
-      await axios
-        .get(
-          `https://9817-14-232-224-226.ngrok-free.app/api/movies/admin/${id}`,
-          {
-            headers: {
-              "ngrok-skip-browser-warning": "skip-browser-warning",
-            },
-          }
-        )
-        .then((response) => {
-          setMovieDetails(response.data);
-        });
+      await axiosInstance.get(`/api/movie/admin/${id}`).then((response) => {
+        console.log(response.data);
+        setMovieDetails(response.data);
+      });
     }
     if (notReload) {
       getData();
@@ -143,7 +144,8 @@ export default function Home({
     setDuration(movieDetails?.duration.toString() || "");
     setVersion(movieDetails?.version || "");
     setMovType(movieDetails?.typeMovies || []);
-    setRoom(movieDetails?.showTimes[0].id.toString() || "");
+    setImageName(movieDetails?.imageURL || "");
+    setRoom(movieDetails?.room?.id || 1);
     setSchedule(movieDetails?.showTimes || []);
     setContent(movieDetails?.content || "");
   }, [movieDetails]);
@@ -151,42 +153,46 @@ export default function Home({
   const handleCheckBoxSchedule = (e: any) => {
     const { value, checked } = e.target;
     setSchedule((prev) => {
+      // Convert the current time string to a ShowTime object or retrieve it if it already exists
+      const timeObj: ShowTime = {
+        id: prev.length,
+        startTime: value,
+        endTime: "",
+      };
       if (checked) {
-        return [...prev, value];
+        // Add the time object to the array if checked
+        return [...prev, timeObj];
       } else {
-        return prev.filter((time) => time !== value);
+        // Remove the time object from the array if unchecked
+        return prev.filter((time) => time.startTime.slice(0, 5) !== value);
       }
     });
   };
 
-  const slots = generateTimeSlots(Number(duration));
+  const slots = generateTimeSlots(duration, 30, 8, 24);
+
+  console.log(schedule)
 
   function handleUpdate(e: any) {
     e.preventDefault();
-    axios
-      .put(
-        "https://9817-14-232-224-226.ngrok-free.app/api/movie",
-        {
-          id: movieId,
-          content: content,
-          movieNameEnglish: movNameEn,
-          movieNameVN: movNameVie,
-          actor: actor,
-          director: director,
-          movieProductionCompany: movProductionComp,
-          startedDate: fromDate,
-          endDate: toDate,
-          duration: duration,
-          imageURL: fileName?.name,
-          version: version,
-          typeMovieId: movType.map(el => Number(el.id)),
-        },
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
-      )
+    axiosInstance
+      .put("/api/movie", {
+        id: movieId,
+        content: content,
+        movieNameEnglish: movNameEn,
+        movieNameVN: movNameVie,
+        actor: actor,
+        director: director,
+        movieProductionCompany: movProductionComp,
+        startedDate: fromDate,
+        endDate: toDate,
+        duration: duration,
+        imageURL: imageName,
+        startTime: schedule.map((el) => el.startTime.slice(0, 5)),
+        roomId: room,
+        version: version,
+        typeMovieId: movType.map((el) => Number(el.id)),
+      })
       .then((response) => {
         router.push("/admin/dashboard/movies");
       });
@@ -211,26 +217,32 @@ export default function Home({
 
   const handleFileChange = (e: any) => {
     setFileName(e.target.files[0]);
+    setImageName(e.target.files[0].name);
     if (e.target.files[0]) {
       const form = new FormData();
       form.append("imageFile", e.target.files[0]);
-      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      });
+      axiosInstance.post("/images", form);
     }
   };
 
   const handleCheckBoxType = (e: any, typeId: number) => {
     const checked = e.target.checked;
     if (checked) {
-      const newType = { id: typeId, typeName: '', createdDate: null, updatedTime: null };
-      setMovType(prev => [...prev, newType]);
+      const newType = {
+        id: typeId,
+        typeName: "",
+        createdDate: null,
+        updatedTime: null,
+      };
+      setMovType((prev) => [...prev, newType]);
     } else {
-      setMovType(prev => prev.filter(type => type.id !== typeId));
+      setMovType((prev) => prev.filter((type) => type.id !== typeId));
     }
   };
+
+  function handleClose() {
+    router.push("/admin/dashboard/movies");
+  }
 
   return (
     <div className="bg-[#EFF0F3] w-full h-full overflow-auto flex flex-col items-center text-black overflow-auto">
@@ -241,6 +253,17 @@ export default function Home({
         <span className="block self-center font-bold text-[1.5rem]">
           UPDATE MOVIE
         </span>
+        <div className="w-[40rem] h-[20rem] overflow-hidden mb-5 self-center">
+          <img
+            src={
+              process.env.NEXT_PUBLIC_API_BASE_URL +
+              "/images/" +
+              movieDetails?.imageURL
+            }
+            alt=""
+            className="w-full h-full object-cover border-[1px] border-black"
+          />
+        </div>
         <label
           htmlFor="movie_name"
           className="block text-sm font-medium text-gray-700"
@@ -349,7 +372,6 @@ export default function Home({
         <input
           id="duration"
           type="text"
-          disabled
           value={duration}
           className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
           onChange={(e) => setDuration(e.target.value)}
@@ -380,7 +402,7 @@ export default function Home({
             <input
               id="hd"
               type="checkbox"
-              checked={movType.some(type => type.id === 1)}
+              checked={movType.some((type) => type.id === 1)}
               value="1"
               onChange={(e) => handleCheckBoxType(e, 1)}
             />
@@ -390,7 +412,7 @@ export default function Home({
             <input
               id="hh"
               type="checkbox"
-              checked={movType.some(type => type.id === 5)}
+              checked={movType.some((type) => type.id === 5)}
               value="5"
               onChange={(e) => handleCheckBoxType(e, 5)}
             />
@@ -400,7 +422,7 @@ export default function Home({
             <input
               id="lm"
               type="checkbox"
-              checked={movType.some(type => type.id === 9)}
+              checked={movType.some((type) => type.id === 9)}
               value="9"
               onChange={(e) => handleCheckBoxType(e, 9)}
             />
@@ -410,7 +432,7 @@ export default function Home({
             <input
               id="tc"
               type="checkbox"
-              checked={movType.some(type => type.id === 2)}
+              checked={movType.some((type) => type.id === 2)}
               value="2"
               onChange={(e) => handleCheckBoxType(e, 2)}
             />
@@ -420,7 +442,7 @@ export default function Home({
             <input
               id="ct"
               type="checkbox"
-              checked={movType.some(type => type.id === 6)}
+              checked={movType.some((type) => type.id === 6)}
               value="6"
               onChange={(e) => handleCheckBoxType(e, 6)}
             />
@@ -430,7 +452,7 @@ export default function Home({
             <input
               id="kh"
               type="checkbox"
-              checked={movType.some(type => type.id === 10)}
+              checked={movType.some((type) => type.id === 10)}
               value="10"
               onChange={(e) => handleCheckBoxType(e, 10)}
             />
@@ -440,7 +462,7 @@ export default function Home({
             <input
               id="an"
               type="checkbox"
-              checked={movType.some(type => type.id === 3)}
+              checked={movType.some((type) => type.id === 3)}
               value="3"
               onChange={(e) => handleCheckBoxType(e, 3)}
             />
@@ -450,7 +472,7 @@ export default function Home({
             <input
               id="kd"
               type="checkbox"
-              checked={movType.some(type => type.id === 7)}
+              checked={movType.some((type) => type.id === 7)}
               value="7"
               onChange={(e) => handleCheckBoxType(e, 7)}
             />
@@ -460,7 +482,7 @@ export default function Home({
             <input
               id="tl"
               type="checkbox"
-              checked={movType.some(type => type.id === 4)}
+              checked={movType.some((type) => type.id === 4)}
               value="4"
               onChange={(e) => handleCheckBoxType(e, 4)}
             />
@@ -470,7 +492,7 @@ export default function Home({
             <input
               id="hh2"
               type="checkbox"
-              checked={movType.some(type => type.id === 8)}
+              checked={movType.some((type) => type.id === 8)}
               value="8"
               onChange={(e) => handleCheckBoxType(e, 8)}
             />
@@ -488,12 +510,11 @@ export default function Home({
           id="sched"
           value={room}
           className="text-black h-10 rounded-[5px] border-[1px] border-black border-solid p-2"
-          onChange={(e) => setRoom(e.target.value)}
+          onChange={(e) => setRoom(Number(e.target.value))}
         >
-          <option value="1">Cinema room 1</option>
-          <option value="2">Cinema room 2</option>
-          <option value="3">Cinema room 3</option>
-          <option value="4">Cinema room 4</option>
+          {rooms.map((el) => (
+            <option value={el.id}>{el.nameRoom}</option>
+          ))}
         </select>
         <label
           htmlFor="version"
@@ -511,9 +532,12 @@ export default function Home({
               <input
                 id={`time_${index}`}
                 type="checkbox"
-                checked={showtimeRange.includes(time)}
+                // Check if the current time string exists in the start times of the `schedule` state
+                checked={schedule.some(
+                  (showTime) => showTime.startTime.slice(0, 5) === time
+                )}
                 value={time}
-                onChange={handleCheckBoxSchedule}
+                onChange={(e) => handleCheckBoxSchedule(e)}
               />
               <label htmlFor={`time_${index}`}>{time}</label>
             </div>
@@ -555,8 +579,8 @@ export default function Home({
               className="hidden"
               onChange={handleFileChange}
             />
-            {fileName && (
-              <span className="text-sm text-black">{fileName.name}</span>
+            {imageName && (
+              <span className="text-sm text-black">{imageName}</span>
             )}
           </div>
         </div>
@@ -570,6 +594,7 @@ export default function Home({
           <button
             type="reset"
             className="p-2 bg-[#337AB7] w-[5rem] rounded-[5px] text-white"
+            onClick={handleClose}
           >
             Close
           </button>

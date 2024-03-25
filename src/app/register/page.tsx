@@ -1,7 +1,9 @@
 "use client";
 
-
-import axios from "axios";
+import axiosInstance from "@/axios";
+import Loading from "components/LoadingScreen";
+import Image from "next/image";
+import loginIcon from "../../../public/loginIcon.svg";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -17,6 +19,20 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [wrongData, setWrongData] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [invalidConfirmPassword, setInvalidConfirmPassoword] = useState(false);
+  const [invalidUsername, setInvalidUsername] = useState(false);
+  const [invalidPassword, setInvalidPassword] = useState("");
+  const [invalidPhone, setInvalidPhone] = useState(false);
+  const [invalidEmail, setInvalidEmail] = useState(false);
+  const [invalidDob, setInvalidDob] = useState(false);
+
+  const checkValidPasswordConfirm = () => {
+    return password === confirmPassword;
+  };
 
   const checkAllFieldsFilled = () => {
     const fields = [
@@ -42,24 +58,53 @@ export default function Register() {
 
   function handleRegister(e: any) {
     e.preventDefault();
-    if (checkAllFieldsFilled()) {
+    setLoading(true);
+    if (checkAllFieldsFilled() && checkValidPasswordConfirm()) {
       const dobArray = extractDob();
-      axios
-        .post("https://9817-14-232-224-226.ngrok-free.app/api/register", {
-          "username": account,
-          "password": password,
-          "fullName": fullName,
-          "dateOfBirth": dobArray[0]+ "-" + dobArray[2].padStart(2,'0') + "-" + dobArray[1].padStart(2,'0'),
-          "gender": gender.toUpperCase(),
-          "email": email,
-          "address": address,
-          "phone": phoneNumber,
-          "identityCard": identityCard
-      }).then(response => {
-        router.push("/login")
-      })
-        .catch(error => console.log(error))
+      axiosInstance
+        .post("/api/register", {
+          username: account,
+          password: password,
+          fullName: fullName,
+          dateOfBirth:
+            dobArray[0] +
+            "-" +
+            dobArray[1].padStart(2, "0") +
+            "-" +
+            dobArray[2].padStart(2, "0"),
+          gender: gender.toUpperCase(),
+          email: email,
+          address: address,
+          phone: phoneNumber,
+          identityCard: identityCard,
+        })
+        .then((response) => {
+          setSuccess(true);
+          setTimeout(() => {
+            router.push("/login");
+          }, 1500);
+        })
+        .catch((error) => {
+          console.log(error)
+          setTimeout(() => {
+            setLoading(false);
+            if (error.response.data.errorCode === 16) setInvalidPassword(error.response.data.message);
+          }, 1000);
+        });
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+        if (!checkAllFieldsFilled()) {
+          setInvalid(true);
+        } else {
+          setInvalidConfirmPassoword(true);
+        }
+      }, 1000);
     }
+  }
+
+  if (success) {
+    return <Loading />;
   }
 
   function handleRedirectLogin() {
@@ -68,8 +113,8 @@ export default function Register() {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[#EFF0F3]">
-      <div className="flex flex-col gap-5 w-[35%] bg-white border-solid border-[1px] border-[#BEC8CF] rounded-[0.5rem] shadow-[0_4px_4px_rgba(0, 0, 0, 0.25)] px-10">
-        <span className="flex justify-center mx-3 pt-4 text-center text-[2rem] text-black font-[700]">
+      <div className="flex flex-col w-[35%] bg-white border-solid border-[1px] border-[#BEC8CF] rounded-[0.5rem] pb-4 shadow-[0_4px_4px_rgba(0, 0, 0, 0.25)] px-10">
+        <span className="flex justify-center mx-3 pt-4 text-center text-[2rem] text-black font-[700] mb-5">
           REGISTER ACCOUNT
         </span>
         <form
@@ -127,7 +172,7 @@ export default function Register() {
                 name="gender"
                 className="mt-[3px]"
                 onChange={(e) => setGender(e.target.value)}
-                checked={gender === "male"}
+                checked={gender.toLowerCase() === "male"}
               />
               <label htmlFor="male">Nam</label>
             </div>
@@ -139,7 +184,7 @@ export default function Register() {
                 name="gender"
                 className="mt-[3px]"
                 onChange={(e) => setGender(e.target.value)}
-                checked={gender === "female"}
+                checked={gender.toLowerCase() === "female"}
               />
               <label htmlFor="female">Nữ</label>
             </div>
@@ -180,12 +225,42 @@ export default function Register() {
             onChange={(e) => setPhoneNumber(e.target.value)}
             required
           />
-          <button className="flex flex-row justify-center items-center p-[10px] bg-[#337AB7] rounded-[7px] mb-8 text-white mt-3">
-            Register
+          <button
+            className="flex flex-row justify-center items-center p-[10px] mb-4 bg-[#337AB7] rounded-[7px] text-white mt-3"
+            disabled={loading}
+          >
+            <div className="flex flex-row items-center gap-2">
+              {loading ? (
+                <div className="block h-4 w-4 animate-spin rounded-full border-2 border-t-transparent border-solid border-white"></div>
+              ) : (
+                <Image src={loginIcon} alt="" />
+              )}
+              <span>{loading ? "Waiting..." : "Register"}</span>
+            </div>
           </button>
         </form>
+        {invalid && (
+          <span className="text-red-500 block self-center font-medium">
+            Please fill in all the information above!
+          </span>
+        )}
+        {wrongData && (
+          <span className="text-red-500 block self-center font-medium">
+            Please revalidate the information above!
+          </span>
+        )}
+        {invalidConfirmPassword && (
+          <span className="text-red-500 block self-center font-medium">
+            The password and password confirmation must be the same!
+          </span>
+        )}
+        {invalidPassword !== "" && (
+            <span className="text-red-500 block self-center font-bold">
+              {invalidPassword.toUpperCase()}
+            </span>
+          )}
       </div>
-      <span className="text-black">
+      <span className="text-black font-medium">
         Have account already?{" "}
         <span
           className="underline cursor-pointer"

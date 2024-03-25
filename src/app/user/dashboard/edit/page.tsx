@@ -3,8 +3,8 @@
 import Image from "next/image";
 import avaBlank from "@/public/avaBlank.png";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import axiosInstance from "@/axios";
 
 interface Role {
   id: number;
@@ -33,6 +33,7 @@ export default function Home() {
   const router = useRouter();
   const [userId, setUserId] = useState(0);
   const [fileName, setFileName] = useState<File>();
+  const [imageName, setImageName] = useState("")
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -44,21 +45,20 @@ export default function Home() {
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [notReload, setNotReload] = useState(true);
+  const [updated, setUpdated] = useState(false);
+  const [invalidData, setInvalidData] = useState(false);
 
   useEffect(() => {
+    const userName = localStorage.getItem("account");
     async function getData() {
-      await axios
-        .get("https://9817-14-232-224-226.ngrok-free.app/api/user/user1", {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        })
-        .then((response) => {
-          setUser(response.data);
-        });
+      await axiosInstance.get(`/api/user/${userName}`).then((response) => {
+        setUser(response.data);
+      });
     }
     if (notReload) {
-      getData();
+      if (userName !== null) {
+        getData();
+      }
       setNotReload(false);
     }
   }, [notReload]);
@@ -75,18 +75,16 @@ export default function Home() {
     setEmail(user?.email || "");
     setAddress(user?.address || "");
     setPhoneNumber(user?.phone || "");
+    setImageName(user?.imageURL || "")
   }, [user]);
 
   const handleFileChange = (e: any) => {
     setFileName(e.target.files[0]);
+    setImageName(e.target.files[0].name)
     if (e.target.files[0]) {
       const form = new FormData();
       form.append("imageFile", e.target.files[0]);
-      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      });
+      axiosInstance.post("/images", form);
     }
   };
 
@@ -94,7 +92,6 @@ export default function Home() {
     const allStringsFilled =
       account &&
       password &&
-      confirmPassword &&
       fullName &&
       dateOfBirth &&
       gender &&
@@ -103,7 +100,6 @@ export default function Home() {
       address &&
       phoneNumber;
     const fileSelected = fileName !== undefined;
-    console.log(allStringsFilled && fileSelected);
     return allStringsFilled && fileSelected;
   }
 
@@ -112,28 +108,28 @@ export default function Home() {
   }
 
   function handleUpdate(e: any) {
-    e.preventDefault()
-    axios.put(
-      "https://9817-14-232-224-226.ngrok-free.app/api/profile",
-      {
-        userId: userId,
-        username: account,
-        password: password,
-        fullName: fullName,
-        dateOfBirth: dateOfBirth,
-        gender: gender,
-        email: email,
-        address: address,
-        phone: phoneNumber,
-        identityCard: identityCard,
-        imageURL: fileName?.name,
-      },
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      }
-    );
+    e.preventDefault();
+    if (checkFormFilled()) {
+      axiosInstance
+        .put("/api/profile", {
+          userId: userId,
+          username: account,
+          password: password,
+          fullName: fullName,
+          dateOfBirth: dateOfBirth,
+          gender: gender,
+          email: email,
+          address: address,
+          phone: phoneNumber,
+          identityCard: identityCard,
+          imageURL: fileName?.name,
+        })
+        .then((response) => {
+          setUpdated(true);
+        });
+    } else {
+      setInvalidData(true);
+    }
   }
 
   return (
@@ -142,8 +138,8 @@ export default function Home() {
         <span className="font-[700] border-b-[1px] w-full py-5 text-center text-[1.2rem]">
           Account Information
         </span>
-        <div className="w-full flex items center justify-center pt-5">
-          <Image src={avaBlank} alt="" />
+        <div className="w-[20rem] h-[20rem] flex items center justify-center pt-5 rounded-full">
+          <img src={process.env.NEXT_PUBLIC_API_BASE_URL + "/images/" + user?.imageURL} alt="" className="w-full h-full object-cover rounded-full"/>
         </div>
         <form
           className="w-[95%] bg-white px-[10px] flex flex-col gap-3"
@@ -172,7 +168,7 @@ export default function Home() {
           </label>
           <input
             id="password"
-            type="text"
+            type="password"
             value={password}
             className="border-solid border-[1px] border-[#BEC8CF] rounded-[5px] p-2"
             onChange={(e) => setPassword(e.target.value)}
@@ -316,14 +312,15 @@ export default function Home() {
                 className="hidden"
                 onChange={handleFileChange}
               />
-              {fileName && (
-                <span className="text-sm text-black">{fileName.name}</span>
+              {imageName && (
+                <span className="text-sm text-black">{imageName}</span> 
               )}
             </div>
           </div>
           <div className="flex flex-row items-center gap-4 mt-5">
             <button
               type="submit"
+              disabled={updated}
               className="p-2 bg-[#337AB7] w-[5rem] rounded-[5px] text-white"
             >
               Save
@@ -337,6 +334,16 @@ export default function Home() {
             </button>
           </div>
         </form>
+        {invalidData && (
+          <span className="text-red-500 block self-center font-bold">
+            You have to fill in all of the required fields above!
+          </span>
+        )}
+        {updated && (
+          <span className="text-green-500 block self-center font-bold">
+            Information is successfully updated
+          </span>
+        )}
       </div>
     </div>
   );

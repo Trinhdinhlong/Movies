@@ -1,9 +1,7 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
-import minimize from "@/public/minimize.svg";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axiosInstance from "@/axios";
 
 export default function Home() {
   const router = useRouter();
@@ -24,18 +22,14 @@ export default function Home() {
     if (e.target.files[0]) {
       const form = new FormData();
       form.append("imageFile", e.target.files[0]);
-      axios.post("https://9817-14-232-224-226.ngrok-free.app/images", form, {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
-      });
+      axiosInstance.post("/images", form);
     }
   };
 
   function handleUpdate(e: any) {
     e.preventDefault();
-    axios.post(
-      "https://9817-14-232-224-226.ngrok-free.app/api/employee",
+    axiosInstance.post(
+      "/api/employee",
       {
         username: account,
         password: password,
@@ -47,11 +41,6 @@ export default function Home() {
         phone: phoneNumber,
         identityCard: identityCard,
         imageURL: image?.name,
-      },
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "skip-browser-warning",
-        },
       }
     ).then(response => {
       router.push("/admin/dashboard/employees")

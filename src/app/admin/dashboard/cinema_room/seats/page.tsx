@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import SeatAdmin from "components/SeatAdmin";
+import axiosInstance from "@/axios";
 
 interface SeatDetail {
   id: number;
@@ -36,18 +37,9 @@ export default function Home({
   const [selectedSeat, setSelectedSeat] = useState<number[]>([]);
 
   useEffect(() => {
-    axios
-      .get(
-        `https://9817-14-232-224-226.ngrok-free.app/api/room/${cinemaId}/seats`,
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
-      )
-      .then((response) => {
-        setListSeat(response.data);
-      });
+    axiosInstance.get(`/api/room/${cinemaId}/seats`).then((response) => {
+      setListSeat(response.data);
+    });
   }, []);
 
   const listSeatLeft = listSeat.filter(
@@ -90,21 +82,16 @@ export default function Home({
   }
 
   function handleUpdateSeat() {
-    axios
+    axiosInstance
       .put(
-        `https://9817-14-232-224-226.ngrok-free.app/api/seats`,
+        `/api/seats`,
         listSeat.map((el) => ({
           id: el.id,
           seatType: el.seatType,
-        })),
-        {
-          headers: {
-            "ngrok-skip-browser-warning": "skip-browser-warning",
-          },
-        }
+        }))
       )
       .then((response) => {
-        router.push("/admin/dashboard/cinema_room")
+        router.push("/admin/dashboard/cinema_room");
       });
   }
 
@@ -156,8 +143,12 @@ export default function Home({
         <div className="flex flex-row gap-3">
           <span className="self-end flex flex-row gap-3 items-center justify-center bg-[#337AB7] text-white rounded-[5px] py-[5px] px-[10px] cursor-pointer">
             <Image src={continueImage} alt="" />
-            <span className="font-[500] cursor-pointer"
-            onClick={handleUpdateSeat}>Save</span>
+            <span
+              className="font-[500] cursor-pointer"
+              onClick={handleUpdateSeat}
+            >
+              Save
+            </span>
           </span>
           <span
             onClick={handleBack}
