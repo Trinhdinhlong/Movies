@@ -27,8 +27,8 @@ public enum ErrorCode {
     ERROR_IDENTITY_CARD_EXISTED(24, "identity card is existed"),
     ERROR_PHONE_EXISTED(25, "phone is existed"),
     ERROR_CAN_NOT_UPDATE_TICKET(26, "can't update active ticket"),
+    ERROR_MOVIENAME_NOT_MATCH(27, "Movie name has't in data")
     ;
-
     ErrorCode(int errCode, String message) {
         this.errCode = errCode;
         this.message = message;

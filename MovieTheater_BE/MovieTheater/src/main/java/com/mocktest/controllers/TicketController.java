@@ -29,24 +29,24 @@ public class TicketController {
         System.out.println(ticketService.getConfirmAdminByTicketId(id));
         return new ResponseEntity<>(ticketService.getConfirmAdminByTicketId(id), HttpStatus.OK);
     }
-    @GetMapping("ticket/booked/{userId}")
+    @GetMapping("ticket/booked/{username}")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasBookedANDGotten
-            (@PathVariable("userId") Long userId){
-        return new ResponseEntity<> (ticketService.getAllBookedList(userId), HttpStatus.OK);
+            (@PathVariable("username") String username){
+        return new ResponseEntity<> (ticketService.getAllBookedList(username), HttpStatus.OK);
     }
     @GetMapping("ticket/search/{data}")
     public ResponseEntity<List<BookingListResponse>> getAllBookingListByUserId(@PathVariable("data") String data){
         return new ResponseEntity<>(ticketService.searchAllBookingUserByUserName(data), HttpStatus.OK);
     }
-    @GetMapping("/ticket/cancel/{userId}")
+    @GetMapping("/ticket/cancel/{username}")
     public ResponseEntity<List<BookedAndCancelTicketResponse>> getAllTicketHasAbort
-            (@PathVariable("userId") Long userId){
-        return new ResponseEntity<>(ticketService.getAllCancelList(userId), HttpStatus.OK);
+            (@PathVariable("username") String username){
+        return new ResponseEntity<>(ticketService.getAllCancelList(username), HttpStatus.OK);
     }
-    @GetMapping("/ticket/history/{userId}")
+    @GetMapping("/ticket/history/{username}")
     public ResponseEntity<List<HistoryTicketResponse>> getAllTicketHistory
-            (@PathVariable("userId") Long userId){
-        return new ResponseEntity<>(ticketService.getAllHistoryList(userId), HttpStatus.OK);
+            (@PathVariable("username") String username){
+        return new ResponseEntity<>(ticketService.getAllHistoryList(username), HttpStatus.OK);
     }
     @GetMapping("/ticket/booking")
     public ResponseEntity<List<BookingListResponse>> getAllBookingByAdmin(){

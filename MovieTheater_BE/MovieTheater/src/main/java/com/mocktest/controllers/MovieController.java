@@ -1,9 +1,9 @@
 package com.mocktest.controllers;
 
+import com.mocktest.bean.response.MovieShowTimeResponse;
 import com.mocktest.bean.request.MovieRequest;
 import com.mocktest.bean.response.MovieResponse;
 import com.mocktest.bean.response.MovieWithCategoryResponse;
-import com.mocktest.entities.Movie;
 import com.mocktest.entities.TypeMovie;
 import com.mocktest.services.MovieService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class MovieController {
         return new ResponseEntity<>(movieService.getAll(), HttpStatus.OK);
     }
     @GetMapping("movies/showtime/{movieName}")
-    public ResponseEntity<?> getAllMovieById(@PathVariable("movieName") String movieName){
+    public ResponseEntity<List<MovieShowTimeResponse>> getAllMovieById(@PathVariable("movieName") String movieName){
         return new ResponseEntity<>(movieService.getAll(movieName), HttpStatus.OK);
     }
     @GetMapping("/type")
@@ -42,14 +42,13 @@ public class MovieController {
         List<MovieResponse> movieResponses = movieService.getAllMovieByAdmin();
         return new ResponseEntity<>(movieResponses, HttpStatus.OK);
     }
-//    @GetMapping("/movies/admin/{movieId}")
-//    public ResponseEntity<Movie> getAllMovieByAdminAndMovieId(@PathVariable("movieId") Long movieId){
-//        Movie responses = movieService.getById(movieId);
-//        return new ResponseEntity<>(responses, HttpStatus.OK);
-//    }
+    @GetMapping("/movie/admin/{movieId}")
+    public ResponseEntity<MovieResponse> getAllMovieByAdminAndMovieId(@PathVariable("movieId") Long movieId){
+        return new ResponseEntity<>(movieService.getById(movieId), HttpStatus.OK);
+    }
     @GetMapping("movie/{typeName}")
-    public ResponseEntity<List<MovieTypeNameResponse>> getAllMovieByTypeName(@PathVariable("typeName") String typeName){
-        return new ResponseEntity<>(movieService.getAllMovieByTypeName(typeName), HttpStatus.OK);
+    public ResponseEntity<List<MovieWithCategoryResponse>> getAllMovieByTypeName(@PathVariable("typeName") String typeName){
+        return new ResponseEntity<>(movieService.getAllByCategoriesByType(typeName), HttpStatus.OK);
     }
     @GetMapping("/movies/admin/{data}")
     public ResponseEntity<MovieResponse> SearchMovieByMovieName(@PathVariable("data") String data){
@@ -69,7 +68,9 @@ public class MovieController {
 
     @PutMapping("/movie")
     public ResponseEntity<MovieResponse> updateMovie(@RequestBody MovieRequest request){
+        System.out.println(request);
         return new ResponseEntity<>(movieService.UpdateMovie(request), HttpStatus.OK);
+//        return null;
     }
 
 }

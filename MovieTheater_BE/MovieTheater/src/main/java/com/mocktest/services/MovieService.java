@@ -1,14 +1,10 @@
 package com.mocktest.services;
-
 import com.mocktest.bean.request.MovieRequest;
 import com.mocktest.bean.response.MovieDetailResponse;
 import com.mocktest.bean.response.MovieResponse;
 import com.mocktest.bean.response.MovieShowTimeResponse;
 import com.mocktest.bean.response.MovieWithCategoryResponse;
-import com.mocktest.entities.Movie;
-import com.mocktest.entities.ShowTime;
-import com.mocktest.entities.Ticket;
-import com.mocktest.entities.TypeMovie;
+import com.mocktest.entities.*;
 import com.mocktest.exceptions.BadRequestException;
 import com.mocktest.exceptions.ErrorCode;
 import com.mocktest.exceptions.NotFoundException;
@@ -17,14 +13,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.mocktest.exceptions.ErrorCode.*;
+
 @Service
 public class MovieService {
     private final String REGEX = "^[a-zA-Z\\s]*$"; //Actor must contain only letters and spaces
-
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
@@ -38,6 +36,28 @@ public class MovieService {
     @Autowired
     private TicketService ticketService;
     public MovieResponse UpdateMovie(MovieRequest request) {
+        if (request.getContent() == null
+                && request.getMovieNameEnglish() == null
+                && request.getMovieNameVN() == null
+                && request.getActor() == null
+                && request.getDirector() == null
+        ) throw new BadRequestException(ERROR_DATA_NOT_MATCH);
+
+        if (!request.getActor().matches(REGEX)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_ACTOR);
+        }
+        if (!request.getDirector().matches(REGEX)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_DIRECTOR);
+        }
+        if (!request.getMovieProductionCompany().matches(REGEX)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_MOVIE_PRODUCTION_COMPANY);
+        }
+        if (request.getDuration() < 1 || request.getDuration() > 300) {
+            throw new BadRequestException(ErrorCode.ERROR_DURATION_NOT_MATCH);
+        }
+        if (request.getEndDate().isBefore(LocalDate.now())) {
+            throw new BadRequestException(ERROR_DATE_NOT_MATCH);
+        }
         Movie movie = movieRepository.getById(request.getId());
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
@@ -62,12 +82,15 @@ public class MovieService {
             listShowTime.forEach(showTime -> {
                 if (!requestedTimes.contains(showTime.getStartTime())) {
                     showTimeService.DeleteById(showTime.getId());
+                }else{
+                    showTime.setRoom(roomRepository.getById(request.getRoomId()));
+                    showTimeRepository.save(showTime);
                 }
             });
             for (LocalTime time : request.getStartTime()) {
                 boolean timeExists = false;
                 for (ShowTime showTime : listShowTime) {
-                    if (time.equals(showTime.getStartTime())) {
+                    if (time.equals(showTime.getStartTime())){
                         timeExists = true;
                         break;
                     }
@@ -92,18 +115,27 @@ public class MovieService {
         }
         movieResponse.setShowTimes(saved);
         if(movieResponse == null){
-            throw new BadRequestException("BAD_REQUEST");
+            throw new BadRequestException(ERROR_DB_NOT_FOUND);
         }
         return movieResponse;
     }
     public List<MovieShowTimeResponse> getAll(String movieName) {
         Movie movie = movieRepository.SearchMoive(movieName);
+        if(movie == null){
+            throw new BadRequestException(ERROR_MOVIENAME_NOT_MATCH);
+        }
+        List<ShowTime> showTimeListDelete = showTimeRepository.findAllAfterCurrentTimeByMovieId(LocalTime.now(),  movie.getId());
+        for(ShowTime showtime : showTimeListDelete){
+            if (showtime.getCreatedDate().toLocalDate().isBefore(LocalDate.now())){
+                showTimeService.DeleteById(showtime.getId());
+            }
+        }
         List<ShowTime> showTimeListMovie = showTimeRepository.findAllAfterCurrentTimeByMovieId(LocalTime.now(),  movie.getId());
-        List<Movie> list = movieRepository.findAll(LocalDate.now());
-        List<Movie> movies = new ArrayList<>();
-        for (Movie moviesaved :list){
-            if(movie.getActive().equals("true")){
-                movies.add(moviesaved);
+        List<Movie> movies = movieRepository.findAll(LocalDate.now());
+        List<ShowTime> showTimesDeletes = showTimeRepository.findAllAfterCurrentTime(LocalTime.now());
+        for(ShowTime showTime : showTimesDeletes){
+            if (showTime.getCreatedDate().toLocalDate().isBefore(LocalDate.now())) {
+                showTimeService.DeleteById(showTime.getId());
             }
         }
         List<ShowTime> showTimes = showTimeRepository.findAllAfterCurrentTime(LocalTime.now());
@@ -156,7 +188,7 @@ public class MovieService {
         }
         showTimeResponses.addAll(filteredResponses);
         if(showTimeResponses.isEmpty()){
-            throw new NotFoundException("No Data Found");
+            throw new NotFoundException(ERROR_DATA_NOT_MATCH);
         }
         return showTimeResponses;
     }
@@ -167,6 +199,12 @@ public class MovieService {
         for (Movie movie :list){
             if(movie.getActive().equals("true")){
                 movies.add(movie);
+            }
+        }
+        List<ShowTime> showTimesDeletes = showTimeRepository.findAllAfterCurrentTime(LocalTime.now());
+        for(ShowTime showTime : showTimesDeletes){
+            if (showTime.getCreatedDate().toLocalDate().isBefore(LocalDate.now())) {
+                 showTimeService.DeleteById(showTime.getId());
             }
         }
         List<ShowTime> showTimes = showTimeRepository.findAllAfterCurrentTime(LocalTime.now());
@@ -203,33 +241,15 @@ public class MovieService {
     }
     public List<MovieResponse> getAllMovieByAdmin(){
         List<Movie> list = movieRepository.findAll(LocalDate.now());
-        List<Movie> movieList = new ArrayList<>();
-        for (Movie movie :list){
-            if(movie.getActive().equals("true")){
-                movieList.add(movie);
-            }
-        }
-        List<MovieResponse> movieResponses = new ArrayList<>();
-        for(Movie movie : movieList){
+        List<MovieResponse> responses = new ArrayList<>();
+        for(Movie movie : list){
             MovieResponse movieResponse = new MovieResponse();
-            movieResponse.setId(movie.getId());
-            movieResponse.setContent(movieResponse.getContent());
-            movieResponse.setMovieNameEnglish(movie.getMovieNameEnglish());
-            movieResponse.setMovieNameVN(movie.getMovieNameVN());
-            movieResponse.setActor(movie.getActor());
-            movieResponse.setDirector(movieResponse.getDirector());
-            movieResponse.setStartedDate(movie.getStartedDate());
-            movieResponse.setMovieProductionCompany(movie.getMovieProductionCompany());
-            movieResponse.setDuration(movie.getDuration());
-            movieResponse.setVersion(movie.getVersion());
-            movieResponse.setTypeMovies(movie.getTypeMovies());
-            movieResponse.setShowTimes(movie.getShowTimes());
-            movieResponse.setImageURL(movie.getImageURL());
-            movieResponse.setCreatDate(movie.getCreatedDate());
-            movieResponses.add(movieResponse);
+            BeanUtils.copyProperties(movie, movieResponse);
+            responses.add(movieResponse);
         }
-        movieResponses.sort(Comparator.comparing(MovieResponse::getCreatDate).reversed());
-        return movieResponses;
+        responses.sort(Comparator.comparing(MovieResponse::getCreatedDate).reversed());
+
+        return responses;
     }
     public void deleteById(Long request){
         if (movieRepository.existsById(request)) {
@@ -246,8 +266,11 @@ public class MovieService {
                 && request.getMovieNameVN() == null
                 && request.getActor() == null
                 && request.getDirector() == null
-        ) throw new BadRequestException(ErrorCode.ERROR_DATA_NOT_MATCH);
-
+        ) throw new BadRequestException(ERROR_DATA_NOT_MATCH);
+        if(movieRepository.existsByMovieNameVNAndMovieNameEnglish(request.getMovieNameVN(),
+                request.getMovieNameEnglish())){
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_ACTOR);
+        }
         if (!request.getActor().matches(REGEX)) {
             throw new BadRequestException(ErrorCode.ERROR_FORMAT_ACTOR);
         }
@@ -261,9 +284,8 @@ public class MovieService {
             throw new BadRequestException(ErrorCode.ERROR_DURATION_NOT_MATCH);
         }
         if (request.getEndDate().isBefore(LocalDate.now())) {
-            throw new BadRequestException(ErrorCode.ERROR_DATE_NOT_MATCH);
+            throw new BadRequestException(ERROR_DATE_NOT_MATCH);
         }
-
         Set<TypeMovie> typeMovies = new HashSet<>();
         for (Long typeId : request.getTypeMovieId()) {
             TypeMovie type = typeRepository.findById(typeId)
@@ -272,7 +294,6 @@ public class MovieService {
                 typeMovies.add(type);
             }
         }
-
         Movie movie = new Movie();
         movie.setTypeMovies(typeMovies);
         BeanUtils.copyProperties(request, movie);
@@ -299,10 +320,20 @@ public class MovieService {
         List<TypeMovie> types = typeRepository.findAll();
         return types;
     }
-    public Movie getById(Long id) {
-        Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_MOVIE_NOT_FOUND));
-        return movie;
+    public MovieResponse getById(Long id) {
+        Movie movie = movieRepository.getMovieById(id);
+        System.out.println(movie);
+        MovieResponse response = new MovieResponse();
+        BeanUtils.copyProperties(movie, response);
+        response.setShowTimes(showTimeRepository.getAllShowTimeById(id));
+        for(ShowTime showTime :response.getShowTimes()){
+            response.setRoom(showTime.getRoom());
+            break;
+        }
+        if(movie == null){
+            throw new NotFoundException(ErrorCode.ERROR_MOVIE_NOT_FOUND);
+        }
+        return response;
     }
     public List<MovieWithCategoryResponse> getAllByCategories() {
         List<Movie> list = movieRepository.findAll(LocalDate.now());
@@ -350,17 +381,51 @@ public class MovieService {
     public MovieResponse searchMovieByMovieName(String data){
         return new MovieResponse(movieRepository.SearchMoive(data));
     }
-    public List<MovieTypeNameResponse> getAllMovieByTypeName(String typeName){
-        List<Movie> movieList = movieRepository.getALlMovieByType(typeName);
-        List<MovieTypeNameResponse> responses = new ArrayList<>();
-        for(Movie movie : movieList){
-            MovieTypeNameResponse response = new MovieTypeNameResponse();
-            BeanUtils.copyProperties(movie, response);
-            responses.add(response);
+    public List<MovieWithCategoryResponse> getAllByCategoriesByType(String type) {
+        List<Movie> list = movieRepository.findAll(LocalDate.now());
+        List<Movie> movieList = new ArrayList<>();
+        for (Movie movie : list) {
+            if (movie.getActive().equals("true")) {
+                movieList.add(movie);
+            }
         }
-        if(responses.isEmpty()){
-            throw new NotFoundException("Not data found");
-        }
-        return responses;
+        LocalDate currentDate = LocalDate.now();
+        List<Movie> filteredMovieList = movieList.stream()
+                .filter(movie -> movie.getEndDate().isAfter(currentDate) || movie.getEndDate().isEqual(currentDate))
+                .collect(Collectors.toList());
+
+        // Lọc danh sách phim theo loại
+        List<Movie> filteredMovies = filteredMovieList.stream()
+                .filter(movie -> movie.getTypeMovies().stream().anyMatch(typeMovie -> typeMovie.getTypeName().equals(type)))
+                .collect(Collectors.toList());
+
+        // Sắp xếp danh sách phim theo ngày bắt đầu giảm dần
+        filteredMovies.sort(Comparator.comparing(Movie::getStartedDate).reversed());
+
+        // Chuyển đổi danh sách phim thành danh sách đối tượng MovieDetailResponse
+        List<MovieDetailResponse> movieResponses = filteredMovies.stream().map(movie -> {
+            MovieDetailResponse movieResponse = new MovieDetailResponse();
+            movieResponse.setId(movie.getId());
+            movieResponse.setMovieNameEnglish(movie.getMovieNameEnglish());
+            movieResponse.setMovieNameVN(movie.getMovieNameVN());
+            movieResponse.setActor(movie.getActor());
+            movieResponse.setDirector(movie.getDirector());
+            movieResponse.setDuration(movie.getDuration());
+            movieResponse.setMovieProductionCompany(movie.getMovieProductionCompany());
+            movieResponse.setStartedDate(movie.getStartedDate());
+            movieResponse.setEndDate(movie.getEndDate());
+            movieResponse.setImageURL(movie.getImageURL());
+            movieResponse.setVersion(movie.getVersion());
+            return movieResponse;
+        }).collect(Collectors.toList());
+
+        // Tạo đối tượng MovieWithCategoryResponse cho loại phim cụ thể
+        MovieWithCategoryResponse response = MovieWithCategoryResponse.builder()
+                .categoryName(type)
+                .movies(movieResponses)
+                .build();
+
+        return Collections.singletonList(response); // Trả về danh sách chứa chỉ một phần tử, là phim của loại cụ thể.
     }
+
 }

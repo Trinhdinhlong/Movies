@@ -65,6 +65,7 @@ public class Movie {
     private List<ShowTime> showTimes;
     @Column(name = "isActive")
     private String Active = "true";
+
     @Override
     public String toString() {
         return "Movie{" +
@@ -81,6 +82,9 @@ public class Movie {
                 ", imageURL='" + imageURL + '\'' +
                 ", createdDate=" + createdDate +
                 ", updatedTime=" + updatedTime +
+                ", version='" + version + '\'' +
+                ", typeMovies=" + typeMovies +
+                ", Active='" + Active + '\'' +
                 '}';
     }
 }

@@ -60,7 +60,18 @@ public class ShowTime {
                 "id=" + id +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", movie=" + movie +
+                ", createdDate=" + createdDate +
+                ", updatedTime=" + updatedTime +
+                ", Active='" + Active + '\'' +
                 '}';
     }
+//    @Override
+//    public String toString() {
+//        return "ShowTime{" +
+//                "id=" + id +
+//                ", startTime=" + startTime +
+//                ", endTime=" + endTime +
+//                ", movie=" + movie +
+//                '}';
+//    }
 }

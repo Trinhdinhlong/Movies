@@ -85,6 +85,28 @@ public class UserService{
         return new UserDto(userRepository.save(requests));
     }
     public UserDto updateById(UserDto request){
+        if (request.getUsername() == null
+                && request.getPassword() == null
+                && request.getEmail() == null
+                && request.getFullName() == null
+                && request.getDateOfBirth() == null
+                && request.getGender() == null
+                && request.getPhone() == null
+                && request.getIdentityCard() == null
+        ) throw new BadRequestException(ErrorCode.ERROR_DATA_NOT_MATCH);
+
+        if (!request.getEmail().matches(REGEX_EMAIL)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_EMAIL);
+        }
+        if(!PasswordEncoderExample.isValidPassword(request.getPassword())){
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_PASSWORD);
+        }
+        if (!request.getPhone().matches(REGEX_PHONE)) {
+            throw new BadRequestException(ErrorCode.ERROR_FORMAT_PHONE);
+        }
+        if (request.getDateOfBirth().isAfter(LocalDate.now())) {
+            throw new BadRequestException(ErrorCode.ERROR_DATE_NOT_MATCH);
+        }
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ERROR_USER_NOT_FOUND));
         user.setPassword(PasswordEncoderExample.encode(request.getPassword()));

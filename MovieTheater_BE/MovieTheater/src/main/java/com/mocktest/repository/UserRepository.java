@@ -22,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByPhone(String phone);
 
     @Override
-    @Query ("FROM User u WHERE u.role.roleName = 'Employee' AND u.Active = '1'")
+    @Query ("FROM User u WHERE u.role.roleName = 'Employee' AND u.Active = 'true'")
     List<User> findAll();
 
 }

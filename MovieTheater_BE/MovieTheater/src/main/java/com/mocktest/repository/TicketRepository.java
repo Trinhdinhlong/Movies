@@ -29,18 +29,19 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "INNER JOIN t.showTime s " +
             "INNER JOIN s.movie m " +
             "INNER JOIN t.seat s2 " +
-            "WHERE t.user.userId = :userId " +
+            "WHERE t.user.username = :username " +
             "GROUP BY m.movieNameVN, t.createdDate, t.ticketType")
-    List<BookedAndCancelTicketResponse> getTotalPriceByTicket(Long userId);
+    List<BookedAndCancelTicketResponse> getTotalPriceByTicket(String username);
 
-    @Query("SELECT new com.mocktest.bean.response.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.ticketType) " +
+    @Query("SELECT new com.mocktest.bean.response.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.createdDate,t.ticketType) " +
             "FROM Ticket t " +
             "INNER JOIN t.user u " +
             "INNER JOIN t.showTime s " +
             "INNER JOIN s.movie m " +
-            "INNER JOIN t.seat s2")
+            "INNER JOIN t.seat s2 " +
+            "WHERE m.Active = 'true'")
     List<BookingListResponse> getAllBookingUser();
-    @Query("SELECT new com.mocktest.bean.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.createdDate,t.ticketType) " +
+    @Query("SELECT new com.mocktest.bean.response.BookingListResponse(t.id, t.user.userId, u.fullName, u.identityCard, u.phone, m.movieNameVN, t.startTime, s2.seatColumn, s2.seatRow, t.createdDate,t.ticketType) " +
             "FROM Ticket t " +
             "INNER JOIN t.user u " +
             "INNER JOIN t.showTime s " +

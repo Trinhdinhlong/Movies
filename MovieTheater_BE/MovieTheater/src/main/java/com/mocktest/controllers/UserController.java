@@ -4,6 +4,7 @@ import com.mocktest.entities.Role;
 import com.mocktest.services.RoleService;
 import com.mocktest.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,10 @@ public class UserController {
     private final UserService userService;
     private final RoleService roleService;
     @PostMapping("/login")
-    public ResponseEntity<?> LoginUser(@RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.login(userDto).getUsername(), HttpStatus.OK);
+    public ResponseEntity<Object> LoginUser(@RequestBody UserDto userDto){
+        UserDto loggedInUser = userService.login(userDto);
+        Object responseObject = new String[]{loggedInUser.getUsername(), (loggedInUser.getRole().getRoleName())};
+        return new ResponseEntity<>(responseObject, HttpStatus.OK);
     }
     @PostMapping("/register")
     public ResponseEntity<UserDto> saveUser(@RequestBody UserDto request){
@@ -28,20 +31,16 @@ public class UserController {
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    @GetMapping("/employee/booking/{username}")
-    public ResponseEntity<UserDto> findUser(@PathVariable("username") String username){
-        return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
-    }
-    @GetMapping("/employee/search/{username}")
-    public ResponseEntity<UserDto> SearchEmployee(@PathVariable("username") String username){
-            return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
-    }
     @PostMapping("/employee")
     public ResponseEntity<UserDto> saveEmployee(@RequestBody UserDto request){
-        Role role= roleService.getById(3L);
+        Role role = roleService.getById(3L);
         request.setRole(role);
         UserDto response = userService.create(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    @GetMapping("/employee/booking/{username}")
+    public ResponseEntity<UserDto> findUser(@PathVariable("username") String username) {
+        return new ResponseEntity<>(userService.getByUserName(username), HttpStatus.OK);
     }
     @GetMapping("/user/{username}")
     public ResponseEntity<UserDto> getUser(@PathVariable("username") String username){

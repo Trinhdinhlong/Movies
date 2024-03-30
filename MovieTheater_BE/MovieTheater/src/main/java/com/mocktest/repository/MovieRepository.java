@@ -11,14 +11,14 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
+    boolean existsByMovieNameVNAndMovieNameEnglish(String movieNameVN, String movieNameEnglish);
     @Query("FROM Movie m " +
             "WHERE m.endDate >= :now AND m.Active = 'true'")
     List<Movie> findAll(LocalDate now);
     @Query("FROM Movie m " +
-            "WHERE m.movieNameVN = :data OR m.movieNameEnglish = :data AND m.Active = 'true'")
+            "WHERE (m.movieNameVN = :data OR m.movieNameEnglish = :data) AND m.Active = 'true'")
     Movie SearchMoive(String data);
     @Query("FROM Movie m " +
-            "INNER JOIN m.typeMovies mt " +
-            "WHERE mt.typeName = :typeName AND m.Active = 'true'")
-    List<Movie> getALlMovieByType(String typeName);
+            "WHERE m.id = :id AND m.Active = 'true'")
+    Movie getMovieById(Long id);
 }

@@ -29,7 +29,7 @@ public class MovieResponse {
     private String director;
     private int duration;
     private String movieProductionCompany;
-    private LocalDateTime creatDate;
+    private LocalDateTime createdDate;
     private LocalDate startedDate;
     private LocalDate endDate;
     private String version;
