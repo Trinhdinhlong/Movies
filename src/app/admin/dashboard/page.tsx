@@ -6,7 +6,7 @@ import { useEffect } from "react";
 export default function Home() {
   const router = useRouter();
   useEffect(() => {
-    router.push("/user/dashboard/home");
+    router.push("/admin/dashboard/employees");
   }, [router])
 
   return (
