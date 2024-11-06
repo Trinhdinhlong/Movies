@@ -44,7 +44,7 @@ export default function Home() {
       }
     ).then(response => {
       router.push("/admin/dashboard/employees")
-    });
+    }).catch(er => console.log(er));
   }
 
   function handleBack() {

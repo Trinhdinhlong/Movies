@@ -111,7 +111,7 @@ export default function Home({
   async function handleConfirmBooking() {
     await axiosInstance
       .post(
-        "https://9817-14-232-224-226.ngrok-free.app/api/ticket/booking",
+        "http://localhost:8080/api/ticket/booking",
         arrayData,
         {
           headers: {

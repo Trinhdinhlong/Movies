@@ -88,7 +88,10 @@ export default function Register() {
           console.log(error)
           setTimeout(() => {
             setLoading(false);
-            if (error.response.data.errorCode === 16) setInvalidPassword(error.response.data.message);
+            if (error.response.data.errorCode === 16) {
+              setInvalidPassword(error.response.data.message)
+              setInvalidConfirmPassoword(false);
+            };
           }, 1000);
         });
     } else {
@@ -98,6 +101,7 @@ export default function Register() {
           setInvalid(true);
         } else {
           setInvalidConfirmPassoword(true);
+          setInvalidPassword("");
         }
       }, 1000);
     }

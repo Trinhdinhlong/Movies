@@ -100,8 +100,8 @@ export default function Home({
           <div>
             <div className="mt-5 ml-5">
               <div className="flex flex-col gap-16">
-                {movieType.map((movie) => (
-                  <div className="flex flex-col">
+                {movieType.map((movie, index) => (
+                  <div className="flex flex-col" key={index}>
                     <span className="font-[700] block mb-2 text-white text-[1.5rem] mb-5">
                       {movie.categoryName}
                     </span>

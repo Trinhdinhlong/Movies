@@ -150,13 +150,15 @@ export default function Home({
             </div>
           </div>
         </div>
-        <span
-          onClick={redirectConfirmation}
-          className="self-end flex flex-row gap-3 items-center justify-center bg-[#337AB7] text-white rounded-[5px] py-[5px] px-[10px] cursor-pointer"
-        >
-          <Image src={continueImage} alt="" />
-          <span className="font-[500]">Continue</span>
-        </span>
+        { selectedSeat.length > 0 && (
+            <span
+              onClick={redirectConfirmation}
+              className="self-end flex flex-row gap-3 items-center justify-center bg-[#337AB7] text-white rounded-[5px] py-[5px] px-[10px] cursor-pointer"
+            >
+              <Image src={continueImage} alt="" />
+              <span className="font-[500]">Continue</span>
+            </span>
+        )}
       </div>
     </div>
   );
