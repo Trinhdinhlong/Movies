@@ -33,21 +33,4 @@ public class MovieRequest {
     private List<Long> typeMovieId;
     private List<LocalTime> startTime;
     private Long roomId;
-//    @Override
-//    public String toString() {
-//        return "MovieDto{" +
-//                "id=" + id +
-//                ", content='" + content + '\'' +
-//                ", movieNameEnglish='" + movieNameEnglish + '\'' +
-//                ", movieNameVN='" + movieNameVN + '\'' +
-//                ", actor='" + actor + '\'' +
-//                ", director='" + director + '\'' +
-//                ", duration=" + duration +
-//                ", movieProductionCompany='" + movieProductionCompany + '\'' +
-//                ", startedDate=" + startedDate +
-//                ", endDate=" + endDate +
-//                ", imageURL='" + imageURL + '\'' +
-//                '}';
-//    }
-
 }

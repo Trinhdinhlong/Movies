@@ -25,8 +25,6 @@ public class TicketController {
     }
     @GetMapping("/ticket/admin/{id}")
     public ResponseEntity<ConfirmTicketResponse> getConfirmByAdmin(@PathVariable("id") Long id){
-        System.out.println(id);
-        System.out.println(ticketService.getConfirmAdminByTicketId(id));
         return new ResponseEntity<>(ticketService.getConfirmAdminByTicketId(id), HttpStatus.OK);
     }
     @GetMapping("ticket/booked/{username}")
